@@ -1,0 +1,166 @@
+/* =========================================================
+   LMG Unterricht – Design Tokens + Auswahl-Komponenten
+   Tokens 1:1 aus dem LMG-Designsystem (colors_and_type.css),
+   Komponenten für Startseite (index.html) und Katalog (katalog.html).
+   ========================================================= */
+
+:root{
+  /* Surface */
+  --surface-page:#ffffff; --surface-soft:#f6f6f4; --surface-sunken:#ecece8; --surface-ink:#1a1c1f;
+  /* Foreground */
+  --fg-1:#17181a; --fg-2:#3d4147; --fg-3:#646a72; --fg-4:#9097a0; --fg-5:#c2c7cd;
+  /* Lines */
+  --line-1:#e4e5e3; --line-2:#cfd1cf; --line-3:#a8acaa;
+  /* Fächer */
+  --mathe:#B61E33; --mathe-soft:#f5e1e3; --mathe-line:#e8b8be; --mathe-ink:#6f0f1c;
+  --physik:#2C5282; --physik-soft:#e8eef5; --physik-line:#b9c8da; --physik-ink:#1d3a5c;
+  --accent:#3d4147; --accent-soft:#ececea; --accent-line:#cfd1cf; --accent-ink:#17181a;
+  /* Feedback / Highlight */
+  --ok:#3f6e3a; --ok-soft:#e7eee5; --warn:#8a6a1e; --warn-soft:#f3ecd9;
+  --hl-soft:#ede5f2; --hl-ink:#6b4a8a; --hl-line:#d6c5e0;
+
+  --font-sans:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+
+  --radius-sm:4px; --radius-md:6px; --radius-lg:10px; --radius-pill:999px;
+  --shadow-1:0 1px 2px rgba(20,22,25,.04),0 1px 1px rgba(20,22,25,.03);
+  --shadow-2:0 2px 6px rgba(20,22,25,.05),0 1px 2px rgba(20,22,25,.04);
+  --shadow-3:0 8px 24px rgba(20,22,25,.07),0 2px 6px rgba(20,22,25,.04);
+  --dur-fast:120ms; --dur-normal:180ms; --dur-slow:280ms;
+  --ease-out:cubic-bezier(0.22,0.61,0.36,1);
+}
+
+.fach-mathe {--accent:var(--mathe); --accent-soft:var(--mathe-soft); --accent-line:var(--mathe-line); --accent-ink:var(--mathe-ink);}
+.fach-physik{--accent:var(--physik);--accent-soft:var(--physik-soft);--accent-line:var(--physik-line);--accent-ink:var(--physik-ink);}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--surface-soft); color:var(--fg-1);
+  font-family:var(--font-sans); font-size:17px; line-height:1.5;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent,var(--physik));outline-offset:3px;border-radius:var(--radius-sm)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- Kopf ---------- */
+.brandline{height:4px;background:linear-gradient(90deg,var(--mathe) 0 50%,var(--physik) 50% 100%)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+@media (min-width:700px){.wrap{padding:0 32px}}
+header.kopf{background:var(--surface-page);border-bottom:1px solid var(--line-1)}
+header.kopf .wrap{padding-top:28px;padding-bottom:28px}
+.kicker{font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-3);margin:0}
+h1{font-size:clamp(32px,6vw,48px);font-weight:700;line-height:1.15;letter-spacing:-.01em;margin:6px 0 8px}
+.lead{margin:0;color:var(--fg-2);max-width:60ch;font-size:18px}
+
+main.wrap{padding-top:32px;padding-bottom:56px}
+
+/* ---------- Schritte ---------- */
+.schritt{margin-bottom:40px}
+.schritt-kopf{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
+.schritt-nr{
+  flex:none;width:28px;height:28px;border-radius:var(--radius-pill);
+  display:inline-grid;place-items:center;font-size:15px;font-weight:700;
+  background:var(--fg-1);color:var(--surface-page);transform:translateY(-2px);
+}
+.schritt h2{font-size:24px;font-weight:600;line-height:1.3;margin:0}
+.schritt[hidden]{display:none}
+.gruppe{font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-3);margin:20px 0 10px}
+.gruppe:first-of-type{margin-top:0}
+
+/* ---------- Stufen-Kacheln ---------- */
+.stufen{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.stufe{
+  position:relative;display:flex;flex-direction:column;justify-content:space-between;
+  min-width:0;min-height:124px;padding:14px 16px 12px;text-align:left;hyphens:manual;
+  background:var(--surface-page);border:1px solid var(--line-2);border-radius:var(--radius-md);
+  box-shadow:var(--shadow-1);
+  transition:transform var(--dur-normal) var(--ease-out),box-shadow var(--dur-normal) var(--ease-out),border-color var(--dur-normal) var(--ease-out),background var(--dur-normal) var(--ease-out);
+}
+.stufe .zahl{font-size:44px;font-weight:700;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stufe .name{font-size:14px;color:var(--fg-3);line-height:1.25;margin-top:4px}
+.stufe .anz{font-size:13px;font-weight:600;color:var(--fg-2);margin-top:10px;display:flex;gap:4px;align-items:center;white-space:nowrap}
+.stufe .punkte{display:inline-flex;gap:3px;margin-right:4px}
+.stufe .punkte i{width:7px;height:7px;border-radius:50%;display:block}
+.stufe:hover:not([aria-disabled="true"]){transform:translateY(-2px);box-shadow:var(--shadow-3);border-color:var(--line-3)}
+.stufe[aria-pressed="true"]{background:var(--fg-1);border-color:var(--fg-1);color:var(--surface-page);box-shadow:var(--shadow-2)}
+.stufe[aria-pressed="true"] .name,.stufe[aria-pressed="true"] .anz{color:var(--fg-5)}
+.stufe[aria-disabled="true"]{cursor:default;background:transparent;border-style:dashed;box-shadow:none;color:var(--fg-4)}
+.stufe[aria-disabled="true"] .name,.stufe[aria-disabled="true"] .anz{color:var(--fg-4);font-weight:400}
+
+/* ---------- Fach-Kacheln ---------- */
+.faecher{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.fach{
+  position:relative;display:flex;gap:18px;align-items:center;min-height:132px;padding:20px 22px;
+  text-decoration:none;color:var(--fg-1);
+  background:var(--surface-page);border:1px solid var(--line-2);border-left:4px solid var(--accent);
+  border-radius:var(--radius-md);box-shadow:var(--shadow-1);
+  transition:transform var(--dur-normal) var(--ease-out),box-shadow var(--dur-normal) var(--ease-out),background var(--dur-normal) var(--ease-out);
+}
+.fach .symbol{flex:none;width:72px;height:72px;border-radius:var(--radius-md);background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
+.fach .symbol svg{width:44px;height:44px}
+.fach .titel{font-size:26px;font-weight:700;line-height:1.1;margin:0}
+.fach .anz{font-size:15px;color:var(--fg-3);margin:4px 0 0}
+.fach .pfeil{margin-left:auto;color:var(--accent);transition:transform var(--dur-normal) var(--ease-out)}
+.fach:hover{transform:translateY(-2px);box-shadow:var(--shadow-3);background:linear-gradient(90deg,var(--accent-soft),var(--surface-page) 70%)}
+.fach:hover .pfeil{transform:translateX(4px)}
+.fach[aria-disabled="true"]{pointer-events:none;border-left-color:var(--line-2);border-style:dashed;border-left-style:solid;background:transparent;box-shadow:none;color:var(--fg-4)}
+.fach[aria-disabled="true"] .symbol{background:var(--surface-sunken);color:var(--fg-4)}
+.fach[aria-disabled="true"] .pfeil{display:none}
+.fach[aria-disabled="true"] .anz{color:var(--fg-4)}
+
+/* ---------- Katalog ---------- */
+.krumen{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:15px;color:var(--fg-3);margin:0 0 10px}
+.krumen a{color:var(--fg-3);text-underline-offset:2px}
+.krumen a:hover{color:var(--fg-1)}
+.umschalter{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:20px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;padding:5px 12px;min-height:34px;
+  border:1px solid var(--line-2);border-radius:var(--radius-pill);background:var(--surface-page);
+  font-size:15px;font-weight:600;color:var(--fg-2);text-decoration:none;
+  transition:background var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out);
+}
+.chip:hover{background:var(--surface-soft);border-color:var(--line-3)}
+.chip[aria-current="true"],.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+
+.karten{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px}
+.karte{
+  display:flex;flex-direction:column;overflow:hidden;text-decoration:none;color:var(--fg-1);
+  background:var(--surface-page);border:1px solid var(--line-1);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);
+  transition:transform var(--dur-normal) var(--ease-out),box-shadow var(--dur-normal) var(--ease-out),border-color var(--dur-normal) var(--ease-out);
+}
+.karte:hover{transform:translateY(-3px);box-shadow:var(--shadow-3);border-color:var(--accent-line)}
+.karte .bild{position:relative;aspect-ratio:16/10;background:var(--accent-soft);border-bottom:1px solid var(--line-1);overflow:hidden}
+.karte .bild img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;transition:transform var(--dur-slow) var(--ease-out)}
+.karte:hover .bild img{transform:scale(1.03)}
+.karte .bild .platzhalter{position:absolute;inset:0;display:grid;place-items:center;color:var(--accent);opacity:.55}
+.karte .bild .platzhalter svg{width:30%;height:auto}
+.karte .badge{position:absolute;top:10px;left:10px;padding:2px 10px;border-radius:var(--radius-pill);font-size:13px;font-weight:700;letter-spacing:.04em;background:var(--accent);color:#fff;box-shadow:var(--shadow-2)}
+.karte .text{padding:16px 18px 18px;display:flex;flex-direction:column;gap:6px;flex:1}
+.karte .thema{font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink)}
+.karte h3{font-size:20px;font-weight:600;line-height:1.25;margin:0}
+.karte p{margin:0;color:var(--fg-2);font-size:16px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.karte .meta{margin-top:auto;padding-top:10px;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;color:var(--fg-3)}
+.karte .meta span{display:inline-flex;align-items:center;gap:5px}
+
+.leer{padding:40px 24px;text-align:center;border:1px dashed var(--line-2);border-radius:var(--radius-lg);color:var(--fg-3);background:var(--surface-page)}
+.leer strong{display:block;color:var(--fg-1);font-size:20px;margin-bottom:4px}
+
+footer.fuss{border-top:1px solid var(--line-1);background:var(--surface-page);color:var(--fg-3);font-size:14px}
+footer.fuss .wrap{padding-top:18px;padding-bottom:22px}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+@media (max-width:760px){.stufen{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:520px){
+  .stufen{gap:8px}
+  .stufe{min-height:104px;padding:10px 12px}
+  .stufe .zahl{font-size:34px}
+  .stufe .name{font-size:13px}
+  .stufe .punkte{display:none}
+  .fach{min-height:104px;padding:16px}
+  .fach .symbol{width:56px;height:56px}
+  .fach .titel{font-size:22px}
+}

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulationen · LMG</title>
+<meta name="description" content="Simulationen für den Mathematik- und Physikunterricht am Ludwig-Meyn-Gymnasium Uetersen">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="assets/lmg.css">
+</head>
+<body>
+<div class="brandline"></div>
+<header class="kopf">
+  <div class="wrap">
+    <p class="kicker" id="schule"></p>
+    <h1 id="titel"></h1>
+    <p class="lead" id="untertitel"></p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="schritt" aria-labelledby="h-stufe">
+    <div class="schritt-kopf"><span class="schritt-nr" aria-hidden="true">1</span><h2 id="h-stufe">In welcher Klassenstufe bist du?</h2></div>
+    <div id="stufen"></div>
+  </section>
+
+  <section class="schritt" id="schritt-fach" aria-labelledby="h-fach" hidden>
+    <div class="schritt-kopf"><span class="schritt-nr" aria-hidden="true">2</span><h2 id="h-fach">Welches Fach?</h2></div>
+    <div class="faecher" id="faecher"></div>
+  </section>
+</main>
+
+<footer class="fuss"><div class="wrap" id="fuss"></div></footer>
+
+<script src="simulationen.js"></script>
+<script>
+(function(){
+  const P = window.PLATTFORM, S = window.SIMULATIONEN || [];
+  const $ = id => document.getElementById(id);
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; };
+  const anzahl = n => n === 0 ? "noch leer" : n === 1 ? "1 Simulation" : n + " Simulationen";
+  const zaehle = (stufe, fach) => S.filter(s => s.stufen.includes(stufe) && (!fach || s.fach === fach)).length;
+  const MERK = "sim-letzte-stufe";
+
+  $("schule").textContent = P.schule;
+  $("titel").textContent = P.name;
+  $("untertitel").textContent = P.untertitel;
+  document.title = P.name + " · LMG";
+  $("fuss").textContent = P.schule + " · Fachschaft Mathematik und Physik";
+
+  /* ---------- Schritt 1: Stufen ---------- */
+  const knoepfe = {};
+  let gruppe = null, raster = null;
+  P.stufen.forEach(st => {
+    if(st.gruppe !== gruppe){
+      gruppe = st.gruppe;
+      $("stufen").appendChild(el("p", "gruppe", gruppe));
+      raster = el("div", "stufen");
+      $("stufen").appendChild(raster);
+    }
+    const n = zaehle(st.id);
+    const b = el("button", "stufe");
+    b.type = "button";
+    b.setAttribute("aria-pressed", "false");
+    b.appendChild(el("span", "zahl", st.zahl));
+    if(st.name !== "Klasse " + st.zahl) b.appendChild(el("span", "name", st.name));
+    else b.appendChild(el("span", "name", "Klasse"));
+    const a = el("span", "anz");
+    if(n){
+      const punkte = el("span", "punkte");
+      P.faecher.forEach(f => { if(zaehle(st.id, f.id)){ const i = el("i"); i.style.background = "var(--" + f.id + ")"; punkte.appendChild(i); } });
+      a.appendChild(punkte);
+    }
+    a.appendChild(document.createTextNode(anzahl(n)));
+    b.appendChild(a);
+    b.setAttribute("aria-label", st.name + ", " + anzahl(n));
+    if(n === 0) b.setAttribute("aria-disabled", "true");
+    else b.addEventListener("click", () => waehle(st.id, true));
+    knoepfe[st.id] = b;
+    raster.appendChild(b);
+  });
+
+  /* ---------- Schritt 2: Fächer ---------- */
+  function waehle(id, scrollen){
+    const st = P.stufen.find(s => s.id === id);
+    if(!st || !zaehle(id)) return;
+    Object.entries(knoepfe).forEach(([k, b]) => b.setAttribute("aria-pressed", String(k === id)));
+    try{ localStorage.setItem(MERK, id); }catch(e){}
+    history.replaceState(null, "", "?stufe=" + encodeURIComponent(id));
+
+    $("h-fach").textContent = st.name + ": Welches Fach?";
+    const box = $("faecher");
+    box.textContent = "";
+    P.faecher.forEach(f => {
+      const n = zaehle(id, f.id);
+      const k = el("a", "fach fach-" + f.id);
+      const sym = el("span", "symbol"); sym.innerHTML = f.symbol;
+      const txt = el("span");
+      txt.appendChild(el("p", "titel", f.name));
+      txt.appendChild(el("p", "anz", anzahl(n)));
+      const pfeil = el("span", "pfeil");
+      pfeil.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+      k.append(sym, txt, pfeil);
+      if(n) k.href = P.zielseite + "?stufe=" + encodeURIComponent(id) + "&fach=" + encodeURIComponent(f.id);
+      else k.setAttribute("aria-disabled", "true");
+      box.appendChild(k);
+    });
+    $("schritt-fach").hidden = false;
+    if(scrollen){
+      const r = $("schritt-fach").getBoundingClientRect();
+      if(r.bottom > innerHeight) $("schritt-fach").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start"});
+    }
+  }
+
+  /* ---------- Vorauswahl: URL (?stufe=10) oder zuletzt gewählte Stufe ---------- */
+  let start = new URLSearchParams(location.search).get("stufe");
+  if(!start){ try{ start = localStorage.getItem(MERK); }catch(e){} }
+  if(start) waehle(start, false);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lernzirkel digital: Reihen- und Parallelschaltung</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F8FB; --card:#FFFFFF; --grid:#E4EAF3; --ink:#18233A; --muted:#56637C;
+  --line:#C8D2E2; --reihe:#2D5BA3; --reihe-soft:#E6EDF8; --par:#0E7C74; --par-soft:#E1F2F0;
+  --lamp:#F4B400; --lamp-soft:#FFF4CC; --ok:#237548; --ok-soft:#E3F3E9; --bad:#B23A2A; --bad-soft:#FBE9E6;
+  --wire:#2A3550; --knobel:#7A4FA3; --knobel-soft:#F1EAF8;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#111827; --card:#1A2335; --grid:#1F2A3F; --ink:#E8EDF6; --muted:#A3AFC4;
+    --line:#34425E; --reihe:#7FA6E6; --reihe-soft:#1E2C47; --par:#4FC1B6; --par-soft:#16312F;
+    --lamp:#FFC933; --lamp-soft:#3A3217; --ok:#5CCB8A; --ok-soft:#173226; --bad:#F08A78; --bad-soft:#3B1F1B;
+    --wire:#C9D3E6; --knobel:#C29BE8; --knobel-soft:#2C2240;
+  }
+}
+:root[data-theme="dark"]{
+    --paper:#111827; --card:#1A2335; --grid:#1F2A3F; --ink:#E8EDF6; --muted:#A3AFC4;
+    --line:#34425E; --reihe:#7FA6E6; --reihe-soft:#1E2C47; --par:#4FC1B6; --par-soft:#16312F;
+    --lamp:#FFC933; --lamp-soft:#3A3217; --ok:#5CCB8A; --ok-soft:#173226; --bad:#F08A78; --bad-soft:#3B1F1B;
+    --wire:#C9D3E6; --knobel:#C29BE8; --knobel-soft:#2C2240;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0; color:var(--ink); background:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  font-family:"Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  font-size:17px; line-height:1.5;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--reihe)}
+:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+
+.wrap{max-width:1040px;margin:0 auto;padding:0 18px}
+header.top{padding:22px 0 6px}
+.titlerow{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+h1{font-size:1.9rem;line-height:1.15;margin:0;letter-spacing:-.01em}
+.sub{margin:4px 0 0;color:var(--muted)}
+.names{display:flex;gap:10px;flex-wrap:wrap}
+.names label{display:flex;flex-direction:column;font-size:.85rem;color:var(--muted)}
+.names input{width:170px;padding:6px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--card)}
+
+/* progress circuit */
+.board{margin:14px 0 6px;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:8px 10px 2px}
+.board svg{width:100%;height:auto;display:block}
+.board .wire{stroke:var(--wire);stroke-width:2.5;fill:none}
+.board .flow{stroke:var(--lamp);stroke-width:2.5;fill:none;stroke-dasharray:6 14;opacity:0}
+.board.alldone .flow{opacity:1;animation:flow 1.4s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-40}}
+@media (prefers-reduced-motion: reduce){.board.alldone .flow{animation:none}}
+.bulb{cursor:pointer}
+.bulb .glass{fill:var(--card);stroke:var(--wire);stroke-width:2.5;transition:fill .4s}
+.bulb .x{stroke:var(--wire);stroke-width:2}
+.bulb .halo{fill:var(--lamp);opacity:0;transition:opacity .5s}
+.bulb.lit .glass{fill:var(--lamp)}
+.bulb.lit .halo{opacity:.28}
+.bulb .num{font-weight:700;font-size:15px;fill:var(--ink);text-anchor:middle}
+.bulb .ring{fill:none;stroke:transparent;stroke-width:3}
+.bulb.current .ring{stroke:var(--ink)}
+.bulb .star{fill:var(--lamp);stroke:var(--wire);stroke-width:1;opacity:0}
+.bulb.plus .star{opacity:1}
+.bulb:focus{outline:none}
+.bulb:focus-visible .ring{stroke:var(--lamp)}
+.boardlegend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.85rem;color:var(--muted);padding:2px 6px 6px}
+.boardlegend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px;background:var(--c)}
+
+/* nav */
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 14px}
+nav.tabs button{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:5px 13px;cursor:pointer;font-size:.92rem}
+nav.tabs button[aria-current="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+nav.tabs button.done::after{content:" ✓";color:var(--ok)}
+nav.tabs button[aria-current="true"].done::after{color:var(--lamp)}
+
+/* sim bar */
+.simbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:14px}
+.simbar strong{margin-right:auto}
+.btn{border:1.5px solid var(--ink);background:var(--ink);color:var(--card);border-radius:9px;padding:7px 14px;cursor:pointer;text-decoration:none;display:inline-block;font-size:.95rem}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.small{padding:4px 10px;font-size:.88rem}
+.simframe{display:none;margin-bottom:16px;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;background:#000}
+.simframe.on{display:block}
+.simframe iframe{display:block;width:100%;aspect-ratio:16/10;border:0;max-height:78vh}
+
+/* station */
+.station{display:none;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:22px 24px 26px;margin-bottom:28px}
+.station.show{display:block}
+.station[data-group="reihe"]{border-top:6px solid var(--reihe)}
+.station[data-group="par"]{border-top:6px solid var(--par)}
+.station[data-group="knobel"]{border-top:6px solid var(--knobel)}
+.station[data-group="info"]{border-top:6px solid var(--lamp)}
+.shead{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline}
+.chip{font-size:.85rem;border-radius:6px;padding:2px 9px;font-weight:700}
+.chip.reihe{background:var(--reihe-soft);color:var(--reihe)}
+.chip.par{background:var(--par-soft);color:var(--par)}
+.chip.knobel{background:var(--knobel-soft);color:var(--knobel)}
+h2{font-size:1.55rem;margin:4px 0 2px;line-height:1.2}
+h3{font-size:1.12rem;margin:22px 0 8px}
+.grid2{display:grid;grid-template-columns:1.1fr 1fr;gap:22px;align-items:start}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+ol.steps{padding-left:1.3em;margin:6px 0}
+ol.steps li{margin:4px 0}
+.settings{background:var(--paper);border:1.5px dashed var(--line);border-radius:10px;padding:8px 12px;margin:8px 0}
+.settings p{margin:2px 0}
+figure.sch{margin:0;background:var(--paper);border-radius:12px;padding:8px}
+figure.sch svg{width:100%;height:auto;display:block}
+figure.sch figcaption{font-size:.85rem;color:var(--muted);text-align:center}
+svg .w{stroke:var(--wire);stroke-width:2;fill:none}
+svg .cmp{fill:var(--card);stroke:var(--wire);stroke-width:2}
+svg .cmpx{stroke:var(--wire);stroke-width:1.8}
+svg .lbl{fill:var(--ink);font-size:15px;font-family:inherit}
+svg .lbl.i{font-style:italic}
+svg .ml{fill:var(--ink);font-size:14px;font-weight:700;text-anchor:middle;dominant-baseline:central}
+svg .dot{fill:var(--wire)}
+svg .gap{fill:var(--paper)}
+
+.tablewrap{overflow-x:auto}
+table.mt{border-collapse:collapse;min-width:420px;margin:6px 0}
+table.mt th,table.mt td{border:1.5px solid var(--line);padding:6px 8px;text-align:center}
+table.mt th{background:var(--paper);font-weight:700;font-size:.95rem}
+table.mt td.given{background:var(--paper);font-weight:700}
+table.mt input{width:86px;padding:5px 6px;border:1.5px solid var(--line);border-radius:6px;text-align:center;background:var(--card)}
+table.mt input.ok{border-color:var(--ok);background:var(--ok-soft)}
+table.mt input.bad{border-color:var(--bad);background:var(--bad-soft)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.fb{margin-top:10px;padding:9px 13px;border-radius:9px;display:none}
+.fb.ok{display:block;background:var(--ok-soft);color:var(--ok);border:1.5px solid var(--ok)}
+.fb.bad{display:block;background:var(--bad-soft);color:var(--bad);border:1.5px solid var(--bad)}
+.fb.info{display:block;background:var(--paper);border:1.5px solid var(--line)}
+.fb p{margin:3px 0}
+.fb ul{margin:4px 0;padding-left:1.2em}
+
+.cloze p{margin:8px 0;line-height:2}
+.cloze select{padding:3px 6px;border:1.5px solid var(--line);border-radius:6px;background:var(--card);max-width:100%}
+.cloze select.ok{border-color:var(--ok);background:var(--ok-soft)}
+.cloze select.bad{border-color:var(--bad);background:var(--bad-soft)}
+textarea{width:100%;min-height:74px;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);resize:vertical}
+label.ta{display:block;font-weight:700;margin:12px 0 4px}
+.muster{display:none;margin-top:10px;padding:10px 14px;border-left:5px solid var(--lamp);background:var(--lamp-soft);border-radius:0 10px 10px 0}
+.muster.on{display:block}
+
+details.zusatz{margin-top:24px;border:1.5px solid var(--line);border-radius:12px;background:var(--paper)}
+details.zusatz summary{cursor:pointer;padding:10px 14px;font-weight:700;list-style:none}
+details.zusatz summary::-webkit-details-marker{display:none}
+details.zusatz summary::before{content:"＋ ";color:var(--muted)}
+details.zusatz[open] summary::before{content:"－ "}
+details.zusatz .zin{padding:0 14px 14px}
+.opt{font-weight:400;color:var(--muted);font-size:.9rem}
+
+.info h3:first-of-type{margin-top:12px}
+.info ul{padding-left:1.2em}
+.info li{margin:4px 0}
+.merk table{border-collapse:collapse;width:100%;min-width:520px}
+.merk th,.merk td{border:1.5px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+.merk th{background:var(--paper)}
+.locked{padding:14px;border:1.5px dashed var(--line);border-radius:10px;color:var(--muted)}
+footer{color:var(--muted);font-size:.85rem;padding:0 0 30px}
+
+@media print{
+  body{background:#fff;color:#000;font-size:12pt}
+  .board,nav.tabs,.simbar,.simframe,.actions,.noprint{display:none!important}
+  .station{display:block!important;break-inside:avoid-page;border:1px solid #999;margin-bottom:12pt}
+  .muster{display:block!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="titlerow">
+      <div>
+        <h1>Lernzirkel digital: Reihen- und Parallelschaltung</h1>
+        <p class="sub">Partnerarbeit mit der PhET-Simulation „Stromkreise schalten: Gleichstrom“</p>
+      </div>
+      <div class="names noprint">
+        <label>Partner:in A<input id="nameA" autocomplete="off" placeholder="Name"></label>
+        <label>Partner:in B<input id="nameB" autocomplete="off" placeholder="Name"></label>
+      </div>
+    </div>
+  </header>
+
+  <div class="board" id="board" aria-label="Fortschritt: jede erledigte Station bringt ihre Lampe zum Leuchten">
+    <svg id="boardSvg" viewBox="0 0 900 200" role="img" aria-labelledby="boardTitle">
+      <title id="boardTitle">Fortschritts-Stromkreis mit einer Lampe je Station</title>
+    </svg>
+    <div class="boardlegend">
+      <span style="--c:var(--reihe)">Stationen 1–4: Reihenschaltung</span>
+      <span style="--c:var(--par)">Stationen 5–7: Parallelschaltung</span>
+      <span style="--c:var(--knobel)">Station 8: Knobelstation (freiwillig)</span>
+      <span style="--c:var(--lamp)">Lampe leuchtet = Station geschafft, Stern = Vertiefung geschafft</span>
+    </div>
+  </div>
+
+  <nav class="tabs" id="tabs" aria-label="Stationen"></nav>
+
+  <div class="simbar">
+    <strong>Simulation</strong>
+    <a class="btn" id="simLink" href="https://phet.colorado.edu/sims/html/circuit-construction-kit-dc/latest/circuit-construction-kit-dc_de.html" target="_blank" rel="noopener">In neuem Tab öffnen</a>
+    <button class="btn ghost" id="simToggle" type="button">Hier einblenden</button>
+  </div>
+  <div class="simframe" id="simFrame"></div>
+
+  <main id="stations"></main>
+
+  <footer>
+    Simulation: PhET Interactive Simulations, University of Colorado Boulder (phet.colorado.edu), Lizenz CC BY 4.0. Eingaben werden nur in diesem Browser gespeichert.
+    <div class="actions noprint">
+      <button class="btn ghost small" type="button" id="printBtn">Protokoll drucken / als PDF speichern</button>
+      <button class="btn ghost small" type="button" id="resetBtn">Alle Eingaben löschen</button>
+    </div>
+  </footer>
+</div>
+
+<script>
+/* ---------- Schaltplan-Helfer ---------- */
+const W = p => `<polyline class="w" points="${p}"/>`;
+const dot = (x,y) => `<circle class="dot" cx="${x}" cy="${y}" r="3.2"/>`;
+const T = (x,y,t,a='middle',cls='lbl') => `<text class="${cls}" x="${x}" y="${y}" text-anchor="${a}">${t}</text>`;
+const lamp = (x,y) => { const d=9.9; return `<circle class="cmp" cx="${x}" cy="${y}" r="14"/><line class="cmpx" x1="${x-d}" y1="${y-d}" x2="${x+d}" y2="${y+d}"/><line class="cmpx" x1="${x-d}" y1="${y+d}" x2="${x+d}" y2="${y-d}"/>`; };
+const meter = (x,y,L) => `<circle class="cmp" cx="${x}" cy="${y}" r="13"/><text class="ml" x="${x}" y="${y}">${L}</text>`;
+// Quelle in horizontaler Leitung
+const srcH = (x,y) => `<rect class="gap" x="${x-7}" y="${y-3}" width="14" height="6"/><line x1="${x-5}" y1="${y-16}" x2="${x-5}" y2="${y+16}" stroke="var(--wire)" stroke-width="2"/><line x1="${x+5}" y1="${y-9}" x2="${x+5}" y2="${y+9}" stroke="var(--wire)" stroke-width="5"/>${T(x-12,y-18,'+','middle')}${T(x+13,y-18,'−','middle')}`;
+// Quelle in vertikaler Leitung
+const srcV = (x,y) => `<rect class="gap" x="${x-3}" y="${y-7}" width="6" height="14"/><line x1="${x-16}" y1="${y-5}" x2="${x+16}" y2="${y-5}" stroke="var(--wire)" stroke-width="2"/><line x1="${x-9}" y1="${y+5}" x2="${x+9}" y2="${y+5}" stroke="var(--wire)" stroke-width="5"/>${T(x-24,y-1,'+','middle')}${T(x-24,y+17,'−','middle')}`;
+const svg = (w,h,inner,cap) => `<figure class="sch"><svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${cap}">${inner}</svg><figcaption>${cap}</figcaption></figure>`;
+const sub = s => s.replace(/_(\w+)/g,'<tspan baseline-shift="sub" font-size="11">$1</tspan>');
+
+const SCH = {
+  reiheU: (a='L_1',b='L_2') => svg(440,275,
+    W('60,90 380,90 380,210 60,210 60,90') +
+    W('130,90 130,38 190,38 190,90') + W('250,90 250,38 310,38 310,90') + W('190,210 190,252 250,252 250,210') +
+    lamp(160,90)+lamp(280,90)+meter(160,38,'V')+meter(280,38,'V')+meter(220,252,'V')+srcH(220,210)+
+    dot(130,90)+dot(190,90)+dot(250,90)+dot(310,90)+dot(190,210)+dot(250,210)+
+    T(160,125,sub(a))+T(280,125,sub(b))+T(160,17,sub('U_1'),'middle','lbl i')+T(280,17,sub('U_2'),'middle','lbl i')+T(262,257,sub('U_g'),'start','lbl i'),
+    'Reihenschaltung mit drei Spannungsmessern'),
+  reiheI: (a='L_1',b='L_2') => svg(440,235,
+    W('60,55 380,55 380,190 60,190 60,55') +
+    meter(60,122,'A')+lamp(150,55)+meter(220,55,'A')+lamp(290,55)+meter(380,122,'A')+srcH(220,190)+
+    T(38,127,sub('I_1'),'end','lbl i')+T(220,30,sub('I_2'),'middle','lbl i')+T(402,127,sub('I_3'),'start','lbl i')+
+    T(150,30,sub(a))+T(290,30,sub(b)),
+    'Reihenschaltung mit drei Strommessern'),
+  parU: () => svg(460,240,
+    W('60,40 380,40')+W('60,200 380,200')+W('60,40 60,200')+W('240,40 240,200')+W('380,40 380,200')+
+    W('60,78 102,78 102,162 60,162')+W('240,78 200,78 200,162 240,162')+W('380,78 340,78 340,162 380,162')+
+    srcV(60,120)+meter(102,120,'V')+lamp(240,120)+meter(200,120,'V')+lamp(380,120)+meter(340,120,'V')+
+    dot(240,40)+dot(240,200)+dot(60,78)+dot(60,162)+dot(240,78)+dot(240,162)+dot(380,78)+dot(380,162)+
+    T(120,125,sub('U_g'),'start','lbl i')+T(182,125,sub('U_1'),'end','lbl i')+T(322,125,sub('U_2'),'end','lbl i')+
+    T(260,125,sub('L_1'),'start')+T(400,125,sub('L_2'),'start'),
+    'Parallelschaltung mit drei Spannungsmessern'),
+  parI: () => svg(460,250,
+    W('60,40 380,40')+W('60,220 380,220')+W('60,40 60,220')+W('240,40 240,220')+W('380,40 380,220')+
+    srcV(60,130)+meter(150,40,'A')+meter(240,92,'A')+lamp(240,165)+meter(380,92,'A')+lamp(380,165)+
+    dot(240,40)+dot(240,220)+
+    T(150,15,sub('I_g'),'middle','lbl i')+T(258,97,sub('I_1'),'start','lbl i')+T(398,97,sub('I_2'),'start','lbl i')+
+    T(262,170,sub('L_1'),'start')+T(402,170,sub('L_2'),'start'),
+    'Parallelschaltung mit drei Strommessern'),
+  parR: () => svg(460,250,
+    W('60,40 380,40')+W('60,220 380,220')+W('60,40 60,220')+W('240,40 240,220')+W('380,40 380,220')+
+    W('60,90 104,90 104,170 60,170')+
+    srcV(60,130)+meter(104,130,'V')+meter(170,40,'A')+lamp(240,130)+lamp(380,130)+
+    dot(240,40)+dot(240,220)+dot(60,90)+dot(60,170)+
+    T(122,135,sub('U'),'start','lbl i')+T(170,15,sub('I_g'),'middle','lbl i')+
+    T(262,135,sub('R_1'),'start')+T(402,135,sub('R_2'),'start'),
+    'Parallelschaltung: Gesamtspannung und Gesamtstromstärke messen'),
+  gemischt: () => svg(480,235,
+    W('60,40 250,40')+W('250,40 400,40')+W('250,40 250,112 400,112 400,40')+W('400,40 440,40 440,200 60,200 60,40')+
+    srcV(60,120)+lamp(150,40)+lamp(325,40)+lamp(325,112)+dot(250,40)+dot(400,40)+
+    T(150,20,sub('L_1'))+T(325,20,sub('L_2'))+T(325,142,sub('L_3')),
+    'Gemischte Schaltung: L1 in Reihe zu L2 ∥ L3')
+};
+
+/* ---------- Stationsdaten ---------- */
+const SIMHINT_R = 'Prüft auch, ob Batteriespannung und Lampen-Widerstände richtig eingestellt sind.';
+const STATIONS = [
+{ id:1, group:'reihe', title:'Spannungen bei Reihenschaltung',
+  settings:['Zwei gleiche Lampen L<sub>1</sub>, L<sub>2</sub> mit je <b>10 Ω</b>','Batteriespannung wie in der Tabelle'],
+  steps:['Baut die Schaltung nach dem Schaltplan in der Simulation auf.','Stellt nacheinander die Batteriespannungen aus der Tabelle ein.','Messt jeweils U<sub>g</sub> an der Batterie und die Teilspannungen U<sub>1</sub> und U<sub>2</sub> an den Lampen. Tragt die Werte ein.','Formuliert eine Gesetzmäßigkeit.'],
+  sch:()=>SCH.reiheU(),
+  table:{cols:[{k:'Ub',l:'Batterie in V',g:1},{k:'Ug',l:'U<sub>g</sub> in V'},{k:'U1',l:'U<sub>1</sub> in V'},{k:'U2',l:'U<sub>2</sub> in V'}],
+    rows:[{Ub:3},{Ub:6},{Ub:9}], exp:r=>({Ug:r.Ub,U1:r.Ub/2,U2:r.Ub/2})},
+  hint:'Die Spannungsmesser müssen <b>parallel</b> zur jeweiligen Lampe angeschlossen sein (rote und schwarze Messspitze an die beiden Anschlüsse der Lampe). '+SIMHINT_R,
+  cloze:[['Die Gesamtspannung U<sub>g</sub> ist ',{o:['gleich der Summe der Teilspannungen','genauso groß wie jede Teilspannung','kleiner als jede Teilspannung'],c:0},'.'],
+         ['Bei zwei gleichen Lampen ist jede Teilspannung ',{o:['halb so groß wie','genauso groß wie','doppelt so groß wie'],c:0},' U<sub>g</sub>.']],
+  muster:'In der Reihenschaltung teilt sich die Gesamtspannung auf die Lampen auf: <b>U<sub>g</sub> = U<sub>1</sub> + U<sub>2</sub></b>. Bei gleichen Lampen sind die Teilspannungen gleich groß.',
+  zusatz:{text:'Stellt eine Vermutung auf: Wie groß ist die Spannung an jeder Lampe, wenn <b>drei</b> gleiche Lampen (je 10 Ω) in Reihe an <b>9 V</b> liegen? Schreibt die Vermutung auf und überprüft sie dann in der Simulation.',
+    table:{cols:[{k:'Ub',l:'Batterie in V',g:1},{k:'U1',l:'U<sub>1</sub> in V'},{k:'U2',l:'U<sub>2</sub> in V'},{k:'U3',l:'U<sub>3</sub> in V'}],rows:[{Ub:9}],exp:r=>({U1:3,U2:3,U3:3})},
+    cloze:[['Bei n gleichen Lampen in Reihe gilt für jede Teilspannung: U = ',{o:['U<sub>g</sub> : n','U<sub>g</sub> · n','U<sub>g</sub>'],c:0,plain:['Ug : n','Ug · n','Ug']},'.']]}
+},
+{ id:2, group:'reihe', title:'Stromstärke bei Reihenschaltung',
+  settings:['Zwei gleiche Lampen mit je <b>10 Ω</b>','Batteriespannung wie in der Tabelle'],
+  steps:['Baut die Schaltung auf. Messt die Stromstärke vor L<sub>1</sub>, zwischen den Lampen und hinter L<sub>2</sub>.','Stellt die Batteriespannungen aus der Tabelle ein und tragt I<sub>1</sub>, I<sub>2</sub> und I<sub>3</sub> ein.','Formuliert ein Ergebnis.'],
+  sch:()=>SCH.reiheI(),
+  table:{cols:[{k:'Ub',l:'Batterie in V',g:1},{k:'I1',l:'I<sub>1</sub> in A'},{k:'I2',l:'I<sub>2</sub> in A'},{k:'I3',l:'I<sub>3</sub> in A'}],
+    rows:[{Ub:3},{Ub:6},{Ub:9}], exp:r=>({I1:r.Ub/20,I2:r.Ub/20,I3:r.Ub/20})},
+  hint:'Das Amperemeter misst den Strom <b>in der Leitung</b>: Legt den Messkopf direkt auf das Kabel an der richtigen Stelle (bzw. baut das Amperemeter in die Leitung ein). '+SIMHINT_R,
+  cloze:[['In der Reihenschaltung ist die Stromstärke ',{o:['an jeder Stelle gleich groß','vor der ersten Lampe am größten','hinter der letzten Lampe am größten'],c:0},'.'],
+         ['Die Lampen „verbrauchen“ ',{o:['keinen Strom – die Ladung fließt vollständig weiter','einen Teil des Stroms'],c:0},'.']],
+  muster:'In der Reihenschaltung ist die Stromstärke an jeder Stelle gleich: <b>I<sub>1</sub> = I<sub>2</sub> = I<sub>3</sub></b>. Die Lampen verbrauchen keinen Strom, sondern Energie.',
+  zusatz:{text:'Vermutung: Wie ändert sich die Stromstärke, wenn <b>drei</b> gleiche Lampen (je 10 Ω) in Reihe an <b>9 V</b> liegen? Überprüft die Vermutung.',
+    table:{cols:[{k:'Ub',l:'Batterie in V',g:1},{k:'I1',l:'I<sub>1</sub> in A'},{k:'I2',l:'I<sub>2</sub> in A'},{k:'I3',l:'I<sub>3</sub> in A'},{k:'I4',l:'I<sub>4</sub> in A'}],rows:[{Ub:9}],exp:()=>({I1:.3,I2:.3,I3:.3,I4:.3})},
+    cloze:[['Mit drei statt zwei Lampen ist die Stromstärke ',{o:['kleiner','größer','gleich groß'],c:0},', weil der Gesamtwiderstand ',{o:['größer','kleiner'],c:0},' wird.']]}
+},
+{ id:3, group:'reihe', title:'Unterschiedliche Lampen im Stromkreis',
+  settings:['L<sub>1</sub> mit <b>10 Ω</b>, L<sub>2</sub> mit <b>40 Ω</b>','Batteriespannung wie in der Tabelle'],
+  steps:['Baut die Schaltung nach dem Schaltplan auf und stellt die Widerstände der Lampen ein.','Messt für jede Batteriespannung U<sub>g</sub>, U<sub>1</sub> und U<sub>2</sub>.','Was fällt euch auf? Vergleicht mit Station 1.'],
+  sch:()=>SCH.reiheU('L_1 (10 Ω)','L_2 (40 Ω)'),
+  table:{cols:[{k:'Ub',l:'Batterie in V',g:1},{k:'Ug',l:'U<sub>g</sub> in V'},{k:'U1',l:'U<sub>1</sub> in V'},{k:'U2',l:'U<sub>2</sub> in V'}],
+    rows:[{Ub:5},{Ub:10},{Ub:15}], exp:r=>({Ug:r.Ub,U1:r.Ub*.2,U2:r.Ub*.8})},
+  hint:'Achtet darauf, welche Lampe 10 Ω und welche 40 Ω hat – vertauschte Lampen vertauschen U<sub>1</sub> und U<sub>2</sub>. '+SIMHINT_R,
+  cloze:[['Auch hier gilt: U<sub>g</sub> ',{o:['= U<sub>1</sub> + U<sub>2</sub>','= U<sub>1</sub> = U<sub>2</sub>','= U<sub>1</sub> − U<sub>2</sub>'],c:0,plain:['= U1 + U2','= U1 = U2','= U1 − U2']},'.'],
+         ['An der Lampe mit dem größeren Widerstand liegt die ',{o:['größere','kleinere','gleiche'],c:0},' Teilspannung.'],
+         ['Das Verhältnis der Teilspannungen ist U<sub>1</sub> : U<sub>2</sub> = ',{o:['R<sub>1</sub> : R<sub>2</sub>','R<sub>2</sub> : R<sub>1</sub>','1 : 1'],c:0,plain:['R1 : R2','R2 : R1','1 : 1']},'.']],
+  muster:'Auch bei unterschiedlichen Lampen gilt <b>U<sub>g</sub> = U<sub>1</sub> + U<sub>2</sub></b>. Die Spannung teilt sich im Verhältnis der Widerstände auf: <b>U<sub>1</sub> : U<sub>2</sub> = R<sub>1</sub> : R<sub>2</sub></b>. Am größeren Widerstand liegt die größere Teilspannung.',
+  zusatz:{text:'Vermutung: Drei unterschiedliche Lampen mit <b>10 Ω, 20 Ω und 30 Ω</b> liegen in Reihe an <b>12 V</b>. Welche Teilspannungen erwartet ihr? Überprüft.',
+    table:{cols:[{k:'Ub',l:'Batterie in V',g:1},{k:'U1',l:'U<sub>1</sub> (10 Ω) in V'},{k:'U2',l:'U<sub>2</sub> (20 Ω) in V'},{k:'U3',l:'U<sub>3</sub> (30 Ω) in V'}],rows:[{Ub:12}],exp:()=>({U1:2,U2:4,U3:6})}}
+},
+{ id:4, group:'reihe', title:'Was ist hier los?',
+  settings:['L<sub>1</sub> mit <b>10 Ω</b>, L<sub>2</sub> mit <b>40 Ω</b> (wie Station 3)','Batteriespannung wie in der Tabelle'],
+  steps:['Baut die Schaltung mit drei Strommessern auf.','Messt I<sub>1</sub>, I<sub>2</sub> und I<sub>3</sub> für jede Batteriespannung.','Berechnet den Gesamtwiderstand R<sub>g</sub> = U<sub>g</sub> : I und vergleicht ihn mit R<sub>1</sub> und R<sub>2</sub>.','Beobachtet die Helligkeit der Lampen genau. Formuliert ein Ergebnis und eine Erklärung.'],
+  sch:()=>SCH.reiheI('L_1 (10 Ω)','L_2 (40 Ω)'),
+  table:{cols:[{k:'Ub',l:'Batterie in V',g:1},{k:'I1',l:'I<sub>1</sub> in A'},{k:'I2',l:'I<sub>2</sub> in A'},{k:'I3',l:'I<sub>3</sub> in A'},{k:'Rg',l:'R<sub>g</sub> = U<sub>g</sub> : I in Ω'}],
+    rows:[{Ub:5},{Ub:10},{Ub:15}], exp:r=>({I1:r.Ub/50,I2:r.Ub/50,I3:r.Ub/50,Rg:50})},
+  hint:'Alle drei Strommesser müssen in der Leitung sitzen, durch die der Strom der Lampen fließt. Für R<sub>g</sub> teilt ihr die Batteriespannung durch die gemessene Stromstärke. '+SIMHINT_R,
+  cloze:[['Durch beide Lampen fließt ',{o:['der gleiche Strom','durch die 40-Ω-Lampe mehr Strom','durch die 10-Ω-Lampe mehr Strom'],c:0},'.'],
+         ['Heller leuchtet die Lampe mit ',{o:['40 Ω','10 Ω'],c:0},', denn an ihr liegt die ',{o:['größere','kleinere'],c:0},' Spannung.'],
+         ['Für den Gesamtwiderstand der Reihenschaltung gilt: R<sub>g</sub> ',{o:['= R<sub>1</sub> + R<sub>2</sub>','= R<sub>1</sub> − R<sub>2</sub>','= R<sub>1</sub> · R<sub>2</sub>'],c:0,plain:['= R1 + R2','= R1 − R2','= R1 · R2']},'. Er ist also ',{o:['größer als jeder Einzelwiderstand','kleiner als jeder Einzelwiderstand'],c:0},'.']],
+  muster:'Die Stromstärke ist trotz unterschiedlicher Lampen überall gleich. Der Gesamtwiderstand ist die Summe der Einzelwiderstände: <b>R<sub>g</sub> = R<sub>1</sub> + R<sub>2</sub></b>, er ist größer als jeder Einzelwiderstand. Die Lampe mit dem <b>größeren</b> Widerstand leuchtet heller: An ihr liegt die größere Spannung, dort wird bei gleichem Strom mehr Energie umgesetzt (P = U · I). Bei echten Glühlampen kann die Lampe mit kleinem Widerstand deshalb sogar dunkel bleiben.',
+  zusatz:{text:'Drei unterschiedliche Lampen mit <b>10 Ω, 20 Ω und 30 Ω</b> in Reihe an <b>12 V</b>: Welche Stromstärke erwartet ihr – und welche Lampe leuchtet am hellsten? Überprüft.',
+    table:{cols:[{k:'Ub',l:'Batterie in V',g:1},{k:'I1',l:'I vor L<sub>1</sub> in A'},{k:'I2',l:'I hinter L<sub>3</sub> in A'}],rows:[{Ub:12}],exp:()=>({I1:.2,I2:.2})},
+    cloze:[['Am hellsten leuchtet die Lampe mit ',{o:['30 Ω','20 Ω','10 Ω'],c:0},'.']]}
+},
+{ id:5, group:'par', title:'Spannung bei Parallelschaltung',
+  settings:['L<sub>1</sub> mit <b>10 Ω</b>, L<sub>2</sub> mit <b>40 Ω</b>','Batteriespannung wie in der Tabelle'],
+  steps:['Erstellt eine Liste der Bauteile, die ihr in der Simulation braucht (unten im Textfeld).','Baut die Parallelschaltung nach dem Schaltplan auf.','Messt U<sub>g</sub>, U<sub>1</sub> und U<sub>2</sub> für jede Batteriespannung.','Formuliert ein Ergebnis.'],
+  sch:()=>SCH.parU(),
+  table:{cols:[{k:'Ub',l:'Batterie in V',g:1},{k:'Ug',l:'U<sub>g</sub> in V'},{k:'U1',l:'U<sub>1</sub> in V'},{k:'U2',l:'U<sub>2</sub> in V'}],
+    rows:[{Ub:3},{Ub:6},{Ub:9}], exp:r=>({Ug:r.Ub,U1:r.Ub,U2:r.Ub})},
+  hint:'Jede Lampe muss einen <b>eigenen Zweig</b> zwischen den beiden Batteriepolen haben. '+SIMHINT_R,
+  extraTa:'Geräteliste',
+  cloze:[['Bei der Parallelschaltung liegt an jeder Lampe ',{o:['die gleiche Spannung wie an der Batterie','die halbe Batteriespannung','eine Spannung, die vom Widerstand der Lampe abhängt'],c:0},'.']],
+  muster:'In der Parallelschaltung liegt an allen Zweigen dieselbe Spannung: <b>U<sub>g</sub> = U<sub>1</sub> = U<sub>2</sub></b> – unabhängig von den Widerständen.',
+  zusatz:{text:'Entfernt in der Simulation eine Lampe aus der Parallelschaltung (Bauteil anklicken und löschen). Was passiert mit der anderen Lampe? Vergleicht mit einer Reihenschaltung. Begründet damit, warum Geräte im Haushalt parallel geschaltet sind.',
+    cloze:[['In der Parallelschaltung leuchtet die andere Lampe ',{o:['unverändert weiter','nicht mehr','dunkler'],c:0},'.'],['In der Reihenschaltung geht die andere Lampe ',{o:['aus','heller an','unverändert weiter'],c:0},'.']],
+    ta:'Warum sind Haushaltsgeräte parallel geschaltet?'}
+},
+{ id:6, group:'par', title:'Widerstand bei Parallelschaltung',
+  settings:['Batteriespannung fest: <b>8 V</b>','Lampen-Widerstände wie in der Tabelle'],
+  steps:['Erstellt eine Liste der Bauteile, die ihr braucht.','Baut die Parallelschaltung auf. Die Simulation hat kein Widerstandsmessgerät – deshalb messt ihr U und I<sub>g</sub>.','Berechnet den Gesamtwiderstand mit R<sub>g</sub> = U : I<sub>g</sub>.','Vergleicht R<sub>g</sub> mit den Einzelwiderständen.','Überprüft mit euren Messwerten zwei Ansätze zur Berechnung von R<sub>g</sub> (zweite Tabelle).'],
+  sch:()=>SCH.parR(),
+  table:{cols:[{k:'R1',l:'R<sub>1</sub> in Ω',g:1},{k:'R2',l:'R<sub>2</sub> in Ω',g:1},{k:'U',l:'U in V'},{k:'Ig',l:'I<sub>g</sub> in A'},{k:'Rg',l:'R<sub>g</sub> = U : I<sub>g</sub> in Ω'}],
+    rows:[{R1:10,R2:10},{R1:10,R2:40},{R1:40,R2:40}], exp:r=>{const Rg=1/(1/r.R1+1/r.R2);return {U:8,Ig:8/Rg,Rg}}},
+  table2:{title:'Welcher Ansatz passt zu euren Messwerten?',
+    text:'Zwei Schüler schlagen Formeln für den Gesamtwiderstand vor:<br><b>Ansatz A:</b> R<sub>g</sub> ist der Mittelwert: R<sub>g</sub> = (R<sub>1</sub> + R<sub>2</sub>) : 2<br><b>Ansatz B:</b> Die Kehrwerte addieren sich: 1/R<sub>g</sub> = 1/R<sub>1</sub> + 1/R<sub>2</sub>, also R<sub>g</sub> = 1 : (1/R<sub>1</sub> + 1/R<sub>2</sub>)<br>Berechnet für jede Zeile beide Ansätze und vergleicht mit eurem gemessenen R<sub>g</sub>. Brüche wie 5/40 dürft ihr so eingeben.',
+    cols:[{k:'R1',l:'R<sub>1</sub> in Ω',g:1},{k:'R2',l:'R<sub>2</sub> in Ω',g:1},{k:'A',l:'Ansatz A:<br>R<sub>g</sub> in Ω'},{k:'B1',l:'Ansatz B:<br>1/R<sub>1</sub> + 1/R<sub>2</sub> in 1/Ω',tol:.002},{k:'B2',l:'Ansatz B:<br>R<sub>g</sub> in Ω'}],
+    rows:[{R1:10,R2:10},{R1:10,R2:40},{R1:40,R2:40}], exp:r=>{const s=1/r.R1+1/r.R2;return {A:(r.R1+r.R2)/2,B1:s,B2:1/s}}},
+  hint:'Der Strommesser für I<sub>g</sub> muss in der Zuleitung sitzen, <b>bevor</b> sich der Strom auf die Zweige aufteilt. '+SIMHINT_R,
+  extraTa:'Geräteliste',
+  cloze:[['Der Gesamtwiderstand einer Parallelschaltung ist ',{o:['kleiner als der kleinste Einzelwiderstand','größer als der größte Einzelwiderstand','gleich der Summe der Einzelwiderstände'],c:0},'.'],
+         ['Bei zwei gleichen Widerständen ist R<sub>g</sub> ',{o:['halb so groß wie ein Einzelwiderstand','doppelt so groß wie ein Einzelwiderstand','genauso groß wie ein Einzelwiderstand'],c:0},'.'],
+         ['Zu den Messwerten passt ',{o:['nur Ansatz B','nur Ansatz A','beide Ansätze'],c:0},'. Für die Parallelschaltung gilt also: ',{o:['1/R<sub>g</sub> = 1/R<sub>1</sub> + 1/R<sub>2</sub>','R<sub>g</sub> = (R<sub>1</sub> + R<sub>2</sub>) : 2','R<sub>g</sub> = R<sub>1</sub> + R<sub>2</sub>'],c:0,plain:['1/Rg = 1/R1 + 1/R2','Rg = (R1 + R2) : 2','Rg = R1 + R2']},'.']],
+  muster:'Der Gesamtwiderstand einer Parallelschaltung ist <b>kleiner als der kleinste Einzelwiderstand</b>. Jeder zusätzliche Zweig bietet der Ladung einen weiteren Weg, R<sub>g</sub> wird kleiner. Es gilt <b>1/R<sub>g</sub> = 1/R<sub>1</sub> + 1/R<sub>2</sub></b>. Bei n gleichen Widerständen folgt daraus R<sub>g</sub> = R : n. Ansatz A scheitert schon bei zwei gleichen Lampen: Er liefert 10 Ω statt der gemessenen 5 Ω.',
+  zusatz:{text:'Die Formel gilt auch für mehr Zweige: <b>1/R<sub>g</sub> = 1/R<sub>1</sub> + 1/R<sub>2</sub> + 1/R<sub>3</sub> …</b> Sagt damit voraus: Wie groß ist R<sub>g</sub> für <b>drei</b> Lampen mit je <b>30 Ω</b> parallel? Messt bei <b>6 V</b> nach.',
+    table:{cols:[{k:'U',l:'U in V',g:1},{k:'Ig',l:'I<sub>g</sub> in A'},{k:'Rg',l:'R<sub>g</sub> in Ω'}],rows:[{U:6}],exp:()=>({Ig:.6,Rg:10})}}
+},
+{ id:7, group:'par', title:'Stromstärke bei Parallelschaltung',
+  settings:['L<sub>1</sub> mit <b>10 Ω</b>, L<sub>2</sub> mit <b>40 Ω</b>','Batteriespannung wie in der Tabelle'],
+  steps:['Erstellt eine Liste der Bauteile, die ihr braucht.','Baut die Schaltung nach dem Schaltplan auf.','Messt I<sub>1</sub>, I<sub>2</sub> und I<sub>g</sub> für jede Batteriespannung.','Formuliert ein Ergebnis.'],
+  sch:()=>SCH.parI(),
+  table:{cols:[{k:'Ub',l:'Batterie in V',g:1},{k:'Ig',l:'I<sub>g</sub> in A'},{k:'I1',l:'I<sub>1</sub> in A'},{k:'I2',l:'I<sub>2</sub> in A'}],
+    rows:[{Ub:4},{Ub:8},{Ub:12}], exp:r=>({Ig:r.Ub/10+r.Ub/40,I1:r.Ub/10,I2:r.Ub/40})},
+  hint:'I<sub>1</sub> und I<sub>2</sub> werden jeweils im eigenen Zweig gemessen, I<sub>g</sub> in der gemeinsamen Zuleitung. '+SIMHINT_R,
+  extraTa:'Geräteliste',
+  cloze:[['Für die Stromstärken gilt: I<sub>g</sub> ',{o:['= I<sub>1</sub> + I<sub>2</sub>','= I<sub>1</sub> = I<sub>2</sub>','= I<sub>1</sub> − I<sub>2</sub>'],c:0,plain:['= I1 + I2','= I1 = I2','= I1 − I2']},'.'],
+         ['Durch den Zweig mit dem kleineren Widerstand fließt der ',{o:['größere','kleinere','gleiche'],c:0},' Teilstrom.']],
+  muster:'In der Parallelschaltung teilt sich der Gesamtstrom auf die Zweige auf: <b>I<sub>g</sub> = I<sub>1</sub> + I<sub>2</sub></b>. Durch den Zweig mit dem kleineren Widerstand fließt der größere Strom.',
+  zusatz:{text:'Vermutung: Ihr schaltet bei <b>8 V</b> drei Lampen mit <b>10 Ω, 20 Ω und 40 Ω</b> parallel. Welche Ströme erwartet ihr? Überprüft. Erklärt anschließend, warum an einer Mehrfachsteckdose nicht beliebig viele Geräte betrieben werden sollten.',
+    table:{cols:[{k:'U',l:'U in V',g:1},{k:'I1',l:'I<sub>1</sub> (10 Ω) in A'},{k:'I2',l:'I<sub>2</sub> (20 Ω) in A'},{k:'I3',l:'I<sub>3</sub> (40 Ω) in A'},{k:'Ig',l:'I<sub>g</sub> in A'}],rows:[{U:8}],exp:()=>({I1:.8,I2:.4,I3:.2,Ig:1.4})},
+    ta:'Mehrfachsteckdose: Begründung'}
+},
+{ id:8, group:'knobel', title:'Knobelstation: gemischte Schaltung', optional:true,
+  settings:['L<sub>1</sub>, L<sub>2</sub>, L<sub>3</sub> mit <b>je 20 Ω</b>','Batteriespannung <b>12 V</b>'],
+  steps:['Stellt <b>vor</b> dem Aufbau eine Vermutung auf: Welche Lampe leuchtet am hellsten? Schreibt eine Begründung ins Textfeld.','Baut die Schaltung auf: L<sub>2</sub> und L<sub>3</sub> parallel, dazu L<sub>1</sub> in Reihe.','Messt die Spannung an L<sub>1</sub> und am Parallelteil sowie die Ströme durch L<sub>1</sub>, L<sub>2</sub> und L<sub>3</sub>.','Erklärt eure Beobachtung mit den Regeln aus den Stationen 1–7.'],
+  sch:()=>SCH.gemischt(),
+  table:{cols:[{k:'Ub',l:'Batterie in V',g:1},{k:'U1',l:'U an L<sub>1</sub> in V'},{k:'U23',l:'U am Parallelteil in V'},{k:'I1',l:'I<sub>1</sub> in A'},{k:'I2',l:'I<sub>2</sub> in A'},{k:'I3',l:'I<sub>3</sub> in A'}],
+    rows:[{Ub:12}], exp:()=>({U1:8,U23:4,I1:.4,I2:.2,I3:.2})},
+  hint:'Der Parallelteil aus zwei 20-Ω-Lampen hat zusammen nur 10 Ω – er bekommt deshalb einen kleineren Teil der Spannung. '+SIMHINT_R,
+  extraTa:'Vermutung vor dem Aufbau',
+  cloze:[['Am hellsten leuchtet ',{o:['L<sub>1</sub>','L<sub>2</sub>','L<sub>3</sub>','alle gleich hell'],c:0,plain:['L1','L2','L3','alle gleich hell']},'.'],
+         ['Durch L<sub>1</sub> fließt ',{o:['der gesamte Strom','nur die Hälfte des Stroms'],c:0},', der sich danach auf L<sub>2</sub> und L<sub>3</sub> ',{o:['aufteilt','verdoppelt'],c:0},'.']],
+  muster:'Der Parallelteil aus zwei 20-Ω-Lampen hat zusammen 10 Ω, die ganze Schaltung also R<sub>g</sub> = 20 Ω + 10 Ω = 30 Ω und I<sub>g</sub> = 12 V : 30 Ω = 0,4 A. Durch L<sub>1</sub> fließt dieser gesamte Strom, an ihr liegen 8 V. Am Parallelteil liegen nur 4 V, durch L<sub>2</sub> und L<sub>3</sub> fließen je 0,2 A. <b>L<sub>1</sub> leuchtet am hellsten.</b>',
+  zusatz:null
+}
+];
+/* ---------- Speicher ---------- */
+const KEY='lz-reihe-parallel-v1';
+let store = {v:{}, done:{}};
+try{ const s=localStorage.getItem(KEY); if(s) store=JSON.parse(s); }catch(e){}
+store.v = store.v||{}; store.done = store.done||{};
+const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} };
+
+/* ---------- Rendering ---------- */
+const $ = s => document.querySelector(s);
+const fmt = n => (Math.round(n*1000)/1000).toString().replace('.',',');
+
+function tableHTML(pre, tb){
+  let h = `<div class="tablewrap"><table class="mt"><thead><tr><th>Nr.</th>${tb.cols.map(c=>`<th>${c.l}</th>`).join('')}</tr></thead><tbody>`;
+  tb.rows.forEach((r,i)=>{
+    h += `<tr><td>${i+1}</td>` + tb.cols.map(c => c.g ? `<td class="given">${fmt(r[c.k])}</td>` :
+      `<td><input inputmode="decimal" id="${pre}-r${i}-${c.k}" aria-label="Zeile ${i+1}, ${c.l.replace(/<[^>]+>/g,'')}"></td>`).join('') + `</tr>`;
+  });
+  return h + `</tbody></table></div>`;
+}
+function clozeHTML(pre, cl){
+  return `<div class="cloze">` + cl.map((line,li)=>{
+    let si=0;
+    return `<p>` + line.map(part => {
+      if(typeof part==='string') return part;
+      const id=`${pre}-c${li}-${si++}`;
+      return `<select id="${id}"><option value="">— bitte wählen —</option>${part.o.map((o,oi)=>`<option value="${oi}">${(part.plain?part.plain[oi]:o).replace(/<[^>]+>/g,'')}</option>`).join('')}</select>`;
+    }).join('') + `</p>`;
+  }).join('') + `</div>`;
+}
+
+function stationHTML(st){
+  const grp = {reihe:['reihe','Reihenschaltung'],par:['par','Parallelschaltung'],knobel:['knobel','freiwillig']}[st.group];
+  const p=`s${st.id}`;
+  let h = `<section class="station" id="st-${st.id}" data-group="${st.group}" aria-labelledby="h-${st.id}">
+  <div class="shead"><span class="chip ${grp[0]}">Station ${st.id} ${st.id===8?'':'– '+grp[1]}</span>${st.optional?'<span class="chip knobel">freiwillig</span>':''}</div>
+  <h2 id="h-${st.id}">${st.title}</h2>
+  <div class="grid2">
+    <div>
+      <div class="settings"><p><b>Einstellungen in der Simulation</b></p>${st.settings.map(s=>`<p>${s}</p>`).join('')}</div>
+      <ol class="steps">${st.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+    </div>
+    ${st.sch()}
+  </div>
+  ${st.extraTa?`<label class="ta" for="${p}-extra">${st.extraTa}</label><textarea id="${p}-extra"></textarea>`:''}
+  <h3>Messtabelle</h3>
+  ${tableHTML(p+'-m', st.table)}
+  ${st.table2?`<h3>${st.table2.title}</h3><p>${st.table2.text}</p>${tableHTML(p+'-t2', st.table2)}`:''}
+  <div class="actions noprint"><button class="btn" type="button" data-act="check-m" data-st="${st.id}">Messwerte prüfen</button></div>
+  <div class="fb" id="${p}-mfb" role="status"></div>
+  <h3>Auswertung</h3>
+  <label class="ta" for="${p}-own">Euer Ergebnis in eigenen Worten</label>
+  <textarea id="${p}-own" placeholder="In der …schaltung gilt: …"></textarea>
+  <p style="margin:14px 0 0"><b>Überprüft euer Ergebnis:</b></p>
+  ${clozeHTML(p+'-k', st.cloze)}
+  <div class="actions noprint"><button class="btn" type="button" data-act="check-k" data-st="${st.id}">Ergebnis prüfen</button></div>
+  <div class="fb" id="${p}-kfb" role="status"></div>
+  <div class="muster" id="${p}-muster"><b>Merksatz:</b> ${st.muster}</div>`;
+  if(st.zusatz){
+    const z=st.zusatz;
+    h += `<details class="zusatz" id="${p}-zd"><summary>Vertiefung <span class="opt">(freiwillig)</span></summary><div class="zin">
+      <p>${z.text}</p>
+      <label class="ta" for="${p}-zv">Unsere Vermutung / Überlegung</label><textarea id="${p}-zv"></textarea>
+      ${z.table?tableHTML(p+'-zm', z.table):''}
+      ${z.cloze?clozeHTML(p+'-zk', z.cloze):''}
+      ${z.ta?`<label class="ta" for="${p}-zt">${z.ta}</label><textarea id="${p}-zt"></textarea>`:''}
+      <div class="actions noprint"><button class="btn" type="button" data-act="check-z" data-st="${st.id}">Vertiefung prüfen</button></div>
+      <div class="fb" id="${p}-zfb" role="status"></div>
+    </div></details>`;
+  }
+  return h + `</section>`;
+}
+
+const INTRO = `<section class="station info" id="st-0" data-group="info" aria-labelledby="h-0">
+  <h2 id="h-0">So arbeitet ihr</h2>
+  <p>Ihr untersucht zu zweit, wie sich Spannung, Stromstärke und Widerstand in Reihen- und Parallelschaltungen verhalten. Statt echter Geräte nutzt ihr eine Simulation. Jede geschaffte Station bringt oben eine Lampe zum Leuchten.</p>
+  <h3>Ablauf je Station</h3>
+  <p>Messwerte eintragen und prüfen, Ergebnis formulieren und prüfen – dann leuchtet die Lampe. Wer schneller ist, bearbeitet die <b>Vertiefung</b> oder die Knobelstation 8.</p>
+  <h3>Simulation bedienen</h3>
+  <ul>
+    <li>Öffnet die Simulation (Button oben) und wählt den Bildschirm <b>„Labor“</b>. Nur dort lassen sich Batteriespannung und Widerstände einstellen.</li>
+    <li>Bauteile aus der Leiste in die Arbeitsfläche ziehen und die Enden aneinanderziehen, bis sie verbunden sind.</li>
+    <li>Bauteil antippen: Unten erscheint ein Regler für Spannung bzw. Widerstand.</li>
+    <li><b>Voltmeter:</b> rote und schwarze Messspitze an die beiden Anschlüsse des Bauteils halten. <b>Amperemeter:</b> auf die Leitung an der Messstelle setzen bzw. in die Leitung einbauen.</li>
+    <li>Das Häkchen bei <b>„Werte“</b> bleibt während der Simulationen ausgeschaltet – Spannungen und Stromstärken bestimmt ihr mit den Messgeräten.</li>
+  </ul>
+  <h3>Hinweis zur Genauigkeit</h3>
+  <p>Beim Prüfen werden kleine Abweichungen (bis etwa 4 %) akzeptiert. Dezimalzahlen könnt ihr mit Komma oder Punkt eingeben.</p>
+  <div class="actions noprint"><button class="btn" type="button" data-go="1">Los geht's mit Station 1</button></div>
+</section>`;
+
+const MERK = `<section class="station merk" id="st-9" data-group="info" aria-labelledby="h-9">
+  <h2 id="h-9">Merktabelle</h2>
+  <div id="merkBody"></div>
+</section>`;
+const MERK_TABLE = `<p>Übertragt die Tabelle ins Heft.</p><div class="tablewrap"><table>
+  <thead><tr><th></th><th>Reihenschaltung</th><th>Parallelschaltung</th></tr></thead>
+  <tbody>
+   <tr><th>Stromstärke</th><td>überall gleich: I = I<sub>1</sub> = I<sub>2</sub></td><td>teilt sich auf: I<sub>g</sub> = I<sub>1</sub> + I<sub>2</sub></td></tr>
+   <tr><th>Spannung</th><td>teilt sich auf: U<sub>g</sub> = U<sub>1</sub> + U<sub>2</sub>, U<sub>1</sub> : U<sub>2</sub> = R<sub>1</sub> : R<sub>2</sub></td><td>überall gleich: U<sub>g</sub> = U<sub>1</sub> = U<sub>2</sub></td></tr>
+   <tr><th>Gesamtwiderstand</th><td>größer als jeder Einzelwiderstand: R<sub>g</sub> = R<sub>1</sub> + R<sub>2</sub></td><td>kleiner als der kleinste Einzelwiderstand: 1/R<sub>g</sub> = 1/R<sub>1</sub> + 1/R<sub>2</sub></td></tr>
+   <tr><th>Fällt ein Gerät aus …</th><td>… ist der ganze Stromkreis unterbrochen.</td><td>… arbeiten die anderen Zweige weiter.</td></tr>
+  </tbody></table></div>`;
+
+$('#stations').innerHTML = INTRO + STATIONS.map(stationHTML).join('') + MERK;
+
+/* ---------- Fortschritts-Stromkreis ---------- */
+function drawBoard(){
+  const s=$('#boardSvg');
+  const R=[{id:1,x:150},{id:2,x:260},{id:3,x:370},{id:4,x:480}];
+  const P=[{id:5,x:620},{id:6,x:720},{id:7,x:820}];
+  const bulb=(id,x,y,col,lp='t')=>`<g class="bulb" data-bulb="${id}" tabindex="0" role="button" aria-label="Station ${id} öffnen">
+     <circle class="halo" cx="${x}" cy="${y}" r="27"/><circle class="ring" cx="${x}" cy="${y}" r="22"/>
+     <circle class="glass" cx="${x}" cy="${y}" r="15" style="stroke:${col}"/>
+     <line class="x" x1="${x-10.6}" y1="${y-10.6}" x2="${x+10.6}" y2="${y+10.6}"/><line class="x" x1="${x-10.6}" y1="${y+10.6}" x2="${x+10.6}" y2="${y-10.6}"/>
+     <polygon class="star" points="${star(x+17,y-17,7,3)}"/>
+     <text class="num" x="${lp==='r'?x+34:x}" y="${lp==='t'?y-28:lp==='b'?y+42:y+5}">${id}</text></g>`;
+  const wire = 'M60,50 L560,50 M560,50 L820,50 M620,50 L620,150 M720,50 L720,150 M820,50 L820,150 M560,150 L820,150 M560,50 L560,50 M560,150 L60,150 M60,50 L60,86 M60,114 L60,150';
+  s.innerHTML += `<path class="wire" d="${wire}"/>
+    <path class="flow" d="M60,50 L620,50 L620,150 L60,150"/>
+    <line x1="42" y1="94" x2="78" y2="94" stroke="var(--wire)" stroke-width="2.5"/><line x1="50" y1="106" x2="70" y2="106" stroke="var(--wire)" stroke-width="6"/>
+    <circle cx="620" cy="50" r="3.5" fill="var(--wire)"/><circle cx="720" cy="50" r="3.5" fill="var(--wire)"/><circle cx="720" cy="150" r="3.5" fill="var(--wire)"/><circle cx="620" cy="150" r="3.5" fill="var(--wire)"/>
+    ${R.map(b=>bulb(b.id,b.x,50,'var(--reihe)')).join('')}
+    ${P.map(b=>bulb(b.id,b.x,100,'var(--par)','r')).join('')}
+    ${bulb(8,300,150,'var(--knobel)','b')}`;
+}
+function star(cx,cy,ro,ri){let p=[];for(let i=0;i<10;i++){const r=i%2?ri:ro,a=Math.PI/5*i-Math.PI/2;p.push((cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)).toFixed(1));}return p.join(' ');}
+drawBoard();
+
+/* ---------- Navigation ---------- */
+const TABS=[{id:0,l:'Start'},...STATIONS.map(s=>({id:s.id,l:s.id===8?'8 (Knobel)':'Station '+s.id})),{id:9,l:'Merktabelle'}];
+$('#tabs').innerHTML = TABS.map(t=>`<button type="button" data-go="${t.id}">${t.l}</button>`).join('');
+let current = store.cur ?? 0;
+function go(id){
+  current=+id; store.cur=current; save();
+  document.querySelectorAll('.station').forEach(e=>e.classList.toggle('show', e.id==='st-'+current));
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-current', b.dataset.go==current?'true':'false'));
+  document.querySelectorAll('.bulb').forEach(b=>b.classList.toggle('current', b.dataset.bulb==current));
+  if(current===9) renderMerk();
+}
+document.addEventListener('click', e=>{
+  const g=e.target.closest('[data-go]'); if(g){ go(g.dataset.go); window.scrollTo({top:$('#tabs').offsetTop-10,behavior:'smooth'}); return; }
+  const b=e.target.closest('.bulb'); if(b){ go(b.dataset.bulb); return; }
+  const a=e.target.closest('[data-act]'); if(a) act(a.dataset.act, +a.dataset.st);
+});
+document.addEventListener('keydown', e=>{ const b=e.target.closest && e.target.closest('.bulb'); if(b && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); go(b.dataset.bulb); }});
+
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- Prüfen ---------- */
+const num = v => { if(v==null) return NaN; const fr=String(v).replace(/,/g,'.').match(/^\s*(-?[\d.]+)\s*\/\s*([\d.]+)\s*$/); if(fr) return parseFloat(fr[1])/parseFloat(fr[2]); const t=String(v).replace(',','.').replace(/[^0-9.\-]/g,''); return t===''?NaN:parseFloat(t); };
+const near = (x,e,c={}) => c.tol!=null ? Math.abs(x-e) <= c.tol : Math.abs(x-e) <= Math.max(0.04*Math.abs(e), 0.021);
+
+function checkTable(pre, tb){
+  let missing=0, wrong=0;
+  tb.rows.forEach((r,i)=>{
+    const ex=tb.exp(r);
+    tb.cols.filter(c=>!c.g).forEach(c=>{
+      const el=document.getElementById(`${pre}-r${i}-${c.k}`); const x=num(el.value);
+      el.classList.remove('ok','bad');
+      if(isNaN(x)){ missing++; return; }
+      if(near(x,ex[c.k],c)) el.classList.add('ok'); else { el.classList.add('bad'); wrong++; }
+    });
+  });
+  return {missing, wrong, ok: !missing && !wrong};
+}
+function checkCloze(pre, cl){
+  let missing=0, wrong=0;
+  cl.forEach((line,li)=>{ let si=0; line.forEach(part=>{ if(typeof part==='string') return;
+    const el=document.getElementById(`${pre}-c${li}-${si++}`); el.classList.remove('ok','bad');
+    if(el.value===''){ missing++; return; }
+    if(+el.value===part.c) el.classList.add('ok'); else { el.classList.add('bad'); wrong++; }
+  });});
+  return {missing, wrong, ok: !missing && !wrong};
+}
+function fb(id, cls, html){ const e=document.getElementById(id); e.className='fb '+cls; e.innerHTML=html; }
+
+function act(kind, sid){
+  const st=STATIONS.find(s=>s.id===sid), p='s'+sid;
+  store.done[sid]=store.done[sid]||{};
+  if(kind==='check-m'){
+    const r=checkTable(p+'-m', st.table);
+    if(st.table2){ const r2=checkTable(p+'-t2', st.table2); r.missing+=r2.missing; r.wrong+=r2.wrong; r.ok=r.ok&&r2.ok; }
+    if(r.ok){ fb(p+'-mfb','ok','<p>Alle Messwerte passen. Jetzt geht es an die Auswertung.</p>'); store.done[sid].m=true; }
+    else if(r.missing && !r.wrong){ fb(p+'-mfb','info',`<p>Es fehlen noch ${r.missing} Messwert(e).</p>`); store.done[sid].m=false; }
+    else { fb(p+'-mfb','bad',`<p>${r.wrong} Wert(e) weichen deutlich ab${r.missing?`, ${r.missing} fehlen noch`:''}. Die rot markierten Felder bitte nachmessen.</p><p>${st.hint}</p>`); store.done[sid].m=false; }
+  }
+  if(kind==='check-k'){
+    const r=checkCloze(p+'-k', st.cloze);
+    if(r.ok){
+      store.done[sid].k=true; $('#'+p+'-muster').classList.add('on');
+      fb(p+'-kfb','ok', store.done[sid].m ? '<p>Richtig! Vergleicht den Merksatz mit eurer Formulierung und übertragt ihn ins Heft.</p>' : '<p>Richtig! Prüft noch eure Messwerte, dann ist die Station geschafft.</p>');
+    } else { store.done[sid].k=false; fb(p+'-kfb', r.wrong?'bad':'info', r.wrong?`<p>${r.wrong} Auswahl(en) passen noch nicht zu euren Messwerten. Schaut in eure Tabelle.</p>`:`<p>Wählt in allen Feldern etwas aus.</p>`); }
+  }
+  if(kind==='check-z'){
+    const z=st.zusatz; let ok=true, parts=[];
+    if(z.table){ const r=checkTable(p+'-zm', z.table); ok=ok&&r.ok; if(!r.ok) parts.push(r.wrong?'Einige Messwerte weichen ab – vergleicht mit eurer Vermutung und messt nach.':'Es fehlen noch Messwerte.'); }
+    if(z.cloze){ const r=checkCloze(p+'-zk', z.cloze); ok=ok&&r.ok; if(!r.ok) parts.push(r.wrong?'Eine Auswahl passt noch nicht.':'Wählt in allen Feldern etwas aus.'); }
+    const vv=(document.getElementById(p+'-zv').value||'').trim();
+    if(!vv){ ok=false; parts.push('Schreibt eure Vermutung bzw. Überlegung auf.'); }
+    if(z.ta && !(document.getElementById(p+'-zt').value||'').trim()){ ok=false; parts.push('Beantwortet noch die Frage im letzten Textfeld.'); }
+    store.done[sid].z=ok;
+    fb(p+'-zfb', ok?'ok':'bad', ok?'<p>Vertiefung geschafft. Stimmte eure Vermutung?</p>':'<ul>'+parts.map(t=>`<li>${t}</li>`).join('')+'</ul>');
+  }
+  save(); updateProgress();
+}
+
+/* ---------- Fortschritt ---------- */
+function stDone(id){ const d=store.done[id]; return !!(d&&d.m&&d.k); }
+function updateProgress(){
+  STATIONS.forEach(s=>{
+    const d=stDone(s.id), z=!!(store.done[s.id]&&store.done[s.id].z);
+    const b=document.querySelector(`.bulb[data-bulb="${s.id}"]`); b.classList.toggle('lit',d); b.classList.toggle('plus',z);
+    b.setAttribute('aria-label',`Station ${s.id} öffnen${d?' (geschafft)':''}${z?', Vertiefung geschafft':''}`);
+    document.querySelector(`#tabs [data-go="${s.id}"]`).classList.toggle('done',d);
+    if(store.done[s.id]&&store.done[s.id].k) $('#s'+s.id+'-muster').classList.add('on');
+  });
+  const all=[1,2,3,4,5,6,7].every(stDone);
+  $('#board').classList.toggle('alldone', all);
+  document.querySelector('#tabs [data-go="9"]').classList.toggle('done', all);
+  if(current===9) renderMerk();
+}
+function renderMerk(){
+  const all=[1,2,3,4,5,6,7].every(stDone);
+  const open=[1,2,3,4,5,6,7].filter(i=>!stDone(i));
+  $('#merkBody').innerHTML = all ? MERK_TABLE : `<div class="locked">Die Merktabelle wird freigeschaltet, sobald die Stationen 1–7 geschafft sind. Noch offen: Station ${open.join(', ')}.</div>`;
+}
+
+/* ---------- Eingaben speichern/laden ---------- */
+document.querySelectorAll('input[id], select[id], textarea[id]').forEach(el=>{
+  if(store.v[el.id]!=null) el.value=store.v[el.id];
+  el.addEventListener('input',()=>{ store.v[el.id]=el.value; save(); });
+});
+document.querySelectorAll('details.zusatz').forEach(d=>{ if(store.v[d.id]) d.open=true; d.addEventListener('toggle',()=>{store.v[d.id]=d.open;save();}); });
+
+/* ---------- Simulation einbetten ---------- */
+$('#simToggle').addEventListener('click',()=>{
+  const f=$('#simFrame'), on=!f.classList.contains('on');
+  if(on && !f.querySelector('iframe')) f.innerHTML=`<iframe src="${$('#simLink').href}" title="PhET-Simulation Stromkreise schalten: Gleichstrom" allowfullscreen></iframe>`;
+  f.classList.toggle('on',on); $('#simToggle').textContent = on?'Ausblenden':'Hier einblenden';
+});
+
+/* ---------- Drucken / Zurücksetzen ---------- */
+$('#printBtn').addEventListener('click',()=>{ renderMerk(); document.querySelectorAll('details').forEach(d=>{d.dataset.was=d.open; d.open=true;}); window.print(); });
+window.addEventListener('afterprint',()=>document.querySelectorAll('details').forEach(d=>d.open=d.dataset.was==='true'));
+$('#resetBtn').addEventListener('click',()=>{ if(confirm('Wirklich alle Eingaben und den Fortschritt löschen?')){ try{localStorage.removeItem(KEY);}catch(e){} location.reload(); }});
+
+updateProgress(); go(current);
+</script>
+</body>
+</html>

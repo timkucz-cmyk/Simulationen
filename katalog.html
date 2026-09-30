@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulationen · LMG</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="assets/lmg.css">
+</head>
+<body>
+<div class="brandline"></div>
+<header class="kopf" id="kopf">
+  <div class="wrap">
+    <nav class="krumen" aria-label="Pfad"><a href="index.html" id="zurueck">Simulationen</a><span aria-hidden="true">›</span><span id="k-stufe"></span></nav>
+    <h1 id="titel"></h1>
+    <div class="umschalter">
+      <div class="chips" id="wahl-fach" role="group" aria-label="Fach wechseln"></div>
+      <div class="chips" id="wahl-stufe" role="group" aria-label="Stufe wechseln"></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="chips" id="themen" role="group" aria-label="Nach Thema filtern" style="margin-bottom:20px"></div>
+  <div class="karten" id="karten"></div>
+</main>
+
+<footer class="fuss"><div class="wrap" id="fuss"></div></footer>
+
+<script src="simulationen.js"></script>
+<script>
+(function(){
+  const P = window.PLATTFORM, S = window.SIMULATIONEN || [];
+  const $ = id => document.getElementById(id);
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; };
+  const q = new URLSearchParams(location.search);
+  const stufe = P.stufen.find(s => s.id === q.get("stufe"));
+  const fach = P.faecher.find(f => f.id === q.get("fach"));
+  if(!stufe || !fach){ location.replace("index.html"); return; }
+
+  const url = (st, f) => "katalog.html?stufe=" + encodeURIComponent(st) + "&fach=" + encodeURIComponent(f);
+  const hat = (st, f) => S.some(s => s.stufen.includes(st) && s.fach === f);
+  const neu = d => d && (Date.now() - new Date(d + "T00:00:00")) / 864e5 <= 21;
+
+  document.body.classList.add("fach-" + fach.id);
+  document.title = fach.name + " · " + stufe.name + " · " + P.name;
+  $("titel").textContent = fach.name + " · " + stufe.name;
+  $("k-stufe").textContent = stufe.name;
+  $("zurueck").textContent = P.name;
+  $("zurueck").href = "index.html?stufe=" + encodeURIComponent(stufe.id);
+  $("fuss").textContent = P.schule + " · Fachschaft Mathematik und Physik";
+
+  /* Schnellwechsel: Fach und Stufe, nur Kombinationen mit Inhalt */
+  P.faecher.forEach(f => {
+    if(!hat(stufe.id, f.id)) return;
+    const a = el("a", "chip", f.name); a.href = url(stufe.id, f.id);
+    if(f.id === fach.id) a.setAttribute("aria-current", "true");
+    $("wahl-fach").appendChild(a);
+  });
+  P.stufen.forEach(st => {
+    if(!hat(st.id, fach.id)) return;
+    const a = el("a", "chip", st.zahl); a.href = url(st.id, fach.id); a.title = st.name;
+    if(st.id === stufe.id) a.setAttribute("aria-current", "true");
+    $("wahl-stufe").appendChild(a);
+  });
+  if($("wahl-fach").children.length < 2) $("wahl-fach").remove();
+  if($("wahl-stufe").children.length < 2) $("wahl-stufe").remove();
+
+  /* Karten */
+  const liste = S.filter(s => s.stufen.includes(stufe.id) && s.fach === fach.id)
+                 .sort((a, b) => (b.datum || "").localeCompare(a.datum || ""));
+  let thema = null;
+  const IC = d => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>';
+  const IC_GRUPPE = IC('<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M16 14.2c2.9.2 5 2.7 5 5.8"/>');
+  const IC_UHR = IC('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>');
+
+  function karte(s){
+    const a = el("a", "karte"); a.href = s.pfad;
+    const bild = el("div", "bild");
+    const ph = el("div", "platzhalter"); ph.innerHTML = fach.symbol; bild.appendChild(ph);
+    if(s.vorschau){
+      const img = el("img"); img.src = s.vorschau; img.alt = ""; img.loading = "lazy";
+      img.onload = () => ph.remove(); img.onerror = () => img.remove();
+      bild.appendChild(img);
+    }
+    if(neu(s.datum)) bild.appendChild(el("span", "badge", "NEU"));
+    const t = el("div", "text");
+    if(s.thema) t.appendChild(el("span", "thema", s.thema));
+    t.appendChild(el("h3", null, s.titel));
+    if(s.beschreibung) t.appendChild(el("p", null, s.beschreibung));
+    const meta = el("div", "meta");
+    const info = (svg, text) => { const sp = el("span"); sp.innerHTML = svg; sp.appendChild(document.createTextNode(text)); meta.appendChild(sp); };
+    if(s.sozialform) info(IC_GRUPPE, s.sozialform);
+    if(s.dauer) info(IC_UHR, s.dauer);
+    if(meta.children.length) t.appendChild(meta);
+    a.append(bild, t);
+    return a;
+  }
+
+  function zeige(){
+    const box = $("karten"); box.textContent = "";
+    const sichtbar = liste.filter(s => !thema || s.thema === thema);
+    if(!sichtbar.length){
+      const d = el("div", "leer"); d.style.gridColumn = "1 / -1";
+      d.appendChild(el("strong", null, "Hier ist noch nichts."));
+      d.appendChild(document.createTextNode("Neue Simulationen kommen nach und nach dazu."));
+      box.appendChild(d); return;
+    }
+    sichtbar.forEach(s => box.appendChild(karte(s)));
+  }
+
+  /* Themenfilter erst ab zwei Themen */
+  const themen = [...new Set(liste.map(s => s.thema).filter(Boolean))];
+  if(themen.length > 1){
+    [null, ...themen].forEach(th => {
+      const b = el("button", "chip", th || "Alle Themen"); b.type = "button";
+      b.setAttribute("aria-pressed", String(th === thema));
+      b.addEventListener("click", () => {
+        thema = th;
+        [...$("themen").children].forEach(c => c.setAttribute("aria-pressed", String(c === b)));
+        zeige();
+      });
+      $("themen").appendChild(b);
+    });
+  } else $("themen").remove();
+
+  zeige();
+})();
+</script>
+</body>
+</html>
