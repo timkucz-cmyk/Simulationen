@@ -15,7 +15,7 @@ bedienen sich gleich.
 | `assets/lmg.css` | Design-Tokens + alle Komponenten dieser Seiten |
 | `simulationen.js` | Konfiguration (`PLATTFORM`) und Inhalte (`SIMULATIONEN`) |
 
-- Lokal: `C:\Users\Anwender\OneDrive\Schule\Vorlagen\Simulationen\`
+- Lokal: `C:\Users\Anwender\OneDrive\Schule\Vorlagen\KI_Tools\Simulationen\`
 - Online: https://github.com/timkucz-cmyk/simulationen (Seite: https://timkucz-cmyk.github.io/simulationen/)
 
 ---
