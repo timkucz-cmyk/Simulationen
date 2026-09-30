@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Waagerechter Wurf erarbeiten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Tokens aus dem LMG-Designsystem (Werte wie in assets/lmg.css, hier eigenständig) */
+:root{
+  --surface-page:#ffffff; --surface-soft:#f6f6f4; --surface-sunken:#ecece8;
+  --fg-1:#17181a; --fg-2:#3d4147; --fg-3:#646a72; --fg-4:#9097a0;
+  --line-1:#e4e5e3; --line-2:#cfd1cf; --line-3:#a8acaa;
+  --mathe:#B61E33;
+  --physik:#2C5282; --physik-soft:#e8eef5; --physik-line:#b9c8da; --physik-ink:#1d3a5c;
+  --ok:#3f6e3a; --ok-soft:#e7eee5; --warn:#8a6a1e; --warn-soft:#f3ecd9;
+  --hl-soft:#ede5f2; --hl-ink:#6b4a8a; --hl-line:#d6c5e0;
+  --radius-sm:4px; --radius-md:6px; --radius-lg:10px; --radius-pill:999px;
+  --shadow-1:0 1px 2px rgba(20,22,25,.04),0 1px 1px rgba(20,22,25,.03);
+  --ease-out:cubic-bezier(0.22,0.61,0.36,1);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--surface-soft);color:var(--fg-1);
+  font-family:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--physik)}
+:focus-visible{outline:2px solid var(--physik);outline-offset:3px;border-radius:var(--radius-sm)}
+
+.brandline{height:4px;background:linear-gradient(90deg,var(--mathe) 0 50%,var(--physik) 50% 100%)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+@media (min-width:700px){.wrap{padding:0 32px}}
+header.top{padding:18px 0 4px}
+.backlink{display:inline-block;margin:0 0 10px;font-size:.92rem;color:var(--fg-3);text-decoration:none}
+.backlink:hover{color:var(--fg-1);text-decoration:underline}
+h1{font-size:clamp(28px,5vw,40px);line-height:1.15;margin:0;letter-spacing:-.01em}
+.sub{margin:4px 0 0;color:var(--fg-2)}
+
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 14px}
+nav.tabs button{border:1px solid var(--line-2);background:var(--surface-page);border-radius:var(--radius-pill);padding:5px 13px;cursor:pointer;font-size:.95rem;min-height:36px}
+nav.tabs button:hover{border-color:var(--physik-line)}
+nav.tabs button[aria-current="true"]{background:var(--fg-1);color:var(--surface-page);border-color:var(--fg-1)}
+nav.tabs button.done::after{content:" ✓";color:var(--ok)}
+nav.tabs button[aria-current="true"].done::after{color:var(--physik-line)}
+
+.simbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--surface-page);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:10px 12px;margin-bottom:10px;box-shadow:var(--shadow-1)}
+.simbar strong{margin-right:auto}
+.btn{border:1px solid var(--physik);background:var(--physik);color:#fff;border-radius:var(--radius-md);padding:7px 14px;cursor:pointer;text-decoration:none;display:inline-block;font-size:.95rem;font-weight:600}
+.btn:hover{background:var(--physik-ink);border-color:var(--physik-ink)}
+.btn.ghost{background:transparent;color:var(--physik)}
+.btn.ghost:hover{background:var(--physik-soft)}
+.btn.small{padding:4px 10px;font-size:.88rem}
+.simframe{display:none;margin-bottom:14px;border:1px solid var(--line-2);border-radius:var(--radius-lg);overflow:hidden;background:#000}
+.simframe.on{display:block}
+.simframe iframe{display:block;width:100%;aspect-ratio:4/3;border:0;max-height:80vh}
+details.tipps{margin:0 0 16px;border:1px solid var(--line-2);border-radius:var(--radius-lg);background:var(--surface-page)}
+details.tipps summary{cursor:pointer;padding:8px 14px;font-weight:600;color:var(--fg-2)}
+details.tipps ul{margin:0;padding:0 14px 12px 34px}
+details.tipps li{margin:3px 0}
+
+.stufe{display:none;background:var(--surface-page);border:1px solid var(--line-2);border-top:4px solid var(--physik);border-radius:var(--radius-lg);padding:20px 22px 24px;margin-bottom:28px;box-shadow:var(--shadow-1)}
+.stufe.show{display:block}
+.stufe.extra{border-top-color:var(--hl-ink)}
+.stufe.einstieg,.stufe.regel{border-top-color:var(--fg-2)}
+.shead{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.chip{font-size:.85rem;border-radius:var(--radius-pill);padding:2px 10px;font-weight:600;background:var(--physik-soft);color:var(--physik-ink)}
+.chip.grau{background:var(--surface-sunken);color:var(--fg-2)}
+.chip.lila{background:var(--hl-soft);color:var(--hl-ink)}
+h2{font-size:1.6rem;margin:6px 0 4px;line-height:1.2}
+h3{font-size:1.15rem;margin:22px 0 8px}
+p{margin:6px 0}
+ol.steps{padding-left:1.4em;margin:8px 0}
+ol.steps li{margin:6px 0}
+.settings{background:var(--surface-soft);border:1px dashed var(--line-3);border-radius:var(--radius-md);padding:8px 12px;margin:10px 0}
+.settings p{margin:2px 0}
+.regel-box{background:var(--warn-soft);border-left:4px solid var(--warn);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:8px 14px;margin:10px 0;font-weight:600}
+.leitfrage{background:var(--hl-soft);border:1px solid var(--hl-line);color:var(--hl-ink);border-radius:var(--radius-md);padding:8px 14px;margin:10px 0;font-weight:600}
+.grid2{display:grid;grid-template-columns:1.2fr 1fr;gap:22px;align-items:start}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+figure.skizze{margin:0;background:var(--surface-soft);border-radius:var(--radius-lg);padding:8px}
+figure.skizze svg{width:100%;height:auto;display:block}
+figure.skizze figcaption{font-size:.85rem;color:var(--fg-3);text-align:center}
+
+label.ta{display:block;font-weight:600;margin:14px 0 4px}
+textarea{width:100%;min-height:72px;padding:8px 10px;border:1px solid var(--line-2);border-radius:var(--radius-md);background:var(--surface-page);resize:vertical}
+input[type=text],input:not([type]){padding:5px 8px;border:1px solid var(--line-2);border-radius:var(--radius-md);background:var(--surface-page);min-width:0}
+input.ok,textarea.ok{border-color:var(--ok);background:var(--ok-soft)}
+input.bad{border-color:var(--warn);background:var(--warn-soft)}
+.inline{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:8px 0}
+.inline input{width:120px}
+.inline input.wide{width:min(360px,100%)}
+fieldset.wahl{border:0;padding:0;margin:8px 0}
+fieldset.wahl legend{font-weight:600;padding:0;margin-bottom:4px}
+fieldset.wahl label{display:inline-flex;align-items:center;gap:6px;margin:2px 16px 2px 0;min-height:32px;cursor:pointer}
+
+.tablewrap{overflow-x:auto}
+table.mt{border-collapse:collapse;margin:6px 0}
+table.mt th,table.mt td{border:1px solid var(--line-2);padding:6px 8px;text-align:center}
+table.mt th{background:var(--surface-soft);font-weight:600;font-size:.95rem}
+table.mt td.given{background:var(--surface-soft);font-weight:600}
+table.mt input{width:92px;text-align:center}
+table.mt.frei input{width:100%;min-width:150px;text-align:left}
+table.gl{border-collapse:collapse;width:100%;min-width:520px;margin:6px 0}
+table.gl th,table.gl td{border:1px solid var(--line-2);padding:6px 8px;vertical-align:middle}
+table.gl thead th{color:#fff;font-weight:600}
+table.gl thead th.x{background:var(--ok)}
+table.gl thead th.y{background:var(--physik)}
+table.gl thead th.leer{background:transparent;border:0}
+table.gl tbody th{background:var(--surface-soft);width:70px}
+table.gl input{width:100%}
+
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.fb{margin-top:10px;padding:9px 13px;border-radius:var(--radius-md);display:none}
+.fb.ok{display:block;background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
+.fb.bad{display:block;background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.fb.info{display:block;background:var(--surface-soft);border:1px solid var(--line-2)}
+.fb p{margin:3px 0}
+
+.sicherung{margin-top:26px;border:1px dashed var(--line-3);border-radius:var(--radius-lg);padding:6px 16px 16px;background:var(--surface-soft)}
+.sicherung h3{margin-top:10px}
+.sicherung .hinweis{color:var(--fg-3);font-size:.92rem}
+
+details.hilfe{margin:8px 0;border:1px solid var(--line-2);border-radius:var(--radius-md);background:var(--surface-page)}
+details.hilfe summary{cursor:pointer;padding:6px 12px;font-weight:600;color:var(--physik-ink)}
+details.hilfe p{padding:0 12px 8px;margin:0}
+details.vertiefung{margin-top:18px;border:1px solid var(--line-2);border-radius:var(--radius-lg);background:var(--surface-soft)}
+details.vertiefung summary{cursor:pointer;padding:10px 14px;font-weight:600}
+details.vertiefung .zin{padding:0 14px 14px}
+.opt{font-weight:400;color:var(--fg-3);font-size:.9rem}
+
+.uebersicht dt{font-weight:600;margin-top:12px}
+.uebersicht dd{margin:2px 0 0;padding:6px 10px;background:var(--surface-soft);border-radius:var(--radius-md);white-space:pre-wrap;min-height:1.5em}
+.uebersicht dd.leer{color:var(--fg-4);font-style:italic}
+
+footer{color:var(--fg-3);font-size:.85rem;padding:0 0 30px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{
+  body{background:#fff;font-size:11.5pt}
+  nav.tabs,.simbar,.simframe,details.tipps,.actions,.noprint{display:none!important}
+  .stufe{display:block!important;break-inside:auto;box-shadow:none;border:1px solid #999;margin-bottom:10pt}
+  details{display:block}
+  details>*{display:block}
+}
+</style>
+</head>
+<body>
+<div class="brandline"></div>
+<div class="wrap">
+  <header class="top">
+    <a class="backlink noprint" href="../../../katalog.html?stufe=E&amp;fach=physik">← Alle Simulationen</a>
+    <h1>Waagerechter Wurf</h1>
+    <p class="sub">Geleitete Erarbeitung mit der PhET-Simulation „Projektilbewegung“ · Doppelstunde</p>
+  </header>
+
+  <nav class="tabs" id="tabs" aria-label="Stufen"></nav>
+
+  <div class="simbar">
+    <strong>Simulation „Projektilbewegung“</strong>
+    <a class="btn" id="simLink" href="https://phet.colorado.edu/sims/html/projectile-motion/latest/projectile-motion_de.html" target="_blank" rel="noopener">In neuem Tab öffnen</a>
+    <button class="btn ghost" id="simToggle" type="button">Hier einblenden</button>
+  </div>
+  <div class="simframe" id="simFrame"></div>
+  <details class="tipps noprint">
+    <summary>Tipps zur Bedienung der Simulation</summary>
+    <ul>
+      <li><b>Höhe:</b> Die Kanone samt Sockel nach oben oder unten ziehen (nur ganze Meter, höchstens 15 m).</li>
+      <li><b>Winkel:</b> Am Kanonenrohr ziehen. Für den waagerechten Wurf immer <b>0°</b>.</li>
+      <li><b>Anfangsgeschwindigkeit:</b> Regler „Anfangstempo“ unten links, mit den Pfeiltasten in 1-m/s-Schritten.</li>
+      <li><b>Messwerkzeug</b> (Kasten mit „Zeit – Weite – Höhe“ oben rechts): herausziehen und mit dem Fadenkreuz auf einen Punkt der Bahn setzen. Es zeigt dort Zeit t, Weite x und Höhe y an.</li>
+      <li><b>Zielscheibe:</b> am Boden verschieben, ihre Position steht darunter.</li>
+      <li>Der Radiergummi löscht alte Bahnen, der rote Knopf schießt ab.</li>
+    </ul>
+  </details>
+
+  <main id="stufen">
+
+  <!-- ============ EINSTIEG ============ -->
+  <section class="stufe einstieg" id="st-0" aria-labelledby="h-0">
+    <div class="shead"><span class="chip grau">Einstieg</span><span class="chip grau">allein · ca. 5 min</span></div>
+    <h2 id="h-0">Wer landet zuerst?</h2>
+    <div class="grid2">
+      <div>
+        <p>Zwei Kugeln starten gleichzeitig aus <b>15 m</b> Höhe:</p>
+        <ul>
+          <li>Kugel A wird fallen gelassen (0 m/s).</li>
+          <li>Kugel B wird mit <b>20 m/s</b> waagerecht abgeschossen.</li>
+        </ul>
+        <p><b>Vorhersage</b> (schriftlich, allein, noch <b>ohne</b> Simulation):</p>
+        <fieldset class="wahl" id="vorhersage">
+          <legend>Welche Kugel kommt zuerst am Boden an?</legend>
+          <label><input type="radio" name="vh" value="A"> Kugel A</label>
+          <label><input type="radio" name="vh" value="B"> Kugel B</label>
+          <label><input type="radio" name="vh" value="gleich"> beide gleichzeitig</label>
+        </fieldset>
+        <label class="ta" for="e-begr">Begründe in einem Satz.</label>
+        <textarea id="e-begr"></textarea>
+      </div>
+      <figure class="skizze">
+        <svg viewBox="0 0 320 220" role="img" aria-label="Skizze: zwei Kugeln starten aus 15 m Höhe, A fällt, B fliegt waagerecht los">
+          <rect x="30" y="40" width="36" height="150" fill="var(--surface-sunken)" stroke="var(--line-3)"/>
+          <line x1="10" y1="190" x2="310" y2="190" stroke="var(--fg-2)" stroke-width="2"/>
+          <circle cx="74" cy="30" r="8" fill="var(--fg-2)"/>
+          <text x="74" y="14" text-anchor="middle" font-size="14" font-weight="700" fill="var(--fg-1)">A</text>
+          <line x1="74" y1="44" x2="74" y2="80" stroke="var(--fg-3)" stroke-width="2" stroke-dasharray="4 4"/>
+          <path d="M70 76 l4 8 4-8" fill="none" stroke="var(--fg-3)" stroke-width="2"/>
+          <circle cx="98" cy="30" r="8" fill="var(--physik)"/>
+          <text x="98" y="14" text-anchor="middle" font-size="14" font-weight="700" fill="var(--physik)">B</text>
+          <line x1="110" y1="30" x2="160" y2="30" stroke="var(--physik)" stroke-width="2.5"/>
+          <path d="M152 24 l9 6 -9 6" fill="none" stroke="var(--physik)" stroke-width="2.5"/>
+          <text x="166" y="35" font-size="14" fill="var(--physik)">20 m/s</text>
+          <line x1="6" y1="30" x2="6" y2="190" stroke="var(--fg-3)" stroke-width="1.5"/>
+          <text x="20" y="114" font-size="13" fill="var(--fg-2)" transform="rotate(-90 14 118)" text-anchor="middle">15 m</text>
+          <text x="230" y="130" font-size="30" fill="var(--fg-4)" text-anchor="middle">?</text>
+        </svg>
+        <figcaption>Gleicher Start, gleiche Höhe</figcaption>
+      </figure>
+    </div>
+    <div class="actions noprint"><button class="btn" type="button" data-go="1">Weiter zu Stufe 1</button></div>
+  </section>
+
+  <!-- ============ STUFE 1 ============ -->
+  <section class="stufe" id="st-1" aria-labelledby="h-1">
+    <div class="shead"><span class="chip">Stufe 1</span><span class="chip grau">ca. 5 min + 2 min Sicherung</span></div>
+    <h2 id="h-1">Überprüfen: Wer landet zuerst?</h2>
+    <div class="settings"><p><b>Bildschirm „Einführung“</b></p></div>
+    <ol class="steps">
+      <li>Stelle den Winkel auf <b>0°</b> und die Kanone auf <b>15 m</b> Höhe.</li>
+      <li>Schieße Kugel A mit <b>0 m/s</b> und Kugel B mit <b>20 m/s</b> ab.</li>
+      <li>Miss mit dem Messwerkzeug jeweils die Flugzeit.</li>
+      <li>Vergleiche mit deiner Vorhersage.</li>
+    </ol>
+    <div class="tablewrap"><table class="mt">
+      <thead><tr><th></th><th>v<sub>0</sub> in m/s</th><th>Flugzeit t in s</th></tr></thead>
+      <tbody>
+        <tr><th>Kugel A</th><td class="given">0</td><td><input inputmode="decimal" id="s1-tA" aria-label="Flugzeit Kugel A in s"></td></tr>
+        <tr><th>Kugel B</th><td class="given">20</td><td><input inputmode="decimal" id="s1-tB" aria-label="Flugzeit Kugel B in s"></td></tr>
+      </tbody>
+    </table></div>
+    <div class="actions noprint"><button class="btn" type="button" data-act="s1">Messwerte prüfen</button></div>
+    <div class="fb" id="s1-fb" role="status"></div>
+
+    <div class="sicherung">
+      <h3>Sicherung – Stufe 1</h3>
+      <p class="hinweis">Wird gemeinsam besprochen. Notiere hier das Ergebnis.</p>
+      <p id="s1-meine" class="hinweis"></p>
+      <label class="ta" for="s1-sich">War deine Vorhersage richtig? Was folgt daraus für den Zusammenhang zwischen waagerechter und senkrechter Bewegung?</label>
+      <textarea id="s1-sich"></textarea>
+      <div class="leitfrage">Leitfrage der Stunde: Was hat die waagerechte Bewegung mit der senkrechten zu tun?</div>
+    </div>
+  </section>
+
+  <!-- ============ STUFE 2 ============ -->
+  <section class="stufe" id="st-2" aria-labelledby="h-2">
+    <div class="shead"><span class="chip">Stufe 2</span><span class="chip grau">Partnerarbeit · ca. 13 min + 4 min Sicherung</span></div>
+    <h2 id="h-2">Wovon hängen Flugzeit und Wurfweite ab?</h2>
+    <ol class="steps">
+      <li>Sammelt Größen, die Flugzeit und Wurfweite beeinflussen könnten.</li>
+      <li>Plant eure Messreihen so, dass ihr jeweils <b>nur eine</b> Größe verändert.</li>
+      <li>Führt die Messungen durch: Bildschirm <b>„Einführung“</b> für Höhe, Anfangsgeschwindigkeit und Objekt; Bildschirm <b>„Experimente“</b> für Masse und g. Winkel immer <b>0°</b>, Luftwiderstand <b>aus</b>.</li>
+      <li>Haltet eure Ergebnisse in der Tabelle fest.</li>
+    </ol>
+    <div class="settings"><p>Achtung: Im Bildschirm „Experimente“ steht die Kanone anfangs auf 0 m Höhe und 80°. Stellt zuerst Höhe und Winkel ein.</p></div>
+    <label class="ta" for="s2-groessen">Gesammelte Größen und euer Plan für die Messreihen</label>
+    <textarea id="s2-groessen"></textarea>
+    <h3>Ergebnistabelle</h3>
+    <div class="tablewrap"><table class="mt frei" id="s2-tab">
+      <thead><tr><th>Größe</th><th>Einfluss auf die Flugzeit</th><th>Einfluss auf die Wurfweite</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+
+    <div class="sicherung">
+      <h3>Sicherung – Stufe 2</h3>
+      <p class="hinweis">Wird gemeinsam besprochen. Notiere hier das Ergebnis.</p>
+      <div class="tablewrap"><table class="mt frei" id="s2-sich">
+        <thead><tr><th>Größe</th><th>Flugzeit</th><th>Wurfweite</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ============ STUFE 3 ============ -->
+  <section class="stufe" id="st-3" aria-labelledby="h-3">
+    <div class="shead"><span class="chip">Stufe 3</span><span class="chip grau">ca. 18 min + 5 min Sicherung</span></div>
+    <h2 id="h-3">Die Bewegung zerlegen</h2>
+    <div class="settings">
+      <p><b>Bildschirm „Vektoren“</b></p>
+      <p>Häkchen bei <b>„Luftwiderstand“</b> entfernen (ist dort anfangs eingeschaltet!).</p>
+      <p>„Komponenten“ wählen und „Geschwindigkeitsvektor“ ankreuzen.</p>
+    </div>
+    <ol class="steps">
+      <li>Blende die Geschwindigkeitskomponenten ein und schieße ab. Beschreibe, wie sich v<sub>x</sub> und v<sub>y</sub> während des Flugs ändern.</li>
+      <li>Stelle h<sub>0</sub> = <b>15 m</b>, v<sub>0</sub> = <b>10 m/s</b> und den Winkel <b>0°</b> ein. Miss mit dem Messwerkzeug an mindestens <b>6</b> Bahnpunkten t, x und y.</li>
+      <li>Übertrage die Werte in Excel. Erstelle zwei Diagramme, x(t) und y(t), und füge jeweils eine passende Trendlinie mit Gleichung hinzu.</li>
+      <li>Stelle für beide Richtungen die Bewegungsgleichungen s(t), v(t) und a(t) auf. Vergleiche mit dem freien Fall aus 15 m Höhe.</li>
+    </ol>
+    <label class="ta" for="s3-beob">1. So ändern sich v<sub>x</sub> und v<sub>y</sub> während des Flugs:</label>
+    <textarea id="s3-beob"></textarea>
+
+    <h3>2. Messwerte (h<sub>0</sub> = 15 m, v<sub>0</sub> = 10 m/s, 0°)</h3>
+    <p class="hinweis">Messwerkzeug: „Zeit“ = t, „Weite“ = x, „Höhe“ = y.</p>
+    <div class="tablewrap"><table class="mt" id="s3-tab">
+      <thead><tr><th>Nr.</th><th>t in s</th><th>x in m</th><th>y in m</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <div class="actions noprint">
+      <button class="btn" type="button" data-act="s3">Messwerte prüfen</button>
+      <button class="btn ghost" type="button" data-act="s3copy">Tabelle für Excel kopieren</button>
+    </div>
+    <div class="fb" id="s3-fb" role="status"></div>
+
+    <h3>3. Trendlinien aus Excel</h3>
+    <div class="inline"><label for="s3-trx">x(t) =</label><input id="s3-trx" class="wide" autocomplete="off"></div>
+    <div class="inline"><label for="s3-try">y(t) =</label><input id="s3-try" class="wide" autocomplete="off"></div>
+    <label class="ta" for="s3-trend">Welche Art von Funktion passt jeweils? Was bedeuten die Zahlen in den Gleichungen?</label>
+    <textarea id="s3-trend"></textarea>
+
+    <h3>4. Bewegungsgleichungen</h3>
+    <label class="ta" for="s3-vgl">Vergleich mit dem freien Fall aus 15 m Höhe</label>
+    <textarea id="s3-vgl"></textarea>
+
+    <div class="sicherung">
+      <h3>Sicherung – Stufe 3</h3>
+      <p class="hinweis">Wird gemeinsam besprochen. Notiere hier das Ergebnis.</p>
+      <div class="tablewrap"><table class="gl">
+        <thead><tr><th class="leer"></th><th class="x">x-Richtung</th><th class="y">y-Richtung</th></tr></thead>
+        <tbody>
+          <tr><th>s(t)</th><td><input id="s3-sx" aria-label="s(t) in x-Richtung"></td><td><input id="s3-sy" aria-label="s(t) in y-Richtung"></td></tr>
+          <tr><th>v(t)</th><td><input id="s3-vx" aria-label="v(t) in x-Richtung"></td><td><input id="s3-vy" aria-label="v(t) in y-Richtung"></td></tr>
+          <tr><th>a(t)</th><td><input id="s3-ax" aria-label="a(t) in x-Richtung"></td><td><input id="s3-ay" aria-label="a(t) in y-Richtung"></td></tr>
+        </tbody>
+      </table></div>
+      <div class="leitfrage">Leitfrage: Was hat die waagerechte Bewegung mit der senkrechten zu tun?</div>
+      <label class="ta" for="s3-leit">Antwort auf die Leitfrage</label>
+      <textarea id="s3-leit"></textarea>
+    </div>
+  </section>
+
+  <!-- ============ STUFE 4 ============ -->
+  <section class="stufe" id="st-4" aria-labelledby="h-4">
+    <div class="shead"><span class="chip">Stufe 4</span><span class="chip grau">ca. 13 min + 4 min Sicherung</span></div>
+    <h2 id="h-4">Ein-Schuss-Challenge</h2>
+    <div class="regel-box">Regel: Erst rechnen, dann genau <u>ein</u> Schuss.</div>
+    <div class="settings"><p><b>Bildschirm „Einführung“</b>, Winkel <b>0°</b>, g = 9,81 m/s²</p></div>
+
+    <h3>a) v<sub>0</sub> = 15 m/s, h<sub>0</sub> = 10 m. Wo muss die Zielscheibe stehen?</h3>
+    <label class="ta" for="s4a-weg">Rechnung</label>
+    <textarea id="s4a-weg"></textarea>
+    <div class="inline"><label for="s4a-erg">Zielscheibe bei</label><input id="s4a-erg" inputmode="decimal" autocomplete="off"><span>m</span></div>
+    <fieldset class="wahl" id="s4a-schuss"><legend>Dein Schuss:</legend>
+      <label><input type="radio" name="s4a" value="t"> Treffer</label>
+      <label><input type="radio" name="s4a" value="d"> daneben</label>
+    </fieldset>
+    <div class="fb" id="s4a-fb" role="status"></div>
+
+    <h3>b) Die Zielscheibe steht bei 18 m, v<sub>0</sub> = 12 m/s. Aus welcher Höhe musst du schießen?</h3>
+    <label class="ta" for="s4b-weg">Rechnung</label>
+    <textarea id="s4b-weg"></textarea>
+    <div class="inline"><label for="s4b-erg">Höhe h<sub>0</sub> =</label><input id="s4b-erg" inputmode="decimal" autocomplete="off"><span>m</span></div>
+    <fieldset class="wahl" id="s4b-schuss"><legend>Dein Schuss:</legend>
+      <label><input type="radio" name="s4b" value="t"> Treffer</label>
+      <label><input type="radio" name="s4b" value="d"> daneben</label>
+    </fieldset>
+    <div class="fb" id="s4b-fb" role="status"></div>
+
+    <h3>c) Eine Gleichung für jede Zielposition</h3>
+    <p>Stelle eine Gleichung y(x) auf, mit der du für jede Zielposition sofort entscheiden kannst, ob du triffst. In dieser Gleichung darf t nicht mehr vorkommen.</p>
+    <label class="ta" for="s4c-weg">Herleitung</label>
+    <textarea id="s4c-weg"></textarea>
+    <div class="inline"><label for="s4c-erg">y(x) =</label><input id="s4c-erg" class="wide" autocomplete="off"></div>
+    <details class="hilfe" data-hilfe="1"><summary>Hilfe 1</summary><p>Welche Größe steckt in beiden Bewegungsgleichungen?</p></details>
+    <details class="hilfe" data-hilfe="2"><summary>Hilfe 2</summary><p>Löse s<sub>x</sub>(t) nach t auf.</p></details>
+    <details class="hilfe" data-hilfe="3"><summary>Hilfe 3</summary><p>Setze diesen Ausdruck für t in s<sub>y</sub>(t) ein und fasse zusammen.</p></details>
+
+    <div class="sicherung">
+      <h3>Sicherung – Stufe 4: Bahnkurve</h3>
+      <p class="hinweis">Wird gemeinsam besprochen. Notiere hier das Ergebnis.</p>
+      <div class="inline"><label for="s4-bahn">Bahnkurve: s<sub>y</sub> =</label><input id="s4-bahn" class="wide" autocomplete="off"></div>
+      <div class="inline"><label for="s4-tf">Falldauer t<sub>F</sub> =</label><input id="s4-tf" class="wide" autocomplete="off"></div>
+      <div class="inline"><label for="s4-sw">Wurfweite s<sub>W</sub> =</label><input id="s4-sw" class="wide" autocomplete="off"></div>
+    </div>
+  </section>
+
+  <!-- ============ STUFE 5 ============ -->
+  <section class="stufe" id="st-5" aria-labelledby="h-5">
+    <div class="shead"><span class="chip">Stufe 5</span><span class="chip grau">ca. 8 min + 3 min Sicherung</span></div>
+    <h2 id="h-5">Wie schnell schlägt der Körper auf?</h2>
+    <p>Ein Körper wird aus h<sub>0</sub> = <b>10 m</b> mit v<sub>0</sub> = <b>15 m/s</b> waagerecht abgeworfen.</p>
+    <ol class="steps">
+      <li>Berechne den Betrag der Aufprallgeschwindigkeit aus den Geschwindigkeitskomponenten.</li>
+      <li>Berechne ihn ein zweites Mal über die Energieerhaltung.</li>
+      <li>Begründe, warum beide Wege dasselbe Ergebnis liefern müssen.</li>
+    </ol>
+    <label class="ta" for="s5-weg1">1. Rechnung über die Komponenten</label>
+    <textarea id="s5-weg1"></textarea>
+    <div class="inline"><label for="s5-v1">v =</label><input id="s5-v1" inputmode="decimal" autocomplete="off"><span>m/s</span></div>
+    <label class="ta" for="s5-weg2">2. Rechnung über die Energieerhaltung</label>
+    <textarea id="s5-weg2"></textarea>
+    <div class="inline"><label for="s5-v2">v =</label><input id="s5-v2" inputmode="decimal" autocomplete="off"><span>m/s</span></div>
+    <div class="actions noprint"><button class="btn" type="button" data-act="s5">Ergebnisse prüfen</button></div>
+    <div class="fb" id="s5-fb" role="status"></div>
+    <label class="ta" for="s5-begr">3. Warum müssen beide Wege dasselbe Ergebnis liefern?</label>
+    <textarea id="s5-begr"></textarea>
+
+    <details class="vertiefung" id="s5-vd"><summary>Vertiefung <span class="opt">(freiwillig)</span></summary><div class="zin">
+      <p>Zeige, dass der Betrag der Aufprallgeschwindigkeit nicht vom Abwurfwinkel abhängt.</p>
+      <textarea id="s5-vert" aria-label="Vertiefung"></textarea>
+    </div></details>
+
+    <div class="sicherung">
+      <h3>Sicherung – Stufe 5</h3>
+      <p class="hinweis">Wird gemeinsam besprochen. Notiere hier das Ergebnis.</p>
+      <div class="inline"><label for="s5-vq">Gesamtgeschwindigkeit: v² =</label><input id="s5-vq" class="wide" autocomplete="off"></div>
+      <label class="ta" for="s5-en">Energetische Beschreibung</label>
+      <textarea id="s5-en"></textarea>
+    </div>
+  </section>
+
+  <!-- ============ FÜR SCHNELLE ============ -->
+  <section class="stufe extra" id="st-6" aria-labelledby="h-6">
+    <div class="shead"><span class="chip lila">Für Schnelle</span><span class="chip grau">freiwillig</span></div>
+    <h2 id="h-6">Grenzen des Modells</h2>
+    <p>Schalte im Bildschirm <b>„Einführung“</b> den Luftwiderstand ein. Schieße Kanonenkugel und Tennisball unter gleichen Bedingungen ab. Beschreibe die Unterschiede und erkläre, für welche Körper unser Modell brauchbar ist.</p>
+    <label class="ta" for="s6-beob">Beobachtung und Erklärung</label>
+    <textarea id="s6-beob"></textarea>
+  </section>
+
+  <!-- ============ REGELHEFT ============ -->
+  <section class="stufe regel" id="st-7" aria-labelledby="h-7">
+    <div class="shead"><span class="chip grau">Abschluss</span><span class="chip grau">ca. 7 min, sonst Hausaufgabe</span></div>
+    <h2 id="h-7">Regelhefteintrag „Waagerechter Wurf“</h2>
+    <p>Schreibe den Regelhefteintrag nach den Vorgaben deiner Lehrkraft. Nutze deine Ergebnisse aus Stufe 1–5, bei Bedarf die Erklärungsfolien zum Nachlesen und/oder das Internet.</p>
+    <h3>Deine Ergebnisse auf einen Blick</h3>
+    <dl class="uebersicht" id="uebersicht"></dl>
+  </section>
+
+  </main>
+
+  <footer>
+    Simulation: PhET Interactive Simulations, University of Colorado Boulder (phet.colorado.edu), Lizenz CC BY 4.0. Eingaben werden nur in diesem Browser gespeichert.
+    <div class="actions noprint">
+      <button class="btn ghost small" type="button" id="printBtn">Protokoll drucken / als PDF speichern</button>
+      <button class="btn ghost small" type="button" id="resetBtn">Alle Eingaben löschen</button>
+    </div>
+  </footer>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num = v => { const t=String(v??'').replace(',','.').replace(/[^0-9.\-]/g,''); return t===''?NaN:parseFloat(t); };
+const val = id => (document.getElementById(id)?.value||'').trim();
+const G = 9.81;
+
+/* ---------- Tabellen aufbauen ---------- */
+$('#s2-tab tbody').innerHTML = [1,2,3,4,5,6].map(i=>
+  `<tr><td><input id="s2-g${i}" aria-label="Zeile ${i}: Größe"></td><td><input id="s2-t${i}" aria-label="Zeile ${i}: Einfluss auf die Flugzeit"></td><td><input id="s2-w${i}" aria-label="Zeile ${i}: Einfluss auf die Wurfweite"></td></tr>`).join('');
+const S2_SICH = [['h','Höhe h<sub>0</sub>'],['v','Anfangsgeschwindigkeit v<sub>0</sub>'],['m','Masse m'],['g','Fallbeschleunigung g']];
+$('#s2-sich tbody').innerHTML = S2_SICH.map(([k,l])=>
+  `<tr><th>${l}</th><td><input id="s2s-t${k}" aria-label="${l.replace(/<[^>]+>/g,'')}: Flugzeit"></td><td><input id="s2s-w${k}" aria-label="${l.replace(/<[^>]+>/g,'')}: Wurfweite"></td></tr>`).join('');
+const S3_ROWS = 8;
+$('#s3-tab tbody').innerHTML = Array.from({length:S3_ROWS},(_,i)=>
+  `<tr><td>${i+1}</td>${['t','x','y'].map(k=>`<td><input inputmode="decimal" id="s3-${k}${i}" aria-label="Punkt ${i+1}, ${k}"></td>`).join('')}</tr>`).join('');
+
+/* ---------- Speicher ---------- */
+const KEY='sim-waagerechter-wurf-v1';
+let store={v:{},cur:0,ok:{}};
+try{ const s=localStorage.getItem(KEY); if(s) store=Object.assign(store,JSON.parse(s)); }catch(e){}
+store.v=store.v||{}; store.ok=store.ok||{};
+const save=()=>{ try{ localStorage.setItem(KEY,JSON.stringify(store)); }catch(e){} };
+
+document.querySelectorAll('input[id], textarea[id]').forEach(el=>{
+  if(store.v[el.id]!=null) el.value=store.v[el.id];
+  el.addEventListener('input',()=>{ store.v[el.id]=el.value; save(); updateDone(); });
+});
+document.querySelectorAll('input[type=radio]').forEach(el=>{
+  if(store.v['r-'+el.name]===el.value) el.checked=true;
+  el.addEventListener('change',()=>{ store.v['r-'+el.name]=el.value; save(); onRadio(el.name); updateDone(); });
+});
+document.querySelectorAll('details[id], details.hilfe').forEach(d=>{
+  const k='d-'+(d.id||'hilfe'+d.dataset.hilfe);
+  if(store.v[k]) d.open=true;
+  d.addEventListener('toggle',()=>{ store.v[k]=d.open; save(); });
+});
+const radio = n => store.v['r-'+n]||'';
+
+/* ---------- Navigation ---------- */
+const TABS=[{id:0,l:'Einstieg'},{id:1,l:'Stufe 1'},{id:2,l:'Stufe 2'},{id:3,l:'Stufe 3'},{id:4,l:'Stufe 4'},{id:5,l:'Stufe 5'},{id:6,l:'Für Schnelle'},{id:7,l:'Regelheft'}];
+$('#tabs').innerHTML = TABS.map(t=>`<button type="button" data-go="${t.id}">${t.l}</button>`).join('');
+function go(id){
+  store.cur=+id; save();
+  document.querySelectorAll('.stufe').forEach(e=>e.classList.toggle('show', e.id==='st-'+store.cur));
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-current', +b.dataset.go===store.cur?'true':'false'));
+  if(store.cur===1) zeigeVorhersage();
+  if(store.cur===7) renderUebersicht();
+}
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]'); if(g){ go(g.dataset.go); window.scrollTo({top:$('#tabs').offsetTop-10,behavior:'smooth'}); return; }
+  const a=e.target.closest('[data-act]'); if(a) act(a.dataset.act);
+});
+
+/* ---------- Feedback ---------- */
+function fb(id,cls,html){ const e=document.getElementById(id); e.className='fb '+cls; e.innerHTML=html; }
+function mark(el,ok){ el.classList.remove('ok','bad'); if(ok!=null) el.classList.add(ok?'ok':'bad'); }
+
+function zeigeVorhersage(){
+  const v=radio('vh'), t={A:'Kugel A',B:'Kugel B',gleich:'beide gleichzeitig'}[v];
+  $('#s1-meine').textContent = t ? `Deine Vorhersage: ${t}.` : 'Du hast beim Einstieg noch keine Vorhersage angekreuzt.';
+}
+
+// Flugzeit aus 15 m: t = √(2·15/9,81) ≈ 1,75 s
+function checkS1(){
+  const T=Math.sqrt(2*15/G), a=$('#s1-tA'), b=$('#s1-tB'), ta=num(a.value), tb=num(b.value);
+  if(isNaN(ta)||isNaN(tb)){ fb('s1-fb','info','<p>Trage beide Flugzeiten ein.</p>'); return false; }
+  const okA=Math.abs(ta-T)<=0.06, okB=Math.abs(tb-T)<=0.06; mark(a,okA); mark(b,okB);
+  if(okA&&okB){ fb('s1-fb','ok','<p>Deine Messwerte passen. Vergleiche jetzt mit deiner Vorhersage.</p>'); return true; }
+  fb('s1-fb','bad','<p>Mindestens ein Wert passt noch nicht. Prüfe: Höhe genau 15 m? Winkel 0°? Luftwiderstand aus? Liegt das Fadenkreuz des Messwerkzeugs auf dem <b>letzten</b> Punkt der Bahn am Boden?</p>');
+  return false;
+}
+
+// Modell für Stufe 3: x = 10·t, y = 15 − g/2·t²
+function checkS3(){
+  let filled=0, wrong=0, part=0;
+  for(let i=0;i<S3_ROWS;i++){
+    const el=k=>document.getElementById(`s3-${k}${i}`), t=num(el('t').value), x=num(el('x').value), y=num(el('y').value);
+    const n=[t,x,y].filter(v=>!isNaN(v)).length;
+    ['t','x','y'].forEach(k=>mark(el(k),null));
+    if(n===0) continue;
+    if(n<3){ part++; continue; }
+    filled++;
+    const okx=Math.abs(x-10*t)<=Math.max(0.03*10*t,0.15), oky=Math.abs(y-(15-G/2*t*t))<=0.2;
+    mark(el('t'),okx&&oky); mark(el('x'),okx); mark(el('y'),oky);
+    if(!(okx&&oky)) wrong++;
+  }
+  if(wrong){ fb('s3-fb','bad',`<p>${wrong} Zeile(n) passen nicht zu einem Wurf mit h<sub>0</sub> = 15 m und v<sub>0</sub> = 10 m/s. Ist der <b>Luftwiderstand aus</b>? Stimmen Höhe, Tempo und Winkel? Hast du Weite und Höhe vertauscht?</p>`); return false; }
+  if(part){ fb('s3-fb','info','<p>In mindestens einer Zeile fehlen noch Werte.</p>'); return false; }
+  if(filled<6){ fb('s3-fb','info',`<p>${filled} von mindestens 6 Bahnpunkten eingetragen.</p>`); return false; }
+  fb('s3-fb','ok','<p>Alle Messwerte passen. Übertrage sie jetzt in Excel.</p>'); return true;
+}
+async function copyS3(){
+  const rows=['t in s\tx in m\ty in m'];
+  for(let i=0;i<S3_ROWS;i++){ const r=['t','x','y'].map(k=>val(`s3-${k}${i}`).replace('.',',')); if(r.some(Boolean)) rows.push(r.join('\t')); }
+  const txt=rows.join('\n');
+  try{ await navigator.clipboard.writeText(txt); fb('s3-fb','ok','<p>Tabelle kopiert. In Excel in Zelle A1 klicken und mit Strg+V einfügen.</p>'); }
+  catch(e){ fb('s3-fb','info','<p>Kopieren nicht möglich. Markiere den Text und kopiere ihn von Hand:</p><textarea readonly rows="6">'+esc(txt)+'</textarea>'); }
+}
+
+// Stufe 5: v² = v0² + 2·g·h0 = 15² + 2·9,81·10 ≈ 421 → v ≈ 20,5 m/s
+function checkS5(){
+  const V=Math.sqrt(15*15+2*G*10), a=$('#s5-v1'), b=$('#s5-v2'), va=num(a.value), vb=num(b.value);
+  if(isNaN(va)||isNaN(vb)){ fb('s5-fb','info','<p>Trage beide Ergebnisse ein.</p>'); return false; }
+  const okA=Math.abs(va-V)<=0.3, okB=Math.abs(vb-V)<=0.3; mark(a,okA); mark(b,okB);
+  if(okA&&okB){ fb('s5-fb','ok','<p>Beide Ergebnisse stimmen. Begründe jetzt, warum das so sein muss.</p>'); return true; }
+  const tip=[];
+  if(!okA) tip.push('Komponenten: v<sub>x</sub> bleibt beim Aufprall gleich v<sub>0</sub>. Für v<sub>y</sub> brauchst du zuerst die Falldauer. Setze dann v<sub>x</sub> und v<sub>y</sub> zum Betrag zusammen.');
+  if(!okB) tip.push('Energie: Welche Energieformen hat der Körper beim Abwurf, welche beim Aufprall?');
+  fb('s5-fb','bad',tip.map(t=>`<p>${t}</p>`).join(''));
+  return false;
+}
+
+function onRadio(name){
+  if(name!=='s4a'&&name!=='s4b') return;
+  const v=radio(name), id=name+'-fb';
+  if(!v){ return; }
+  if(v==='t') fb(id,'ok','<p>Volltreffer! Die Rechnung stimmt mit der Simulation überein.</p>');
+  else fb(id,'bad', name==='s4a'
+    ? '<p>Prüfe deine Rechnung: Die Flugzeit hängt nur von der Höhe ab. Berechne sie zuerst, dann die Weite.</p>'
+    : '<p>Prüfe deine Rechnung: Aus Weite und Anfangsgeschwindigkeit bekommst du die Flugzeit, aus der Flugzeit die Höhe. Die Kanone lässt sich nur in ganzen Metern verstellen, runde sinnvoll.</p>');
+}
+['s4a','s4b'].forEach(onRadio);
+
+function act(k){
+  if(k==='s1') store.ok.s1=checkS1();
+  if(k==='s3') store.ok.s3=checkS3();
+  if(k==='s3copy') { copyS3(); return; }
+  if(k==='s5') store.ok.s5=checkS5();
+  save(); updateDone();
+}
+
+/* ---------- Fortschritt ---------- */
+const filled = ids => ids.every(id=>val(id));
+const DONE = {
+  0: ()=> !!radio('vh') && filled(['e-begr']),
+  1: ()=> !!store.ok.s1,
+  2: ()=> [1,2,3,4,5,6].filter(i=>val('s2-g'+i)&&(val('s2-t'+i)||val('s2-w'+i))).length>=3,
+  3: ()=> !!store.ok.s3,
+  4: ()=> filled(['s4a-erg','s4b-erg','s4c-erg']) && !!radio('s4a') && !!radio('s4b'),
+  5: ()=> !!store.ok.s5 && filled(['s5-begr']),
+  6: ()=> filled(['s6-beob'])
+};
+function updateDone(){
+  Object.entries(DONE).forEach(([id,f])=>$(`#tabs [data-go="${id}"]`).classList.toggle('done', f()));
+}
+
+/* ---------- Übersicht für den Regelhefteintrag ---------- */
+function renderUebersicht(){
+  const rowsS2 = S2_SICH.map(([k,l])=>{ const t=val('s2s-t'+k), w=val('s2s-w'+k); return (t||w)?`${l.replace(/<[^>]+>/g,'')}: Flugzeit – ${t||'…'}; Wurfweite – ${w||'…'}`:''; }).filter(Boolean).join('\n');
+  const eq = (a,b)=> (val(a)||val(b)) ? `x-Richtung: ${val(a)||'…'}\ny-Richtung: ${val(b)||'…'}` : '';
+  const items = [
+    ['Stufe 1: Zusammenhang der Bewegungen', val('s1-sich')],
+    ['Stufe 2: Einflussgrößen', rowsS2],
+    ['Stufe 3: s(t)', eq('s3-sx','s3-sy')],
+    ['Stufe 3: v(t)', eq('s3-vx','s3-vy')],
+    ['Stufe 3: a(t)', eq('s3-ax','s3-ay')],
+    ['Stufe 3: Antwort auf die Leitfrage', val('s3-leit')],
+    ['Stufe 4: Bahnkurve, Falldauer, Wurfweite', [val('s4-bahn')&&'sy = '+val('s4-bahn'), val('s4-tf')&&'tF = '+val('s4-tf'), val('s4-sw')&&'sW = '+val('s4-sw')].filter(Boolean).join('\n')],
+    ['Stufe 5: Aufprallgeschwindigkeit', [val('s5-vq')&&'v² = '+val('s5-vq'), val('s5-en')].filter(Boolean).join('\n')]
+  ];
+  const dl=$('#uebersicht'); dl.textContent='';
+  items.forEach(([t,v])=>{
+    const dt=document.createElement('dt'); dt.textContent=t;
+    const dd=document.createElement('dd'); dd.textContent=v||'noch nichts eingetragen'; if(!v) dd.className='leer';
+    dl.append(dt,dd);
+  });
+}
+
+/* ---------- Simulation einbetten ---------- */
+$('#simToggle').addEventListener('click',()=>{
+  const f=$('#simFrame'), on=!f.classList.contains('on');
+  if(on && !f.querySelector('iframe')) f.innerHTML=`<iframe src="${$('#simLink').href}" title="PhET-Simulation Projektilbewegung" allowfullscreen></iframe>`;
+  f.classList.toggle('on',on); $('#simToggle').textContent = on?'Ausblenden':'Hier einblenden';
+});
+
+/* ---------- Drucken / Zurücksetzen ---------- */
+$('#printBtn').addEventListener('click',()=>{ zeigeVorhersage(); renderUebersicht(); document.querySelectorAll('details').forEach(d=>{d.dataset.was=d.open; d.open=true;}); window.print(); });
+window.addEventListener('afterprint',()=>document.querySelectorAll('details').forEach(d=>d.open=d.dataset.was==='true'));
+$('#resetBtn').addEventListener('click',()=>{ if(confirm('Wirklich alle Eingaben löschen?')){ try{localStorage.removeItem(KEY);}catch(e){} location.reload(); }});
+
+if(store.ok.s1) checkS1();
+if(store.ok.s3) checkS3();
+if(store.ok.s5) checkS5();
+updateDone(); go(store.cur||0);
+</script>
+</body>
+</html>

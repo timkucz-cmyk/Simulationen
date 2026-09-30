@@ -53,5 +53,18 @@ window.SIMULATIONEN = [
     sozialform: "Partnerarbeit",
     dauer: "ca. 2 Doppelstunden",
     datum: "2026-09-30"
+  },
+  {
+    id: "waagerechter-wurf",
+    titel: "Waagerechter Wurf erarbeiten",
+    fach: "physik",
+    stufen: ["E"],
+    thema: "Mechanik",
+    beschreibung: "In fünf Stufen mit der PhET-Simulation „Projektilbewegung“: Flugzeit und Wurfweite untersuchen, die Bewegung in zwei Teilbewegungen zerlegen, die Bahnkurve herleiten und die Aufprallgeschwindigkeit berechnen.",
+    pfad: "sims/physik/waagerechter-wurf/",
+    vorschau: "sims/physik/waagerechter-wurf/vorschau.png",
+    sozialform: "Einzel- und Partnerarbeit",
+    dauer: "Doppelstunde",
+    datum: "2026-09-30"
   }
 ];
