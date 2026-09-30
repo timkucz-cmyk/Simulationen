@@ -11,4 +11,6 @@ Mathe-/Physikunterricht am LMG Uetersen. Kein Build, keine Frameworks.
 - Daten bleiben `.js` (nicht `.json`), damit die Seiten auch per `file://` laufen.
 - Lokale Vorschau: `.claude/launch.json` → `python -m http.server 8123`.
 - Simulationen in `sims/` sind eigenständige HTML-Dateien; nicht an das Portal-CSS koppeln.
+  Einzige Pflicht: Zurück-Link `.backlink` oben im Kopf auf `../../../katalog.html?stufe=…&fach=…`
+  (Vorlage: `sims/physik/reihe-parallel/index.html`).
 - Texte auf Deutsch mit korrekten Umlauten und „deutschen Anführungszeichen“.

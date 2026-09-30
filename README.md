@@ -8,7 +8,9 @@ Physikunterricht am Ludwig-Meyn-Gymnasium Uetersen.
 ## Neue Simulation veröffentlichen
 
 1. Ordner anlegen: `sims/<fach>/<kurzname>/` (`<fach>` ist `mathe` oder `physik`) und die
-   Simulation als `index.html` hineinlegen.
+   Simulation als `index.html` hineinlegen. Oben im Kopf einen Zurück-Link einbauen:
+   `<a class="backlink noprint" href="../../../katalog.html?stufe=10&amp;fach=physik">← Alle Simulationen</a>`
+   (Stufe und Fach anpassen; Vorlage inkl. CSS in `sims/physik/reihe-parallel/index.html`).
 2. Vorschaubild erzeugen (Screenshot der Startansicht, 1200 × 750):
    ```
    powershell -ExecutionPolicy Bypass -File tools\vorschau.ps1 sims\physik\<kurzname>
