@@ -12,28 +12,48 @@
 <link rel="stylesheet" href="assets/lmg.css">
 </head>
 <body>
-<div class="brandline"></div>
-<header class="kopf">
-  <div class="wrap">
-    <p class="kicker" id="schule"></p>
-    <h1 id="titel"></h1>
-    <p class="lead" id="untertitel"></p>
+<div class="st-seite">
+  <div class="st-kopf">
+    <div class="st-marke" aria-hidden="true"><i></i><i></i></div>
+    <div class="st-leiste">
+      <div class="st-leiste-innen">
+        <span class="st-wortmarke">LMG</span>
+        <span class="st-trenner" aria-hidden="true"></span>
+        <span class="st-schule" id="schule"></span>
+      </div>
+    </div>
+    <header class="st-held">
+      <div class="st-held-innen">
+        <p class="st-kicker">Fachschaft Mathematik und Physik</p>
+        <h1 class="st-titel" id="titel"></h1>
+        <p class="st-lead" id="untertitel"></p>
+      </div>
+    </header>
   </div>
-</header>
 
-<main class="wrap">
-  <section class="schritt" aria-labelledby="h-stufe">
-    <div class="schritt-kopf"><span class="schritt-nr" aria-hidden="true">1</span><h2 id="h-stufe">In welcher Klassenstufe bist du?</h2></div>
-    <div id="stufen"></div>
-  </section>
+  <main class="st-main">
+    <section class="st-schritt aktiv" aria-labelledby="h-stufe">
+      <div class="st-leitung" aria-hidden="true"><span class="st-nr">1</span><span class="st-linie"></span></div>
+      <div class="st-inhalt">
+        <h2 class="st-frage" id="h-stufe">In welcher Klassenstufe bist du?</h2>
+        <div class="st-gruppen" id="stufen"></div>
+      </div>
+    </section>
 
-  <section class="schritt" id="schritt-fach" aria-labelledby="h-fach" hidden>
-    <div class="schritt-kopf"><span class="schritt-nr" aria-hidden="true">2</span><h2 id="h-fach">Welches Fach?</h2></div>
-    <div class="faecher" id="faecher"></div>
-  </section>
-</main>
+    <section class="st-schritt" id="schritt-fach" aria-labelledby="h-fach">
+      <div class="st-leitung" aria-hidden="true"><span class="st-nr">2</span></div>
+      <div class="st-inhalt">
+        <h2 class="st-frage" id="h-fach">Welches Fach?</h2>
+        <div class="st-platzhalter" id="fach-platzhalter">Wähle zuerst deine Klassenstufe.</div>
+        <div class="st-faecher" id="faecher" hidden></div>
+      </div>
+    </section>
+  </main>
 
-<footer class="fuss"><div class="wrap" id="fuss"></div></footer>
+  <footer class="st-fuss">
+    <div class="st-fuss-innen"><span id="fuss"></span><span>Fachschaft Mathematik und Physik</span></div>
+  </footer>
+</div>
 
 <script src="simulationen.js"></script>
 <script>
@@ -42,14 +62,16 @@
   const $ = id => document.getElementById(id);
   const el = (tag, cls, text) => { const e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; };
   const anzahl = n => n === 0 ? "noch leer" : n === 1 ? "1 Simulation" : n + " Simulationen";
+  const kurzAnzahl = n => n === 0 ? "noch leer" : n + " Sim.";
   const zaehle = (stufe, fach) => S.filter(s => s.stufen.includes(stufe) && (!fach || s.fach === fach)).length;
   const MERK = "sim-letzte-stufe";
+  const PFEIL = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 
   $("schule").textContent = P.schule;
   $("titel").textContent = P.name;
   $("untertitel").textContent = P.untertitel;
   document.title = P.name + " · LMG";
-  $("fuss").textContent = P.schule + " · Fachschaft Mathematik und Physik";
+  $("fuss").textContent = P.schule;
 
   /* ---------- Schritt 1: Stufen ---------- */
   const knoepfe = {};
@@ -57,26 +79,27 @@
   P.stufen.forEach(st => {
     if(st.gruppe !== gruppe){
       gruppe = st.gruppe;
-      $("stufen").appendChild(el("p", "gruppe", gruppe));
-      raster = el("div", "stufen");
-      $("stufen").appendChild(raster);
+      const box = el("div");
+      box.appendChild(el("p", "st-gruppe", gruppe));
+      raster = el("div", "st-stufen");
+      box.appendChild(raster);
+      $("stufen").appendChild(box);
     }
     const n = zaehle(st.id);
-    const b = el("button", "stufe");
+    const b = el("button", "st-stufe");
     b.type = "button";
     b.setAttribute("aria-pressed", "false");
+    b.appendChild(el("span", "name", st.kurz || "Klasse"));
     b.appendChild(el("span", "zahl", st.zahl));
-    if(st.name !== "Klasse " + st.zahl) b.appendChild(el("span", "name", st.name));
-    else b.appendChild(el("span", "name", "Klasse"));
     const a = el("span", "anz");
     if(n){
       const punkte = el("span", "punkte");
       P.faecher.forEach(f => { if(zaehle(st.id, f.id)){ const i = el("i"); i.style.background = "var(--" + f.id + ")"; punkte.appendChild(i); } });
       a.appendChild(punkte);
     }
-    a.appendChild(document.createTextNode(anzahl(n)));
+    a.appendChild(el("span", null, kurzAnzahl(n)));
     b.appendChild(a);
-    b.setAttribute("aria-label", st.name + ", " + anzahl(n));
+    b.setAttribute("aria-label", st.name.replace(/­/g, "") + ", " + anzahl(n));
     if(n === 0) b.setAttribute("aria-disabled", "true");
     else b.addEventListener("click", () => waehle(st.id, true));
     knoepfe[st.id] = b;
@@ -89,28 +112,31 @@
     if(!st || !zaehle(id)) return;
     Object.entries(knoepfe).forEach(([k, b]) => b.setAttribute("aria-pressed", String(k === id)));
     try{ localStorage.setItem(MERK, id); }catch(e){}
-    history.replaceState(null, "", "?stufe=" + encodeURIComponent(id));
+    try{ history.replaceState(null, "", "?stufe=" + encodeURIComponent(id)); }catch(e){}
 
     $("h-fach").textContent = st.name + ": Welches Fach?";
     const box = $("faecher");
     box.textContent = "";
     P.faecher.forEach(f => {
       const n = zaehle(id, f.id);
-      const k = el("a", "fach fach-" + f.id);
-      const sym = el("span", "symbol"); sym.innerHTML = f.symbol;
-      const txt = el("span");
-      txt.appendChild(el("p", "titel", f.name));
-      txt.appendChild(el("p", "anz", anzahl(n)));
+      const k = el("a", "st-fach fach-" + f.id);
+      const sym = el("span", "symbol", f.zeichen || f.name.charAt(0));
+      sym.setAttribute("aria-hidden", "true");
+      const txt = el("span", "text");
+      txt.appendChild(el("span", "titel", f.name));
+      txt.appendChild(el("span", "anz", anzahl(n)));
       const pfeil = el("span", "pfeil");
-      pfeil.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+      pfeil.innerHTML = PFEIL;
       k.append(sym, txt, pfeil);
       if(n) k.href = P.zielseite + "?stufe=" + encodeURIComponent(id) + "&fach=" + encodeURIComponent(f.id);
       else k.setAttribute("aria-disabled", "true");
       box.appendChild(k);
     });
-    $("schritt-fach").hidden = false;
+    $("fach-platzhalter").hidden = true;
+    box.hidden = false;
+    $("schritt-fach").classList.add("aktiv");
     if(scrollen){
-      const r = $("schritt-fach").getBoundingClientRect();
+      const r = box.getBoundingClientRect();
       if(r.bottom > innerHeight) $("schritt-fach").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start"});
     }
   }

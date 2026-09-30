@@ -41,66 +41,84 @@ neuen Hex-Werte erfinden.
 
 | Rolle | Token | Wert |
 |---|---|---|
-| Seitenhintergrund | `--surface-soft` | `#f6f6f4` |
-| Kopf, Kacheln, Karten | `--surface-page` | `#ffffff` |
-| Text | `--fg-1` / `--fg-2` / `--fg-3` / `--fg-4` | `#17181a` / `#3d4147` / `#646a72` / `#9097a0` |
+| Seite, Kacheln, Karten (Startseite) | `--surface-page` | `#ffffff` |
+| Hover, Seitenhintergrund Katalog | `--surface-soft` | `#f6f6f4` |
+| Kopf-Verlauf Mitte, gewählte Kachel | `--surface-ink` | `#1a1c1f` |
+| Text | `--fg-1` / `--fg-2` / `--fg-3` / `--fg-4` / `--fg-5` | `#17181a` / `#3d4147` / `#646a72` / `#9097a0` / `#c2c7cd` |
 | Linien | `--line-1` / `--line-2` / `--line-3` | `#e4e5e3` / `#cfd1cf` / `#a8acaa` |
 | Mathematik | `--mathe`, `-soft`, `-line`, `-ink` | `#B61E33`, `#f5e1e3`, `#e8b8be`, `#6f0f1c` |
 | Physik | `--physik`, `-soft`, `-line`, `-ink` | `#2C5282`, `#e8eef5`, `#b9c8da`, `#1d3a5c` |
 
-- **Schrift:** Source Sans 3 (400/600/700) von Google Fonts, sonst keine externen Ressourcen.
-- **Radien:** 6 px für Kacheln, 10 px für Vorschau-Karten, 999 px für Chips.
-- **Schatten:** nur `--shadow-1` (ruhend) und `--shadow-3` (Hover). Keine farbigen Schatten.
-- **Bewegung:** 180 ms, `cubic-bezier(0.22,0.61,0.36,1)`; Hover hebt um 2 bis 3 px an. Kein
-  Bounce. `prefers-reduced-motion` schaltet alle Übergänge ab.
+- **Schrift:** Source Sans 3 (400/600/700), Fachzeichen in `--font-math` (Cambria Math).
+- **Radien:** 6 px für Kacheln, 10 px für Vorschau-Karten, 999 px für Chips und Schrittnummern.
+- **Schatten:** `--shadow-1` (Stufen ruhend), `--shadow-2` (Fächer ruhend), `--shadow-3` (Hover).
+- **Bewegung:** 180 ms, `cubic-bezier(0.22,0.61,0.36,1)`. Kein Anheben, kein Bounce; Hover
+  ändert nur Hintergrund, Rahmen und Schatten, der Pfeil rutscht 4 px.
+  `prefers-reduced-motion` schaltet alle Übergänge ab.
 - **Fach-Akzent:** Die Klassen `.fach-mathe` / `.fach-physik` setzen `--accent*`. Komponenten
   benutzen nur `--accent`, `--accent-soft`, `--accent-line`, `--accent-ink`.
-- **Markenlinie:** 4 px hoher Streifen ganz oben, links Mathe-Rot, rechts Physik-Blau
-  (`.brandline`).
-- Nur heller Modus (das Designsystem hat keine Dark-Tokens).
+- Die Startseite ist hell; einzig der Kopf ist dunkel. Plattformen mit Dunkelmodus (Lerntheke)
+  bilden die Tokens auf ihre eigenen ab und lassen den Kopf dunkel.
 
 ## 3. Aufbau der Startseite
 
+Alle Klassen der Startseite beginnen mit `st-` und stehen im Block „Startseite“ von
+`assets/lmg.css`. **Diesen Block 1:1 übernehmen**, nur fehlende Tokens ergänzen (so gemacht
+in der Spielesammlung und der Lerntheke). Vorlage war der Entwurf
+„Startseite_layouted.html“, Variante F „Verlauf dunkel“.
+
 ```
-┌────────────────────────────────────────────── (Markenlinie rot|blau)
-│ LUDWIG-MEYN-GYMNASIUM UETERSEN        ← .kicker (Versalien, 0.12em)
-│ Simulationen                          ← h1, 48 px, 700
-│ Ein Satz, was es hier gibt.           ← .lead
-├──────────────────────────────────────────────
-│ ① In welcher Klassenstufe bist du?    ← .schritt-kopf mit .schritt-nr
-│ SEKUNDARSTUFE I                        ← .gruppe
-│ [5] [6] [7] [8] [9] [10]               ← .stufen: 6 Spalten (Handy: 3)
-│ OBERSTUFE
-│ [E] [Q1] [Q2]
-│
-│ ② Klasse 10: Welches Fach?            ← erscheint erst nach Wahl der Stufe
-│ [▣ Mathematik  noch leer ] [▣ Physik  1 Simulation  →]
-└──────────────────────────────────────────────
+┌──────────────────────────────────────────────── .st-marke: 3 px rot | blau
+│ LMG │ Ludwig-Meyn-Gymnasium Uetersen      [opt. Knopf]  ← .st-leiste, 56 px
+├──────────────────────────────────────────────── Haarlinie weiß 14 %
+│ FACHSCHAFT MATHEMATIK UND PHYSIK          ← .st-kicker
+│ Simulationen                              ← .st-titel, 56 px, 700, weiß
+│ Ein, zwei Sätze, was es hier gibt.        ← .st-lead, --fg-5
+└──── Kopf .st-kopf: Verlauf 115° --mathe-ink → --surface-ink → --physik-ink
+  ① In welcher Klassenstufe bist du?       ← .st-schritt.aktiv, .st-nr gefüllt
+  │ SEKUNDARSTUFE I ─────────────────        ← .st-gruppe mit Linie
+  │ [5] [6] [7] [8] [9] [10]                 ← .st-stufen (auto-fill, min 128 px)
+  │ SEKUNDARSTUFE II ────────────────
+  │ [E] [Q1] [Q2]
+  │                                          ← .st-linie verbindet die Nummern
+  ② Klasse 10: Welches Fach?               ← grau mit Ring-Nummer, bis eine Stufe gewählt ist
+    [∫ Mathematik  noch leer  →] [λ Physik  1 Simulation  →]
+─────────────────────────────────────────────
+  Ludwig-Meyn-Gymnasium Uetersen        …   ← .st-fuss
 ```
 
-### Stufen-Kachel (`button.stufe`)
+- Schritt 2 ist **immer sichtbar**. Vor der Stufenwahl: graue Überschrift, Ring-Nummer und
+  der gestrichelte Platzhalter „Wähle zuerst deine Klassenstufe.“ (`.st-platzhalter`).
+- Braucht die Plattform einen dritten Schritt (Lerntheke: Thema, Spielesammlung: Spiel),
+  bekommt Schritt 2 ebenfalls eine `.st-linie`, und die Fächer werden zu `<button aria-pressed>`
+  (gewählt: Akzentrahmen, Pfeil zeigt nach unten). Einträge in Schritt 3 als `.st-eintrag`
+  in einer `.st-liste` oder mit plattformeigenen Kacheln.
 
-- Inhalt: große Zahl/Kürzel (44 px, 700), darunter „Klasse“ bzw. „Einführungsphase“,
-  unten die Anzahl („1 Simulation“, „3 Spiele“, …) mit **farbigen Punkten**, einer pro
-  Fach mit Inhalt.
-- Zustände: normal (weiß, Hairline), Hover (angehoben, `--shadow-3`), gewählt
-  (`aria-pressed="true"`: invertiert, Hintergrund `--fg-1`), leer
-  (`aria-disabled="true"`: transparent, gestrichelt, `--fg-4`, keine Reaktion).
-- Lange Wörter mit weichem Trennzeichen `\u00AD` in den Daten („Einführungs\u00ADphase“),
-  nicht mit `hyphens:auto`, das bricht auf Android unschön.
+### Stufen-Kachel (`button.st-stufe`)
 
-### Fach-Kachel (`a.fach.fach-<id>`)
+- Inhalt von oben nach unten: kleine Versalzeile (`.name`: „Klasse“, „Einführung“,
+  „Qualifikation“, aus `kurz` in den Daten), große Zahl/Kürzel (`.zahl`, 38 px, 700), unten
+  **farbige Punkte** (einer pro Fach mit Inhalt) und die Kurzanzahl („1 Sim.“, „3 Spiele“).
+- Zustände: normal (weiß, Haarlinie `--line-1`, `--shadow-1`), Hover (`--surface-soft`,
+  Rahmen `--line-3`), gewählt (`aria-pressed="true"`: `--surface-ink`, weiße Schrift, Nebenzeilen
+  `--fg-5`), leer (`aria-disabled="true"`: transparent, gestrichelt, `--fg-4`, keine Reaktion).
+- Handy (≤ 560 px): drei Spalten, Punkte ausgeblendet.
+- Lange Wörter in `name` mit weichem Trennzeichen `­` („Einführungs­phase“), das
+  vor `aria-label` und Überschrift entfernt wird.
 
-- Echter Link (`<a href>`), damit Zurück-Taste und „in neuem Tab öffnen“ funktionieren.
-- Links 4 px Akzentbalken, Symbol-Feld 72 px mit `--accent-soft`, Fachname 26 px, Anzahl,
-  rechts ein Pfeil, der beim Hover 4 px nach rechts rutscht.
-- Leer: gestrichelt, grau, ohne `href`, `aria-disabled="true"`.
-- Symbole als Inline-SVG mit `currentColor` (Mathe: Funktionsgraph im Koordinatensystem,
-  Physik: Atom), stehen in der Konfiguration.
+### Fach-Kachel (`a.st-fach.fach-<id>`)
+
+- Echter Link (`<a href>`), damit Zurück-Taste und „in neuem Tab öffnen“ funktionieren
+  (bei drei Schritten `<button aria-pressed>`, s. o.).
+- Raster `64px 1fr 24px`: Zeichenfeld 64 px mit `--accent-soft` und dem Fachzeichen
+  (`zeichen` in den Daten: Mathe „∫“, Physik „λ“, Schrift `--font-math`), Fachname 22 px/600
+  mit Anzahl darunter, rechts der Pfeil in `--accent`.
+- Hover: Rahmen `--accent`, `--shadow-3`, Pfeil 4 px nach rechts.
+- Leer: Deckkraft 50 %, ohne `href`, `aria-disabled="true"`.
 
 ### Verhalten
 
-- Klick auf Stufe → Schritt 2 wird eingeblendet und nur dann ins Bild gescrollt, wenn er
+- Klick auf Stufe → Schritt 2 wird aktiv und nur dann ins Bild gescrollt, wenn er
   unterhalb des sichtbaren Bereichs liegt.
 - Die gewählte Stufe steht in der URL (`index.html?stufe=10`, per `history.replaceState`)
   und in `localStorage` (Schlüssel plattformspezifisch, z. B. `sim-letzte-stufe`), damit
@@ -138,8 +156,9 @@ window.PLATTFORM = {
   untertitel: "…",                      // .lead
   schule: "Ludwig-Meyn-Gymnasium Uetersen",
   zielseite: "katalog.html",            // Ziel von Schritt 2
-  stufen:  [{ id:"10", zahl:"10", name:"Klasse 10", gruppe:"Sekundarstufe I" }, …],
-  faecher: [{ id:"physik", name:"Physik", symbol:'<svg …>' }, …]
+  stufen:  [{ id:"10", zahl:"10", name:"Klasse 10", gruppe:"Sekundarstufe I" },
+            { id:"E", zahl:"E", name:"Einführungs­phase", kurz:"Einführung", gruppe:"Sekundarstufe II" }, …],
+  faecher: [{ id:"physik", name:"Physik", zeichen:"λ", symbol:'<svg …>' }, …]
 };
 window.SIMULATIONEN = [
   { id, titel, fach, stufen:["10"], thema, beschreibung, pfad, vorschau, sozialform, dauer, datum }
@@ -173,6 +192,14 @@ Wenn die Plattform eine einzige große `index.html` ist (Spielesammlung): Auswah
 eigene Ansicht in derselben Datei umsetzen, CSS-Regeln aus `assets/lmg.css` übernehmen und
 dort vorhandene gleichnamige Tokens nicht doppelt definieren. Die Plattform-Regel
 „keine externen Libraries“ bleibt bestehen.
+
+**Stand der Umsetzung (30.09.2026):**
+
+| Plattform | Umsetzung |
+|---|---|
+| Simulationen | Referenz: Stufe → Fach → `katalog.html` |
+| Spielesammlung (`timkucz-cmyk/jeopardy`) | Fall B als eigene Startansicht in `index.html`: Stufe → Fach → Spielkacheln mit Anzahl der passenden Sätze; ein Klick wählt im Spiel den ersten passenden Satz vor, die Dropdowns bleiben. `body.start` blendet dort die Kopfzeile aus. |
+| Lerntheke (`timkucz-cmyk/lerntheke`) | Startansicht in `app/app.js` (`ansichtStart`): Stufe → Fach → Thema; „Zuletzt geöffnet“ über Schritt 1. Tokens in `app/style.css` auf die Lerntheke-Farben abgebildet (Dunkelmodus). |
 
 ## 7. Barrierefreiheit und Technik
 

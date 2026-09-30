@@ -8,11 +8,12 @@
 
 window.PLATTFORM = {
   name: "Simulationen",
-  untertitel: "Interaktive Simulationen und digitale Lernzirkel für Mathematik und Physik.",
+  untertitel: "Interaktive Simulationen und digitale Lernzirkel für den Mathematik- und Physikunterricht. Wähle deine Klassenstufe und dein Fach, um passende Simulationen zu finden.",
   schule: "Ludwig-Meyn-Gymnasium Uetersen",
   zielseite: "katalog.html",
 
-  // Reihenfolge = Reihenfolge der Kacheln. "gruppe" steuert die Zwischenüberschrift.
+  // Reihenfolge = Reihenfolge der Kacheln. "gruppe" steuert die Zwischenüberschrift,
+  // "kurz" die kleine Zeile über der Zahl (fehlt sie, steht dort „Klasse“).
   // \u00AD = weiches Trennzeichen, damit lange Wörter auf dem Handy sauber umbrechen.
   stufen: [
     { id: "5",  zahl: "5",  name: "Klasse 5",  gruppe: "Sekundarstufe I" },
@@ -21,15 +22,17 @@ window.PLATTFORM = {
     { id: "8",  zahl: "8",  name: "Klasse 8",  gruppe: "Sekundarstufe I" },
     { id: "9",  zahl: "9",  name: "Klasse 9",  gruppe: "Sekundarstufe I" },
     { id: "10", zahl: "10", name: "Klasse 10", gruppe: "Sekundarstufe I" },
-    { id: "E",  zahl: "E",  name: "Einführungs\u00ADphase",      gruppe: "Oberstufe" },
-    { id: "Q1", zahl: "Q1", name: "Qualifikations\u00ADphase 1", gruppe: "Oberstufe" },
-    { id: "Q2", zahl: "Q2", name: "Qualifikations\u00ADphase 2", gruppe: "Oberstufe" }
+    { id: "E",  zahl: "E",  name: "Einführungs\u00ADphase", kurz: "Einführung",     gruppe: "Sekundarstufe II" },
+    { id: "Q1", zahl: "Q1", name: "Qualifikations\u00ADphase 1", kurz: "Qualifikation",  gruppe: "Sekundarstufe II" },
+    { id: "Q2", zahl: "Q2", name: "Qualifikations\u00ADphase 2", kurz: "Qualifikation",  gruppe: "Sekundarstufe II" }
   ],
 
+  // "zeichen" steht groß auf der Fach-Kachel der Startseite, "symbol" im Katalog,
+  // wenn eine Simulation kein Vorschaubild hat.
   faecher: [
-    { id: "mathe",  name: "Mathematik",
+    { id: "mathe",  name: "Mathematik", zeichen: "∫",
       symbol: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 40h36M10 44V6"/><path d="M4 11l6-5 6 5" stroke-width="2.2"/><path d="M14 36c6-2 9-24 16-24s6 14 12 14"/></svg>' },
-    { id: "physik", name: "Physik",
+    { id: "physik", name: "Physik", zeichen: "λ",
       symbol: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><ellipse cx="24" cy="24" rx="20" ry="8"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(60 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(120 24 24)"/><circle cx="24" cy="24" r="3" fill="currentColor" stroke="none"/></svg>' }
   ]
 };
