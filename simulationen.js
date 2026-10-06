@@ -82,5 +82,18 @@ window.SIMULATIONEN = [
     sozialform: "Einzel- und Partnerarbeit",
     dauer: "Doppelstunde",
     datum: "2026-09-30"
+  },
+  {
+    id: "binomische-formeln",
+    titel: "Binomische Formeln entdecken",
+    fach: "mathe",
+    stufen: ["8"],
+    thema: "Terme und Gleichungen",
+    beschreibung: "Drei Stationen mit Pflicht-Vorhersage: Termwerte von (a + b)² und a² + b² vergleichen und einen Term für die Differenz finden, das Quadrat (a + b)² als Flächenpuzzle legen und ein L-Stück zum Rechteck (a + b) · (a − b) umlegen.",
+    pfad: "sims/mathe/binomische-formeln/",
+    vorschau: "sims/mathe/binomische-formeln/vorschau.png",
+    sozialform: "Partnerarbeit",
+    dauer: "ca. 25 min",
+    datum: "2026-10-06"
   }
 ];

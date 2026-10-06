@@ -6,6 +6,10 @@ Mathe-/Physikunterricht am LMG Uetersen. Kein Build, keine Frameworks.
 - Neue Simulation: Ablauf in `README.md` („Neue Simulation veröffentlichen“). Nur
   `simulationen.js` ergänzen, `index.html`/`katalog.html` nicht anfassen.
 - Design: ausschließlich Tokens aus `assets/lmg.css` (LMG-Designsystem). Keine neuen Farben.
+  Ausnahme (Tim, 06.10.2026): Teilflächen im Flächenmodell (Mathe) in den Skriptfarben
+  grün `#BCD684`, blau `#72BFE1`, rot `#EE705D`, orange `#FAC075` (Vorlage: `sims/mathe/binomische-formeln`).
+- Lehrernotiz: zugeklappter Block „Für Lehrkräfte“ (`details.lehrkraft`) unten auf der
+  Startseite der Simulation – Zweck, Vorwissen, Ablauf mit Zeiten, Hinweise.
 - Auswahlseite und ihre Regeln: `AUSWAHLSEITE.md`. Änderungen an Startseite oder Katalog
   dort nachtragen, weil andere Plattformen danach gebaut werden.
 - Daten bleiben `.js` (nicht `.json`), damit die Seiten auch per `file://` laufen.

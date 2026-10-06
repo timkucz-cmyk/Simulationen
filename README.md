@@ -11,6 +11,8 @@ Physikunterricht am Ludwig-Meyn-Gymnasium Uetersen.
    Simulation als `index.html` hineinlegen. Oben im Kopf einen Zurück-Link einbauen:
    `<a class="backlink noprint" href="../../../katalog.html?stufe=10&amp;fach=physik">← Alle Simulationen</a>`
    (Stufe und Fach anpassen; Vorlage inkl. CSS in `sims/physik/reihe-parallel/index.html`).
+   Lehrernotiz als zugeklappten Block „Für Lehrkräfte“ unten auf die Startseite der
+   Simulation (Vorlage: `sims/mathe/binomische-formeln/index.html`).
 2. Vorschaubild erzeugen (Screenshot der Startansicht, 1200 × 750):
    ```
    powershell -ExecutionPolicy Bypass -File tools\vorschau.ps1 sims\physik\<kurzname>

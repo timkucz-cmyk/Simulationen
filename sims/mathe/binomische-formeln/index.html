@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Binomische Formeln entdecken</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Tokens aus dem LMG-Designsystem (Werte wie in assets/lmg.css, hier eigenständig) */
+:root{
+  --surface-page:#ffffff; --surface-soft:#f6f6f4; --surface-sunken:#ecece8;
+  --fg-1:#17181a; --fg-2:#3d4147; --fg-3:#646a72; --fg-4:#9097a0;
+  --line-1:#e4e5e3; --line-2:#cfd1cf; --line-3:#a8acaa;
+  --mathe:#B61E33; --mathe-soft:#f5e1e3; --mathe-line:#e8b8be; --mathe-ink:#6f0f1c;
+  --physik:#2C5282;
+  --ok:#3f6e3a; --ok-soft:#e7eee5; --warn:#8a6a1e; --warn-soft:#f3ecd9;
+  --radius-sm:4px; --radius-md:6px; --radius-lg:10px; --radius-pill:999px;
+  --shadow-1:0 1px 2px rgba(20,22,25,.04),0 1px 1px rgba(20,22,25,.03);
+  --font-math:"Cambria Math","STIX Two Math","STIX Two Text",Cambria,"Times New Roman",Georgia,serif;
+  /* Ausnahme (Tim, 06.10.2026): Teilflächen in den Farben des Flächenmodells aus Skript 1, 8e */
+  --f-a2:#BCD684; --f-ab1:#72BFE1; --f-ab2:#EE705D; --f-b2:#FAC075;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}
+body{margin:0;background:var(--surface-soft);color:var(--fg-1);
+  font-family:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--mathe)}
+:focus-visible{outline:2px solid var(--mathe);outline-offset:3px;border-radius:var(--radius-sm)}
+.m{font-family:var(--font-math);white-space:nowrap}
+.m i{font-style:italic}
+
+.brandline{height:4px;background:linear-gradient(90deg,var(--mathe) 0 50%,var(--physik) 50% 100%)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+@media (min-width:700px){.wrap{padding:0 24px}}
+header.top{padding:12px 0 0}
+.backlink{display:inline-block;margin:0 0 4px;font-size:.92rem;color:var(--fg-3);text-decoration:none;padding:6px 0}
+.backlink:hover{color:var(--fg-1);text-decoration:underline}
+h1{font-size:clamp(26px,4vw,34px);line-height:1.15;margin:0;letter-spacing:-.01em}
+.sub{margin:2px 0 0;color:var(--fg-2)}
+
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 12px}
+nav.tabs button{border:1px solid var(--line-2);background:var(--surface-page);border-radius:var(--radius-pill);padding:6px 16px;cursor:pointer;font-size:1rem;min-height:44px}
+nav.tabs button[aria-current="true"]{background:var(--fg-1);color:var(--surface-page);border-color:var(--fg-1)}
+nav.tabs button.done::after{content:" ✓";color:var(--ok)}
+nav.tabs button[aria-current="true"].done::after{color:var(--mathe-line)}
+
+.btn{border:1px solid var(--mathe);background:var(--mathe);color:#fff;border-radius:var(--radius-md);padding:8px 16px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;font-size:1rem;font-weight:600;min-height:44px}
+.btn:active{background:var(--mathe-ink);border-color:var(--mathe-ink)}
+.btn.ghost{background:var(--surface-page);color:var(--mathe)}
+.btn.ghost:active{background:var(--mathe-soft)}
+.btn.small{padding:6px 12px;font-size:.92rem}
+.btn[disabled]{opacity:.45;cursor:default}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+
+.station{display:none;background:var(--surface-page);border:1px solid var(--line-2);border-top:6px solid var(--mathe);border-radius:var(--radius-lg);padding:14px 18px 18px;margin-bottom:20px;box-shadow:var(--shadow-1)}
+.station.show{display:block}
+.sthead{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.chip{font-size:.85rem;border-radius:var(--radius-sm);padding:2px 9px;font-weight:700;display:inline-block;background:var(--mathe-soft);color:var(--mathe-ink)}
+h2{font-size:1.45rem;margin:4px 0 0;line-height:1.2}
+h3{font-size:1.1rem;margin:0 0 8px}
+
+/* Vorhersage */
+.vh-card{border:2px solid var(--mathe-line);background:var(--mathe-soft);border-radius:var(--radius-lg);padding:12px 16px 14px;margin-bottom:12px}
+.vh-card h3{color:var(--mathe-ink)}
+.q{margin:8px 0 6px}
+.choices{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
+.choice{min-height:48px;min-width:96px;padding:8px 16px;border:2px solid var(--line-3);background:var(--surface-page);border-radius:var(--radius-md);cursor:pointer;font-size:1rem}
+.choice[aria-pressed="true"]{border-color:var(--mathe);background:var(--mathe);color:#fff;font-weight:600}
+.qrow{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:10px 0 0}
+.numin,.txtin{min-height:48px;padding:8px 12px;border:2px solid var(--line-3);border-radius:var(--radius-md);background:var(--surface-page);font-size:1.1rem}
+.numin{width:110px;text-align:center}
+.txtin{flex:1;min-width:240px}
+.vh-fest{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;border-left:5px solid var(--mathe);background:var(--surface-soft);border-radius:0 var(--radius-lg) var(--radius-lg) 0;padding:8px 14px;margin-bottom:12px}
+.vh-label{font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mathe-ink)}
+.vh-fest ul{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:4px 22px}
+.vgl{color:var(--fg-3)}
+
+/* Sperre */
+.explore{position:relative}
+.explore.locked .ex-inner{opacity:.3;filter:grayscale(.7);pointer-events:none;user-select:none;-webkit-user-select:none}
+.lockmsg{position:absolute;left:50%;top:60px;transform:translateX(-50%);background:var(--surface-page);border:2px solid var(--mathe);border-radius:var(--radius-lg);padding:12px 18px;font-weight:600;display:flex;gap:10px;align-items:center;box-shadow:0 8px 24px rgba(20,22,25,.12);max-width:90%}
+.lockmsg svg{flex:none;color:var(--mathe)}
+
+.fb{margin-top:10px;padding:9px 13px;border-radius:var(--radius-md);display:none}
+.fb.ok{display:block;background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
+.fb.bad{display:block;background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.fb.info{display:block;background:var(--surface-soft);border:1px solid var(--line-2)}
+.fb p{margin:2px 0}
+
+.grid2{display:grid;grid-template-columns:1fr;gap:16px}
+@media (min-width:860px){.grid2{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr)}}
+.panel{border:1px solid var(--line-1);border-radius:var(--radius-lg);padding:12px 14px;background:var(--surface-page)}
+
+/* Schieberegler mit großen Touch-Flächen */
+.sl{margin:0 0 10px}
+.sl-l{display:block;font-size:1.15rem;margin-bottom:2px}
+.sl-l output{font-weight:700;font-variant-numeric:tabular-nums}
+.sl-row{display:flex;align-items:center;gap:10px}
+.step{flex:none;width:48px;height:48px;border:2px solid var(--line-3);border-radius:var(--radius-md);background:var(--surface-page);font-size:1.5rem;font-weight:700;cursor:pointer;line-height:1}
+.step:active{background:var(--mathe-soft)}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;min-width:0;height:48px;background:transparent;margin:0;touch-action:pan-y}
+input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:5px;background:var(--line-2)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:40px;height:40px;border-radius:50%;background:var(--mathe);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);margin-top:-15px}
+input[type=range]::-moz-range-track{height:10px;border-radius:5px;background:var(--line-2)}
+input[type=range]::-moz-range-thumb{width:32px;height:32px;border-radius:50%;background:var(--mathe);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+
+/* 1A */
+.werte{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:baseline;background:var(--surface-soft);border-radius:var(--radius-md);padding:10px 14px;margin:6px 0 10px;font-size:1.15rem}
+.werte b{font-size:1.35rem;font-variant-numeric:tabular-nums;text-align:right}
+.werte .diff{border-top:1px solid var(--line-2);padding-top:4px}
+.savemsg{color:var(--fg-3);font-size:.95rem}
+table.wt{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+table.wt th,table.wt td{border:1px solid var(--line-2);padding:5px 8px;text-align:center}
+table.wt th{background:var(--surface-soft);font-weight:600}
+table.wt td.leer{color:var(--fg-3);font-style:italic}
+table.wt tr.neu td{background:var(--mathe-soft)}
+.prog{color:var(--fg-3);margin:8px 0 0}
+.auftrag{margin-top:14px;border:2px solid var(--mathe);border-radius:var(--radius-lg);padding:12px 14px}
+.termrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}
+.termrow label{font-size:1.15rem}
+.term{flex:1;min-width:180px;min-height:48px;padding:6px 12px;border:2px solid var(--line-3);border-radius:var(--radius-md);font-family:var(--font-math);font-size:1.4rem;background:var(--surface-page)}
+.keypad{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.keypad button{min-width:46px;height:46px;border:1px solid var(--line-3);border-radius:var(--radius-md);background:var(--surface-soft);font-family:var(--font-math);font-size:1.3rem;cursor:pointer}
+.keypad button:active{background:var(--mathe-soft)}
+.keypad button.del{font-family:inherit;font-size:1rem;padding:0 12px}
+
+/* Puzzle */
+.puzzle{width:100%;height:auto;display:block;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.puzzle .dim line{stroke:var(--fg-2);stroke-width:1.6}
+.puzzle .dim text,.puzzle .pl,.puzzle .area{fill:var(--fg-1);font-family:var(--font-math)}
+.puzzle .dim text{font-size:22px}
+.puzzle .vi{font-style:italic}
+.puzzle .pl{font-size:19px}
+.puzzle .area{font-size:34px;text-anchor:middle;dominant-baseline:central}
+.puzzle .fl{stroke:var(--fg-1);stroke-width:2}
+.puzzle .a2{fill:var(--f-a2)} .puzzle .ab1{fill:var(--f-ab1)} .puzzle .ab2{fill:var(--f-ab2)} .puzzle .b2{fill:var(--f-b2)}
+.puzzle .neutral{fill:var(--surface-page);stroke:var(--fg-2);stroke-width:2}
+.puzzle .gap{fill:var(--surface-page);stroke:var(--fg-3);stroke-width:2;stroke-dasharray:8 6}
+.puzzle .gap.hot,.puzzle .tgt.hot{fill:var(--mathe-soft);stroke:var(--mathe);stroke-width:3;stroke-dasharray:none}
+.puzzle .tgt{fill:none;stroke:none}
+.puzzle .tray{fill:var(--surface-soft);stroke:var(--line-2);stroke-width:1.5}
+.puzzle .traylbl{fill:var(--fg-3);font-size:16px;font-weight:600;letter-spacing:.08em}
+.puzzle [data-piece]{cursor:grab}
+.puzzle [data-piece].fix{cursor:default}
+.puzzle [data-piece].drag rect{stroke:var(--mathe);stroke-width:3.5}
+.puzzle .ghost{fill:none;stroke:var(--fg-4);stroke-width:1.5;stroke-dasharray:6 5}
+.puzzle .lline{fill:none;stroke:var(--fg-1);stroke-width:2}
+.puzzle .cutline{stroke:var(--fg-1);stroke-width:2;stroke-dasharray:7 6}
+.puzzle .nostroke{stroke:none}
+.puzzle .hatchbox{fill:url(#hatch2);stroke:var(--fg-3);stroke-width:1.5;stroke-dasharray:5 4}
+.puzzle .hatchline{stroke:var(--f-b2);stroke-width:3}
+.puzzlecard{border:1px solid var(--line-1);border-radius:var(--radius-lg);padding:8px;background:var(--surface-page)}
+.hinweis{color:var(--fg-3);font-size:.95rem;margin:6px 4px 0}
+
+.formel{font-family:var(--font-math);font-size:1.45rem;background:var(--surface-soft);border-radius:var(--radius-md);padding:10px 14px;margin:8px 0;line-height:1.9}
+.formel .t{border-radius:4px;padding:0 5px}
+.formel .t-a2{background:var(--f-a2)} .formel .t-ab1{background:var(--f-ab1)} .formel .t-ab2{background:var(--f-ab2)} .formel .t-b2{background:var(--f-b2)}
+.ergebnis{border:2px solid var(--ok);background:var(--ok-soft);border-radius:var(--radius-lg);padding:12px 16px;margin-top:12px}
+.ergebnis h3{color:var(--ok)}
+.schnell{margin-top:10px;border-left:4px solid var(--mathe);padding:4px 12px;background:var(--surface-page)}
+.side{display:flex;flex-direction:column;gap:10px}
+.grid-s2{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}
+@media (min-width:860px){.grid-s2{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)}}
+
+/* Start */
+.intro p{max-width:75ch}
+.karten{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:14px 0}
+.karte{display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:center;text-align:left;border:1px solid var(--line-2);border-radius:var(--radius-lg);background:var(--surface-page);padding:12px;cursor:pointer;min-height:110px}
+.karte:active{border-color:var(--mathe)}
+.karte .ic{width:84px;height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--surface-soft);border-radius:var(--radius-md);font-family:var(--font-math);font-size:15px;line-height:1.3;text-align:center}
+.karte b{display:block;font-size:1.1rem}
+.karte span.k{color:var(--fg-3);font-size:.92rem}
+details.lehrkraft{margin-top:18px;border:1px solid var(--line-2);border-radius:var(--radius-lg);background:var(--surface-soft)}
+details.lehrkraft summary{cursor:pointer;padding:12px 14px;font-weight:600;color:var(--fg-2);min-height:44px}
+details.lehrkraft .in{padding:0 16px 12px}
+details.lehrkraft dl{margin:0}
+details.lehrkraft dt{font-weight:700;margin-top:8px}
+details.lehrkraft dd{margin:0}
+footer{color:var(--fg-3);font-size:.88rem;padding:0 0 28px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="brandline"></div>
+<div class="wrap">
+  <header class="top">
+    <a class="backlink noprint" href="../../../katalog.html?stufe=8&amp;fach=mathe">← Alle Simulationen</a>
+    <h1>Binomische Formeln entdecken</h1>
+    <p class="sub">Termwerte vergleichen, Flächen puzzeln, ein L-Stück umlegen</p>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="Stationen"></nav>
+  <main>
+    <section class="station" id="st-0" aria-labelledby="h-0"></section>
+    <section class="station" id="st-1a" aria-label="Station 1A"></section>
+    <section class="station" id="st-1b" aria-label="Station 1B"></section>
+    <section class="station" id="st-2" aria-label="Station 2"></section>
+  </main>
+  <footer>Diese Seite speichert und überträgt nichts. Beim Neuladen sind alle Eingaben weg.</footer>
+</div>
+
+<script>
+/* =========================================================
+   Hilfen
+   ========================================================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const M=s=>`<span class="m">${s.replace(/[ab]/g,'<i>$&</i>')}</span>`;          // nur für reine Terme
+const SV=s=>s.replace(/[ab]/g,'<tspan class="vi">$&</tspan>');                    // dasselbe im SVG
+const num=v=>{ const t=String(v??'').replace(/\s/g,'').replace(',','.').replace(/[−–]/g,'-'); return /^[-+]?\d*\.?\d+$/.test(t)?parseFloat(t):NaN; };
+const fmt=n=>{ const r=Math.round(n*1000)/1000; return String(r).replace('.',',').replace('-','−'); };
+const reduced=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const LOCK_ICON='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>';
+
+function svgPt(svg,e){ return new DOMPoint(e.clientX,e.clientY).matrixTransform(svg.getScreenCTM().inverse()); }
+function dimH(y,x1,x2,label,up){ const ty=up?y-9:y+24;
+  return `<g class="dim"><line x1="${x1+2}" y1="${y}" x2="${x2-2}" y2="${y}"/><line x1="${x1}" y1="${y-7}" x2="${x1}" y2="${y+7}"/><line x1="${x2}" y1="${y-7}" x2="${x2}" y2="${y+7}"/><text x="${(x1+x2)/2}" y="${ty}" text-anchor="middle">${SV(label)}</text></g>`; }
+function dimV(x,y1,y2,label,left){ const tx=left?x-10:x+10;
+  return `<g class="dim"><line x1="${x}" y1="${y1+2}" x2="${x}" y2="${y2-2}"/><line x1="${x-7}" y1="${y1}" x2="${x+7}" y2="${y1}"/><line x1="${x-7}" y1="${y2}" x2="${x+7}" y2="${y2}"/><text x="${tx}" y="${(y1+y2)/2+7}" text-anchor="${left?'end':'start'}">${SV(label)}</text></g>`; }
+function pieceInner(pc,cls,area){
+  return `<rect class="${cls}" width="${pc.w}" height="${pc.h}"/>`+
+    (area?`<text class="area" x="${pc.w/2}" y="${pc.h/2}">${SV(area)}</text>`:'')+
+    `<text class="pl" x="${pc.w/2}" y="22" text-anchor="middle">${SV(pc.wl)}</text>`+
+    `<text class="pl" x="9" y="${pc.h/2+(area?-18:6)}" text-anchor="start">${SV(pc.hl)}</text>`; }
+function rotate(pc){ const cx=pc.x+pc.w/2, cy=pc.y+pc.h/2; [pc.w,pc.h]=[pc.h,pc.w]; [pc.wl,pc.hl]=[pc.hl,pc.wl]; pc.x=cx-pc.w/2; pc.y=cy-pc.h/2; }
+function clamp(pc,W,H){ pc.x=Math.max(0,Math.min(W-pc.w,pc.x)); pc.y=Math.max(0,Math.min(H-pc.h,pc.y)); }
+function tween(pc,tx,ty,step,done){
+  if(reduced){ pc.x=tx; pc.y=ty; done(); return; }
+  const x0=pc.x,y0=pc.y,t0=performance.now(),D=220,tok=pc.tw={};
+  (function f(t){ if(pc.tw!==tok) return;                     // neu gegriffen: Animation abbrechen
+    const k=Math.min(1,Math.max(0,(t-t0)/D)), e=1-Math.pow(1-k,3); pc.x=x0+(tx-x0)*e; pc.y=y0+(ty-y0)*e; step();
+    if(k<1) requestAnimationFrame(f); else { pc.tw=null; done(); } })(t0);
+}
+
+/* Ziehen und Antippen (Pointer Events: Finger, Stift, Maus) */
+function enableDrag(svg,o){
+  let d=null;
+  svg.addEventListener('pointerdown',e=>{
+    const g=e.target.closest('[data-piece]'); if(!g) return;
+    const pc=o.get(g.dataset.piece); if(!pc||pc.locked) return;
+    e.preventDefault();
+    pc.tw=null;
+    const p=svgPt(svg,e);
+    d={pc,g,id:e.pointerId,sx:p.x,sy:p.y,px:pc.x,py:pc.y,moved:false};
+    try{ svg.setPointerCapture(e.pointerId); }catch(_){}
+    g.parentNode.appendChild(g); g.classList.add('drag');
+  });
+  svg.addEventListener('pointermove',e=>{
+    if(!d||e.pointerId!==d.id) return;
+    const p=svgPt(svg,e), dx=p.x-d.sx, dy=p.y-d.sy;
+    if(!d.moved && Math.hypot(dx,dy)<8) return;
+    d.moved=true; d.pc.x=d.px+dx; d.pc.y=d.py+dy;
+    d.g.setAttribute('transform',`translate(${d.pc.x},${d.pc.y})`);
+    o.move(d.pc);
+  });
+  const end=e=>{ if(!d||e.pointerId!==d.id) return; const x=d; d=null; x.g.classList.remove('drag');
+    if(x.moved||e.type==='pointercancel') o.drop(x.pc); else o.tap(x.pc); };
+  svg.addEventListener('pointerup',end); svg.addEventListener('pointercancel',end);
+  svg.addEventListener('keydown',e=>{ if(e.key!=='Enter'&&e.key!==' ') return; const g=e.target.closest('[data-piece]'); if(!g) return; const pc=o.get(g.dataset.piece); if(pc&&!pc.locked){ e.preventDefault(); o.tap(pc); } });
+}
+
+/* Bausteine für die Stationen */
+function choices(st,q,opts,cur){
+  return `<div class="choices" role="group" data-st="${st}" data-q="${q}">`+opts.map(([v,l])=>
+    `<button type="button" class="choice" data-val="${esc(v)}" aria-pressed="${cur===v}">${l}</button>`).join('')+`</div>`; }
+function slider(st,k,min,max,val){
+  return `<div class="sl"><label class="sl-l" for="r-${st}-${k}">${M(k)} = <output id="o-${st}-${k}">${val}</output></label>
+    <div class="sl-row"><button type="button" class="step" data-step="${st}:${k}:-1" aria-label="${k} um 1 verkleinern">−</button>
+    <input type="range" id="r-${st}-${k}" data-st="${st}" data-k="${k}" min="${min}" max="${max}" step="1" value="${val}">
+    <button type="button" class="step" data-step="${st}:${k}:1" aria-label="${k} um 1 vergrößern">+</button></div></div>`; }
+function shell(id,chip,title,s,vhHTML,fixHTML,exHTML){
+  const open=!!s.vh;
+  return `<div class="sthead"><div><span class="chip">${chip}</span><h2>${title}</h2></div>
+      <button type="button" class="btn ghost small" data-reset="${id}">Station zurücksetzen</button></div>
+    ${open?`<div class="vh-fest"><span class="vh-label">Eure Vorhersage</span><div id="vhfix-${id}">${fixHTML}</div></div>`
+          :`<div class="vh-card"><h3>Erst vorhersagen, dann ausprobieren</h3>${vhHTML}
+             <div class="actions"><button type="button" class="btn" data-vh="${id}">Vorhersage festhalten</button></div>
+             <div class="fb" id="fbvh-${id}" role="status"></div></div>`}
+    <div class="explore${open?'':' locked'}"><div class="ex-inner"${open?'':' inert aria-hidden="true"'}>${exHTML}</div>
+      ${open?'':`<div class="lockmsg">${LOCK_ICON}<span>Haltet zuerst eure Vorhersage fest – dann geht die Station auf.</span></div>`}</div>`;
+}
+function fb(id,cls,html){ const e=document.getElementById(id); if(!e) return; e.className='fb '+(cls||''); e.innerHTML=html||''; }
+
+/* =========================================================
+   Zustand (nur im Speicher der Seite)
+   ========================================================= */
+const S={};
+const INIT={
+  '1a':()=>({vh:null,draft:{},a:4,b:1,rows:[],term:'',termFb:null,done:false,last:null}),
+  '1b':()=>({vh:null,draft:{},pcs:init1B(),fill:{},done:false}),
+  '2': ()=>({vh:null,draft:{},a:7,b:3,cut:false,solved:false,pc:null})
+};
+
+/* =========================================================
+   Start
+   ========================================================= */
+function renderStart(){
+  $('#st-0').innerHTML=`<div class="intro">
+    <h2 id="h-0">So arbeitet ihr</h2>
+    <p>Ihr arbeitet zu zweit. Jede Station beginnt mit einer <b>Vorhersage</b>: Besprecht sie, gebt sie ein und haltet sie fest. Erst dann geht die Station auf. Eure Vorhersage bleibt oben stehen – vergleicht sie am Ende mit dem, was ihr herausgefunden habt.</p>
+    <p>Teile verschiebt ihr mit dem Finger. Ein Teil kurz <b>antippen</b> dreht es um 90°.</p>
+    <div class="karten">
+      <button type="button" class="karte" data-go="1a"><span class="ic">${M('(a + b)²')}<br>?<br>${M('a² + b²')}</span>
+        <span><span class="k">Station 1A</span><b>Termwerte vergleichen</b><span class="k">Werte einsetzen, Tabelle anlegen, Term finden</span></span></button>
+      <button type="button" class="karte" data-go="1b"><span class="ic"><svg width="72" height="72" viewBox="0 0 80 80" aria-hidden="true">
+          <rect x="6" y="6" width="42" height="42" fill="var(--f-a2)" stroke="var(--fg-1)" stroke-width="1.5"/>
+          <rect x="48" y="48" width="26" height="26" fill="var(--f-b2)" stroke="var(--fg-1)" stroke-width="1.5"/>
+          <rect x="48" y="6" width="26" height="42" fill="#fff" stroke="var(--fg-3)" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <rect x="6" y="48" width="42" height="26" fill="#fff" stroke="var(--fg-3)" stroke-width="1.5" stroke-dasharray="4 3"/></svg></span>
+        <span><span class="k">Station 1B</span><b>Flächenpuzzle</b><span class="k">Das Quadrat ${M('(a + b)²')} vervollständigen</span></span></button>
+      <button type="button" class="karte" data-go="2"><span class="ic"><svg width="72" height="72" viewBox="0 0 80 80" aria-hidden="true">
+          <defs><pattern id="hatchMini" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="var(--f-b2)" stroke-width="2.5"/></pattern></defs>
+          <rect x="6" y="22" width="34" height="52" fill="var(--f-ab1)" stroke="var(--fg-1)" stroke-width="1.5"/>
+          <rect x="40" y="40" width="34" height="34" fill="var(--f-ab2)" stroke="var(--fg-1)" stroke-width="1.5"/>
+          <rect x="40" y="22" width="34" height="18" fill="url(#hatchMini)" stroke="var(--fg-3)" stroke-width="1.2" stroke-dasharray="3 3"/></svg></span>
+        <span><span class="k">Station 2</span><b>L-Stück umlegen</b><span class="k">Aus ${M('a² − b²')} ein Rechteck machen</span></span></button>
+    </div>
+    <div class="actions"><button type="button" class="btn" data-go="1a">Los geht’s mit Station 1A</button></div>
+    <details class="lehrkraft"><summary>Für Lehrkräfte</summary><div class="in"><dl>
+      <dt>Zweck</dt><dd>Die 1. binomische Formel über Termwerte (1A) und das Flächenmodell (1B) entdecken, die 3. binomische Formel durch Umlegen eines L-Stücks (2). Entdecken vor Erklären: Jede Station ist bis zur Eingabe einer Vorhersage gesperrt. Die 2. binomische Formel ist nicht enthalten.</dd>
+      <dt>Vorwissen</dt><dd>Flächenmodell für ${M('(x + 3)(x + 4)')}, Malkreuz, „Das Minus gehört zum Summanden dahinter“. Farben der Teilflächen wie im Flächenmodell aus Skript 1.</dd>
+      <dt>Ablauf</dt><dd>Partnerarbeit, je zwei an einem iPad (Querformat).<br>Station 1 (1A Termwerte, 1B Flächenpuzzle): ca. 15 min · Station 2 (L-Stück): ca. 10 min.</dd>
+      <dt>Hinweise</dt><dd>1A: Der Termauftrag erscheint nach fünf gespeicherten Wertepaaren. Die Prüfung setzt mehrere Zahlenpaare ein, äquivalente Terme werden akzeptiert; ein Gegenbeispiel wird genannt, die Lösung nicht. Terme mit Hochzahl werden als richtig, aber „geht kürzer“ zurückgemeldet.<br>
+        Es werden keine Daten gespeichert oder übertragen; Neuladen löscht alles. „Station zurücksetzen“ setzt auch die Vorhersage zurück.</dd>
+    </dl></div></details></div>`;
+}
+
+/* =========================================================
+   Station 1A – Termwerte vergleichen
+   ========================================================= */
+const CMP={'größer':['größer','<b>größer</b> als'],'kleiner':['kleiner','<b>kleiner</b> als'],'gleich':['gleich','<b>gleich</b>'],'kommt drauf an':['kommt drauf an','']};
+function fix1A(){
+  const s=S['1a'], v=s.vh, row=(a,b)=>s.rows.find(r=>r.a===a&&r.b===b);
+  const cmp=v.cmp==='kommt drauf an'?`Ob ${M('(a + b)²')} größer, kleiner oder gleich ${M('a² + b²')} ist, <b>kommt drauf an</b>.`
+    :`${M('(a + b)²')} ist ${CMP[v.cmp][1]} ${M('a² + b²')}.`;
+  const d=(a,b,x)=>{ const r=row(a,b); return `Unterschied für ${M('a')} = ${a}, ${M('b')} = ${b}: <b>${fmt(x)}</b>`+(r?` <span class="vgl">(Tabelle: ${r.d})</span>`:''); };
+  return `<ul><li>${cmp}</li><li>${d(3,3,v.d1)}</li><li>${d(5,2,v.d2)}</li></ul>`;
+}
+function render1A(){
+  const s=S['1a'];
+  const vh=`<p class="q"><b>1.</b> Ist ${M('(a + b)²')} größer, kleiner oder gleich ${M('a² + b²')}?</p>
+    ${choices('1a','cmp',Object.keys(CMP).map(k=>[k,CMP[k][0]]),s.draft.cmp)}
+    <div class="qrow"><label for="vh1a-d1"><b>2.</b> Wie groß ist der Unterschied für ${M('a')} = 3, ${M('b')} = 3?</label>
+      <input id="vh1a-d1" class="numin" inputmode="decimal" autocomplete="off" value="${esc(s.draft.d1||'')}"></div>
+    <div class="qrow"><label for="vh1a-d2"><b>3.</b> Wie groß ist der Unterschied für ${M('a')} = 5, ${M('b')} = 2?</label>
+      <input id="vh1a-d2" class="numin" inputmode="decimal" autocomplete="off" value="${esc(s.draft.d2||'')}"></div>`;
+  const ex=`<div class="grid2">
+    <div class="panel">
+      ${slider('1a','a',1,10,s.a)}${slider('1a','b',1,10,s.b)}
+      <div class="werte" id="w1a" aria-live="polite"></div>
+      <div class="actions" style="margin-top:0"><button type="button" class="btn" id="save1a">Wertepaar speichern</button><span class="savemsg" id="savemsg1a" role="status"></span></div>
+    </div>
+    <div class="panel">
+      <h3>Eure Wertetabelle</h3>
+      <table class="wt"><thead><tr><th>${M('a')}</th><th>${M('b')}</th><th>${M('(a + b)²')}</th><th>${M('a² + b²')}</th><th>Differenz</th></tr></thead><tbody id="tb1a"></tbody></table>
+      <p class="prog" id="prog1a"></p>
+      <div id="term1a"></div>
+    </div></div>`;
+  $('#st-1a').innerHTML=shell('1a','Station 1A · 1. binomische Formel','Termwerte vergleichen',s,vh,s.vh?fix1A():'',ex);
+  upd1A(); table1A();
+}
+function upd1A(){
+  const s=S['1a'], a=s.a, b=s.b, L=(a+b)**2, R=a*a+b*b;
+  ['a','b'].forEach(k=>{ const r=$('#r-1a-'+k); if(r){ r.value=s[k]; $('#o-1a-'+k).textContent=s[k]; } });
+  const w=$('#w1a'); if(!w) return;
+  w.innerHTML=`<span>${M('(a + b)²')}</span><span class="m">= (${a} + ${b})² = ${a+b}²</span><b>= ${L}</b>
+    <span>${M('a² + b²')}</span><span class="m">= ${a}² + ${b}² = ${a*a} + ${b*b}</span><b>= ${R}</b>
+    <span class="diff">Differenz</span><span class="m diff">= ${L} − ${R}</span><b class="diff">= ${L-R}</b>`;
+}
+function table1A(){
+  const s=S['1a'], tb=$('#tb1a'); if(!tb) return;
+  tb.innerHTML=s.rows.length?s.rows.map(r=>`<tr${r===s.last?' class="neu"':''}><td>${r.a}</td><td>${r.b}</td><td>${r.L}</td><td>${r.R}</td><td><b>${r.d}</b></td></tr>`).join('')
+    :`<tr><td colspan="5" class="leer">Noch keine Wertepaare gespeichert.</td></tr>`;
+  const n=s.rows.length;
+  $('#prog1a').textContent=n<5?`Noch ${5-n} Wertepaar${5-n===1?'':'e'} speichern – probiert verschiedene Zahlen aus.`:`${n} Wertepaare gespeichert.`;
+  if(n>=5 && !$('#term-in')) renderTerm1A();
+  if(s.vh) $('#vhfix-1a').innerHTML=fix1A();
+}
+function renderTerm1A(){
+  const s=S['1a'];
+  const keys=['a','b','+','−','·','²','(',')'];
+  $('#term1a').innerHTML=`<div class="auftrag"><h3>Auftrag: Findet einen Term für die Differenz.</h3>
+    <div class="termrow"><label for="term-in">Differenz =</label>
+      <input id="term-in" class="term" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Term mit a und b" value="${esc(s.term)}"></div>
+    <div class="keypad" aria-label="Eingabehilfe">${keys.map(k=>`<button type="button" data-key="${k}">${k==='a'||k==='b'?`<i>${k}</i>`:k}</button>`).join('')}
+      ${'1234567890'.split('').map(k=>`<button type="button" data-key="${k}">${k}</button>`).join('')}
+      <button type="button" class="del" data-key="del" aria-label="Zeichen löschen">⌫ löschen</button></div>
+    <div class="actions"><button type="button" class="btn" id="termCheck">Term prüfen</button></div>
+    <div class="fb" id="fbterm" role="status"></div></div>`;
+  if(s.termFb) fb('fbterm',s.termFb[0],s.termFb[1]);
+}
+function save1A(){
+  const s=S['1a'], a=s.a, b=s.b;
+  if(s.rows.some(r=>r.a===a&&r.b===b)){ $('#savemsg1a').textContent='Dieses Wertepaar steht schon in der Tabelle.'; return; }
+  const L=(a+b)**2, R=a*a+b*b; s.last={a,b,L,R,d:L-R}; s.rows.push(s.last);
+  $('#savemsg1a').textContent='Gespeichert.'; table1A();
+}
+
+/* Termprüfung: Term lesen und an mehreren Zahlenpaaren mit der Differenz vergleichen */
+function TermError(m){ this.message=m; }
+function parseTerm(src){
+  const s=src.replace(/\s+/g,'').replace(/[−–]/g,'-').replace(/[·×∙⋅*]/g,'*').replace(/:/g,'/').replace(/,/g,'.').replace(/A/g,'a').replace(/B/g,'b');
+  const tk=[]; let i=0;
+  while(i<s.length){
+    const c=s[i];
+    if(/[0-9.]/.test(c)){ let j=i; while(j<s.length&&/[0-9.]/.test(s[j])) j++; const t=s.slice(i,j);
+      if(!/^\d*\.?\d+$/.test(t)) throw new TermError(`Die Zahl „${t.replace('.',',')}“ kann ich nicht lesen.`); tk.push({t:'n',v:parseFloat(t)}); i=j; continue; }
+    if(c==='a'||c==='b'){ tk.push({t:'v',v:c}); i++; continue; }
+    if('+-*/^()'.includes(c)){ tk.push({t:c}); i++; continue; }
+    if(c==='²'||c==='³'){ tk.push({t:'^'},{t:'n',v:c==='²'?2:3}); i++; continue; }
+    throw new TermError(`Das Zeichen „${c}“ kenne ich nicht. Verwendet nur ${M('a')}, ${M('b')}, Zahlen, + − · ( ) und ².`);
+  }
+  if(!tk.length) throw new TermError('Gebt zuerst einen Term ein.');
+  let p=0; const peek=()=>tk[p];
+  const expr=()=>{ let n=term(); while(peek()&&(peek().t==='+'||peek().t==='-')){ const o=tk[p++].t, l=n, r=term(); n=o==='+'?e=>l(e)+r(e):e=>l(e)-r(e); } return n; };
+  const term=()=>{ let n=unary(); for(;;){ const t=peek(); if(!t) break;
+      if(t.t==='*'||t.t==='/'){ p++; const l=n, r=unary(); n=t.t==='*'?e=>l(e)*r(e):e=>l(e)/r(e); }
+      else if(t.t==='n'||t.t==='v'||t.t==='('){ const l=n, r=power(); n=e=>l(e)*r(e); }     // 2ab, 2(a + b)
+      else break; } return n; };
+  const unary=()=>{ const t=peek(); if(t&&(t.t==='-'||t.t==='+')){ p++; const f=unary(); return t.t==='-'?e=>-f(e):f; } return power(); };
+  const power=()=>{ const base=atom(); if(peek()&&peek().t==='^'){ p++; const ex=unary(); return e=>Math.pow(base(e),ex(e)); } return base; };
+  const atom=()=>{ const t=tk[p++];
+    if(!t) throw new TermError('Der Term ist unvollständig.');
+    if(t.t==='n') return ()=>t.v;
+    if(t.t==='v') return e=>e[t.v];
+    if(t.t==='('){ const n=expr(); if(!peek()||peek().t!==')') throw new TermError('Eine Klammer wird nicht geschlossen.'); p++; return n; }
+    throw new TermError('Der Term ist an einer Stelle unvollständig (z. B. zwei Rechenzeichen hintereinander).'); };
+  const f=expr();
+  if(p<tk.length) throw new TermError(tk[p].t===')'?'Es wird eine Klammer zu viel geschlossen.':'Den Term kann ich nicht vollständig lesen.');
+  return f;
+}
+function checkTerm(){
+  const s=S['1a'], src=$('#term-in').value; s.term=src;
+  let f; try{ f=parseTerm(src); }catch(e){ if(!(e instanceof TermError)) throw e; s.termFb=['info',`<p>${e.message}</p>`]; fb('fbterm',...s.termFb); return; }
+  const pairs=[...s.rows.map(r=>[r.a,r.b]),[1,2],[2,5],[3,1],[4,7],[6,3],[10,9],[7,7]];
+  for(const [a,b] of pairs){
+    const v=f({a,b});
+    if(!isFinite(v)||Math.abs(v-2*a*b)>1e-9){
+      s.termFb=['bad',`<p>Stimmt nicht für ${M('a')} = ${a}, ${M('b')} = ${b}${isFinite(v)?`: Euer Term ergibt dort ${fmt(v)}`:''}. Vergleicht mit eurer Tabelle.</p>`];
+      fb('fbterm',...s.termFb); return;
+    }
+  }
+  if(/[²³^]/.test(src)){ s.termFb=['info',`<p>Euer Term stimmt für alle getesteten Zahlenpaare. Geht es auch kürzer, ohne Hochzahl? Schaut auf die Spalte „Differenz“.</p>`]; fb('fbterm',...s.termFb); return; }
+  s.done=true; updTabs();
+  s.termFb=['ok',`<p><b>Richtig!</b> Euer Term passt für alle getesteten Zahlenpaare. Vergleicht mit eurer Vorhersage oben.</p>
+    <div class="actions"><button type="button" class="btn" data-go="1b">Weiter zu Station 1B: Warum ist das so?</button></div>`];
+  fb('fbterm',...s.termFb);
+}
+let caret=null;
+function keyIn(k){
+  const el=$('#term-in'); if(!el) return;
+  let [a,b]=caret||[el.value.length,el.value.length], v=el.value;
+  if(k==='del'){ if(a!==b){ v=v.slice(0,a)+v.slice(b); } else if(a>0){ v=v.slice(0,a-1)+v.slice(a); a--; } b=a; }
+  else { v=v.slice(0,a)+k+v.slice(b); a=b=a+k.length; }
+  el.value=v; caret=[a,b]; S['1a'].term=v;
+}
+
+/* =========================================================
+   Station 1B – Flächenpuzzle (a + b)², maßstäblich mit a = 5, b = 3
+   ========================================================= */
+const U1=40, PA=5*U1, PB=3*U1, SX=70, SY=60, VW1=1000, VH1=440;
+const SQ={x:SX,y:SY,w:PA+PB,h:PA+PB};
+const GAPS=[{id:'g1',x:SX+PA,y:SY,w:PB,h:PA,cls:'ab1'},{id:'g2',x:SX,y:SY+PA,w:PA,h:PB,cls:'ab2'}];
+function init1B(){
+  const P=(id,x,y,w,h,wl,hl)=>({id,x,y,w,h,wl,hl,home:{x,y,w,h,wl,hl},locked:false,in:null});
+  return [P('p1',460,75,PA,PB,'a','b'),P('p2',460,235,PA,PB,'a','b'),P('p3',700,75,PB,PB,'b','b'),P('p4',670,215,PA+PB,PA,'a + b','a')];
+}
+function fix1B(){
+  const o={zweiAB:`zwei Rechtecke ${M('a × b')}`,zweiBB:`zwei Quadrate ${M('b × b')}`,einAAB:`ein Rechteck ${M('a × (a + b)')}`,mix:`ein Quadrat ${M('b × b')} und ein Rechteck ${M('a × b')}`};
+  return `In die beiden Lücken passen <b>${o[S['1b'].vh.teile]}</b>.`;
+}
+function render1B(){
+  const s=S['1b'];
+  const vh=`<p class="q">Das große Quadrat hat die Seitenlänge ${M('a + b')}. Die Teile ${M('a²')} und ${M('b²')} liegen schon. Was passt eurer Meinung nach in die beiden Lücken?</p>
+    ${choices('1b','teile',[['zweiBB',`zwei Quadrate ${M('b × b')}`],['zweiAB',`zwei Rechtecke ${M('a × b')}`],['einAAB',`ein Rechteck ${M('a × (a + b)')}`],['mix',`ein Quadrat ${M('b × b')} und ein Rechteck ${M('a × b')}`]],s.draft.teile)}`;
+  const ex=`<div class="puzzlecard"><svg class="puzzle" id="svg1b" viewBox="0 0 ${VW1} ${VH1}" role="img" aria-label="Quadrat mit Seitenlänge a plus b, darin a² und b². Rechts die Teile-Ablage."></svg></div>
+    <p class="hinweis">Teil ziehen: verschieben · Teil kurz antippen: um 90° drehen</p>
+    <div class="fb" id="fb1b" role="status"></div><div id="res1b"></div>`;
+  $('#st-1b').innerHTML=shell('1b','Station 1B · 1. binomische Formel','Flächenpuzzle',s,vh,s.vh?fix1B():'',ex);
+  draw1B(); result1B();
+  enableDrag($('#svg1b'),{
+    get:id=>s.pcs.find(p=>p.id===id),
+    move:pc=>{ const g=gapAt(pc); document.querySelectorAll('#svg1b .gap').forEach(e=>e.classList.toggle('hot',!!g&&e.dataset.gap===g.id)); },
+    tap:pc=>{ rotate(pc); clamp(pc,VW1,VH1); draw1B(); },
+    drop:drop1B
+  });
+}
+function gapAt(pc){ const cx=pc.x+pc.w/2, cy=pc.y+pc.h/2;
+  return GAPS.find(g=>!S['1b'].fill[g.id]&&cx>=g.x-20&&cx<=g.x+g.w+20&&cy>=g.y-20&&cy<=g.y+g.h+20); }
+function overlaps(p,q){ return p.x<q.x+q.w-6&&p.x+p.w>q.x+6&&p.y<q.y+q.h-6&&p.y+p.h>q.y+6; }
+function drop1B(pc){
+  const s=S['1b'], g=gapAt(pc);
+  if(g&&pc.w===g.w&&pc.h===g.h){
+    Object.assign(pc,{x:g.x,y:g.y,locked:true,in:g.id}); s.fill[g.id]=pc.id; fb('fb1b');
+    if(GAPS.every(x=>s.fill[x.id])){ s.done=true; s.pcs.forEach(p=>p.locked=true); updTabs(); }
+    draw1B(); result1B(); return;
+  }
+  if(g||overlaps(pc,SQ)){
+    const ab=pc.home.wl==='a'&&pc.home.hl==='b';
+    fb('fb1b','bad',`<p>Passt nicht – vergleiche die Seitenlängen.${ab&&g?' Ein Teil dreht ihr durch kurzes Antippen.':''}</p>`);
+    const h=pc.home; pc.w=h.w; pc.h=h.h; pc.wl=h.wl; pc.hl=h.hl; draw1B();
+    const el=document.querySelector(`#svg1b [data-piece="${pc.id}"]`);
+    tween(pc,h.x,h.y,()=>el&&el.setAttribute('transform',`translate(${pc.x},${pc.y})`),draw1B);
+    return;
+  }
+  clamp(pc,VW1,VH1); draw1B();
+}
+function draw1B(){
+  const s=S['1b'], svg=$('#svg1b'); if(!svg) return;
+  let h=`<rect class="tray" x="445" y="45" width="548" height="388" rx="10"/><text class="traylbl" x="460" y="34">TEILE-ABLAGE</text>`;
+  h+=dimH(SY-16,SX,SX+PA,'a',true)+dimH(SY-16,SX+PA,SX+PA+PB,'b',true)+dimV(SX-16,SY,SY+PA,'a',true)+dimV(SX-16,SY+PA,SY+PA+PB,'b',true);
+  h+=`<rect class="fl a2" x="${SX}" y="${SY}" width="${PA}" height="${PA}"/><rect class="fl b2" x="${SX+PA}" y="${SY+PA}" width="${PB}" height="${PB}"/>`;
+  if(s.done) h+=`<text class="area" x="${SX+PA/2}" y="${SY+PA/2}">${SV('a²')}</text><text class="area" x="${SX+PA+PB/2}" y="${SY+PA+PB/2}">${SV('b²')}</text>`;
+  GAPS.forEach(g=>{ if(!s.fill[g.id]) h+=`<rect class="gap" data-gap="${g.id}" x="${g.x}" y="${g.y}" width="${g.w}" height="${g.h}"/>`; });
+  // eingesetzte Teile zuerst, damit lose Teile oben liegen
+  [...s.pcs].sort((p,q)=>(q.in?1:0)-(p.in?1:0)).forEach(pc=>{
+    const g=GAPS.find(x=>x.id===pc.in);
+    h+=`<g data-piece="${pc.id}" class="${pc.locked?'fix':''}" transform="translate(${pc.x},${pc.y})" ${pc.locked?'':'tabindex="0" role="button" aria-label="Teil '+pc.wl+' mal '+pc.hl+'. Antippen dreht."'}>${pieceInner(pc,g?'fl '+g.cls:'neutral',s.done&&g?'ab':'')}</g>`;
+  });
+  svg.innerHTML=h;
+}
+function result1B(){
+  const el=$('#res1b'); if(!el) return;
+  el.innerHTML=S['1b'].done?`<div class="ergebnis"><h3>Das Quadrat ist vollständig.</h3>
+    <div class="formel">${M('(a + b)²')} = <span class="t t-a2">${M('a²')}</span> + <span class="t t-ab1">${M('ab')}</span> + <span class="t t-ab2">${M('ab')}</span> + <span class="t t-b2">${M('b²')}</span> = ${M('a² + 2ab + b²')}</div>
+    <div class="schnell"><b>Für Schnelle:</b> Erklärt mit dem Bild, warum die Differenz aus Station 1A genau so groß ist.</div>
+    <div class="actions"><button type="button" class="btn" data-go="2">Weiter zu Station 2</button></div></div>`:'';
+}
+
+/* =========================================================
+   Station 2 – L-Stück umlegen (a + b)(a − b) = a² − b²
+   ========================================================= */
+const VW2=660, VH2=520;
+function geo2(){
+  const {a,b}=S['2'], u=Math.min(44,Math.floor(430/(a+b))), OX=70, OY=30, d=a-b;
+  return {a,b,u,OX,OY,
+    sq:{x:OX,y:OY+b*u,w:a*u,h:a*u}, strip:{x:OX,y:OY+b*u,w:d*u,h:a*u},
+    cut:{x:OX+d*u,y:OY+b*u,w:b*u,h:b*u}, home:{x:OX+d*u,y:OY+2*b*u,w:b*u,h:d*u},
+    tgt:{x:OX,y:OY,w:d*u,h:b*u}};
+}
+function home2(){ const h=geo2().home; S['2'].pc={id:'p',...h,wl:'b',hl:'a − b',locked:!S['2'].cut}; }
+function fix2(){ const v=S['2'].vh;
+  return `<ul><li>Lässt sich der Rest zu einem Rechteck umlegen? <b>${v.yn}</b></li>${v.txt?`<li>Seitenlängen: <b>${esc(v.txt)}</b></li>`:''}</ul>`; }
+function render2(){
+  const s=S['2']; if(!s.pc) home2();
+  const vh=`<p class="q"><b>1.</b> Aus einem Quadrat ${M('a²')} wird in einer Ecke ein Quadrat ${M('b²')} herausgeschnitten. Lässt sich der Rest zu einem Rechteck umlegen?</p>
+    ${choices('2','yn',[['ja','ja'],['nein','nein']],s.draft.yn)}
+    <div class="qrow"><label for="vh2-txt"><b>2.</b> Welche Seitenlängen hätte es?</label>
+      <input id="vh2-txt" class="txtin" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="z. B. … und …" value="${esc(s.draft.txt||'')}"></div>`;
+  const ex=`<div class="grid-s2">
+    <div><div class="puzzlecard"><svg class="puzzle" id="svg2" viewBox="0 0 ${VW2} ${VH2}" role="img" aria-label="Quadrat a mal a mit herausgeschnittenem Quadrat b mal b oben rechts"></svg></div>
+      <p class="hinweis" id="hint2"></p></div>
+    <div class="side">
+      <div class="actions" style="margin-top:0"><button type="button" class="btn" id="cut2"${s.cut?' disabled':''}>Schneiden</button></div>
+      <div class="fb" id="fb2" role="status"></div>
+      <div id="res2"></div>
+      <div class="panel"><h3>Andere Größen</h3>${slider('2','a',5,10,s.a)}${slider('2','b',2,8,s.b)}</div>
+    </div></div>`;
+  $('#st-2').innerHTML=shell('2','Station 2 · 3. binomische Formel','L-Stück umlegen',s,vh,s.vh?fix2():'',ex);
+  draw2(); result2(); sliders2();
+  enableDrag($('#svg2'),{
+    get:()=>s.pc,
+    move:pc=>{ const t=$('#tgt2'); if(t) t.classList.toggle('hot',near2(pc)); },
+    tap:pc=>{ rotate(pc); clamp(pc,VW2,VH2); draw2(); },
+    drop:drop2
+  });
+}
+function near2(pc){ const t=geo2().tgt; return Math.hypot(pc.x+pc.w/2-(t.x+t.w/2),pc.y+pc.h/2-(t.y+t.h/2))<Math.max(t.w,t.h)*0.6+30; }
+function drop2(pc){
+  const s=S['2'], G=geo2(), t=G.tgt, hm=G.home;
+  if(near2(pc)){
+    if(pc.w===t.w&&pc.h===t.h){ Object.assign(pc,{x:t.x,y:t.y,locked:true}); s.solved=true; fb('fb2'); updTabs(); draw2(); result2(); return; }
+    fb('fb2','bad','<p>Fast! So passt das Teil nicht – dreht es durch kurzes Antippen.</p>');
+  } else if(pc.w===hm.w&&pc.h===hm.h&&Math.hypot(pc.x-hm.x,pc.y-hm.y)<30){ pc.x=hm.x; pc.y=hm.y; }
+  clamp(pc,VW2,VH2); draw2();
+}
+function draw2(){
+  const s=S['2'], svg=$('#svg2'); if(!svg) return;
+  const G=geo2(), {sq,strip,cut,home,tgt,OX,OY,u,a,b}=G, pc=s.pc;
+  let h=`<defs><pattern id="hatch2" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)"><line class="hatchline" x1="0" y1="0" x2="0" y2="10"/></pattern></defs>`;
+  if(s.solved) h+=`<rect class="ghost" x="${sq.x}" y="${sq.y}" width="${sq.w}" height="${sq.h}"/>`;
+  h+=`<rect class="tgt" id="tgt2" x="${tgt.x}" y="${tgt.y}" width="${tgt.w}" height="${tgt.h}"/>`;
+  h+=`<rect class="fl ab1${s.cut?'':' nostroke'}" x="${strip.x}" y="${strip.y}" width="${strip.w}" height="${strip.h}"/>`;
+  h+=`<rect class="hatchbox" x="${cut.x}" y="${cut.y}" width="${cut.w}" height="${cut.h}"/><text class="area" x="${cut.x+cut.w/2}" y="${cut.y+cut.h/2}">${SV('b²')}</text>`;
+  if(s.solved){
+    h+=dimV(OX-16,OY,OY+(a+b)*u,'a + b',true)+dimH(sq.y+sq.h+14,strip.x,strip.x+strip.w,'a − b',false);
+  } else {
+    h+=dimV(OX-16,sq.y,sq.y+sq.h,'a',true)+dimH(sq.y+sq.h+14,strip.x,strip.x+strip.w,'a − b',false)+dimV(sq.x+sq.w+14,cut.y,cut.y+cut.h,'b',false);
+  }
+  if(!s.cut){
+    // L-Stück noch ganz: gemeinsame Umrisslinie, Trennlinie gestrichelt
+    h+=`<rect class="fl ab2 nostroke" x="${home.x}" y="${home.y}" width="${home.w}" height="${home.h}"/>
+      <polygon class="lline" points="${sq.x},${sq.y} ${cut.x},${sq.y} ${cut.x},${cut.y+cut.h} ${sq.x+sq.w},${cut.y+cut.h} ${sq.x+sq.w},${sq.y+sq.h} ${sq.x},${sq.y+sq.h}"/>
+      <line class="cutline" x1="${home.x}" y1="${home.y}" x2="${home.x}" y2="${home.y+home.h}"/>
+      <text class="pl" x="${home.x+home.w/2}" y="${home.y+22}" text-anchor="middle">${SV('b')}</text>
+      <text class="pl" x="${home.x+home.w-8}" y="${home.y+home.h/2+6}" text-anchor="end">${SV('a − b')}</text>`;
+  } else {
+    h+=`<g data-piece="p" class="${pc.locked?'fix':''}" transform="translate(${pc.x},${pc.y})" ${pc.locked?'':'tabindex="0" role="button" aria-label="Rechteck '+pc.wl+' mal '+pc.hl+'. Antippen dreht."'}>${pieceInner(pc,'fl ab2','')}</g>`;
+  }
+  svg.innerHTML=h;
+  const hint=$('#hint2');
+  if(hint) hint.textContent=s.solved?'':s.cut?'Rotes Teil ziehen: verschieben · kurz antippen: um 90° drehen':'Das L-Stück ist gestrichelt in zwei Rechtecke geteilt. Tippt auf „Schneiden“.';
+}
+function result2(){
+  const s=S['2'], el=$('#res2'); if(!el) return;
+  if(!s.solved){ el.innerHTML=''; return; }
+  const {a,b}=s;
+  el.innerHTML=`<div class="ergebnis" style="margin-top:0"><h3>Ein Rechteck!</h3>
+    <p>Seitenlängen: ${M('a + b')} und ${M('a − b')}. Sein Flächeninhalt ist ${M('a² − b²')} – der Rest des Quadrats.</p>
+    <div class="formel">${M('(a + b) · (a − b) = a² − b²')}</div>
+    <p class="m" style="white-space:normal">(${a} + ${b}) · (${a} − ${b}) = ${a+b} · ${a-b} = ${(a+b)*(a-b)} &nbsp;und&nbsp; ${a}² − ${b}² = ${a*a} − ${b*b} = ${a*a-b*b}</p>
+    <p class="hinweis" style="margin:0">Ändert ${M('a')} und ${M('b')} unten und prüft die Formel an anderen Größen.</p></div>`;
+}
+function sliders2(){
+  const s=S['2'], rb=$('#r-2-b'); if(!rb) return;
+  rb.max=s.a-2; ['a','b'].forEach(k=>{ $('#r-2-'+k).value=s[k]; $('#o-2-'+k).textContent=s[k]; });
+}
+function set2(k,v){
+  const s=S['2'];
+  if(k==='a'){ s.a=Math.max(5,Math.min(10,v)); s.b=Math.min(s.b,s.a-2); } else s.b=Math.max(2,Math.min(s.a-2,v));
+  if(s.solved){ const t=geo2().tgt; s.pc={id:'p',...t,wl:'a − b',hl:'b',locked:true}; } else home2();
+  draw2(); result2(); sliders2();
+}
+
+/* =========================================================
+   Navigation und Ereignisse
+   ========================================================= */
+const TABS=[['0','Start'],['1a','1A Termwerte'],['1b','1B Flächenpuzzle'],['2','2 L-Stück']];
+$('#tabs').innerHTML=TABS.map(([id,l])=>`<button type="button" data-go="${id}">${l}</button>`).join('');
+let current='0';
+function go(id){
+  current=id;
+  document.querySelectorAll('.station').forEach(e=>e.classList.toggle('show',e.id==='st-'+id));
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===id?'true':'false'));
+}
+function updTabs(){
+  const d={'1a':S['1a'].done,'1b':S['1b'].done,'2':S['2'].solved};
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('done',!!d[b.dataset.go]));
+}
+const RENDER={'1a':render1A,'1b':render1B,'2':render2};
+
+function submitVh(id){
+  const s=S[id], d=s.draft;
+  if(id==='1a'){
+    const d1=num($('#vh1a-d1').value), d2=num($('#vh1a-d2').value);
+    if(!d.cmp||isNaN(d1)||isNaN(d2)){ fb('fbvh-1a','bad','<p>Beantwortet erst alle drei Fragen (bei 2 und 3 eine Zahl).</p>'); return; }
+    s.vh={cmp:d.cmp,d1,d2};
+  } else if(id==='1b'){
+    if(!d.teile){ fb('fbvh-1b','bad','<p>Wählt erst eine Antwort aus.</p>'); return; }
+    s.vh={teile:d.teile};
+  } else {
+    const txt=($('#vh2-txt').value||'').trim();
+    if(!d.yn){ fb('fbvh-2','bad','<p>Beantwortet erst Frage 1.</p>'); return; }
+    if(d.yn==='ja'&&!txt){ fb('fbvh-2','bad','<p>Schreibt bei Frage 2 eure Vermutung für die Seitenlängen auf.</p>'); return; }
+    s.vh={yn:d.yn,txt};
+  }
+  RENDER[id]();
+}
+
+document.addEventListener('click',e=>{
+  const t=e.target;
+  const g=t.closest('[data-go]'); if(g){ go(g.dataset.go); $('#tabs').scrollIntoView({block:'start',behavior:reduced?'auto':'smooth'}); return; }
+  const r=t.closest('[data-reset]'); if(r){ const id=r.dataset.reset; if(confirm('Diese Station zurücksetzen? Auch eure Vorhersage wird gelöscht.')){ S[id]=INIT[id](); RENDER[id](); updTabs(); } return; }
+  const c=t.closest('.choice'); if(c){ const box=c.closest('.choices'); S[box.dataset.st].draft[box.dataset.q]=c.dataset.val;
+    box.querySelectorAll('.choice').forEach(b=>b.setAttribute('aria-pressed',b===c?'true':'false')); return; }
+  const v=t.closest('[data-vh]'); if(v){ submitVh(v.dataset.vh); return; }
+  const st=t.closest('[data-step]'); if(st){ const [sid,k,dv]=st.dataset.step.split(':');
+    if(sid==='1a'){ S['1a'][k]=Math.max(1,Math.min(10,S['1a'][k]+(+dv))); upd1A(); } else set2(k,S['2'][k]+(+dv)); return; }
+  const k=t.closest('[data-key]'); if(k){ keyIn(k.dataset.key==='del'?'del':k.dataset.key); return; }
+  if(t.closest('#save1a')){ save1A(); return; }
+  if(t.closest('#termCheck')){ checkTerm(); return; }
+  if(t.closest('#cut2')){ S['2'].cut=true; S['2'].pc.locked=false; $('#cut2').disabled=true; draw2(); return; }
+});
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.type==='range'){ const sid=t.dataset.st, k=t.dataset.k;
+    if(sid==='1a'){ S['1a'][k]=+t.value; upd1A(); } else set2(k,+t.value); return; }
+  if(t.id==='vh1a-d1') S['1a'].draft.d1=t.value;
+  if(t.id==='vh1a-d2') S['1a'].draft.d2=t.value;
+  if(t.id==='vh2-txt') S['2'].draft.txt=t.value;
+  if(t.id==='term-in'){ S['1a'].term=t.value; caret=[t.selectionStart,t.selectionEnd]; }
+});
+['keyup','click','select','focusout'].forEach(ev=>document.addEventListener(ev,e=>{ if(e.target.id==='term-in') caret=[e.target.selectionStart,e.target.selectionEnd]; }));
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.id==='term-in'){ e.preventDefault(); checkTerm(); } });
+
+Object.keys(INIT).forEach(k=>S[k]=INIT[k]());
+renderStart(); render1A(); render1B(); render2(); updTabs(); go('0');
+</script>
+</body>
+</html>
