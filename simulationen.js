@@ -58,6 +58,19 @@ window.SIMULATIONEN = [
     datum: "2026-09-30"
   },
   {
+    id: "kirchhoff",
+    titel: "Kirchhoff’sche Gesetze erkunden",
+    fach: "physik",
+    stufen: ["10"],
+    thema: "Elektrizitätslehre",
+    beschreibung: "Eigene interaktive Schaltung mit Strom- und Spannungsmessern: Knotenregel und Maschenregel in fünf Aufträgen entdecken, mit Schaltern und drittem Zweig variieren und zum Schluss Werte ohne Messgerät vorhersagen.",
+    pfad: "sims/physik/kirchhoff/",
+    vorschau: "sims/physik/kirchhoff/vorschau.png",
+    sozialform: "Partnerarbeit",
+    dauer: "Doppelstunde",
+    datum: "2026-10-06"
+  },
+  {
     id: "waagerechter-wurf",
     titel: "Waagerechter Wurf erarbeiten",
     fach: "physik",

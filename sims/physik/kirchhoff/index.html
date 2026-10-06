@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kirchhoff’sche Gesetze erkunden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F8FB; --card:#FFFFFF; --grid:#E4EAF3; --ink:#18233A; --muted:#56637C;
+  --line:#C8D2E2; --reihe:#2D5BA3; --reihe-soft:#E6EDF8; --par:#0E7C74; --par-soft:#E1F2F0;
+  --lamp:#F4B400; --lamp-soft:#FFF4CC; --ok:#237548; --ok-soft:#E3F3E9; --bad:#B23A2A; --bad-soft:#FBE9E6;
+  --wire:#2A3550; --knobel:#7A4FA3; --knobel-soft:#F1EAF8;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#111827; --card:#1A2335; --grid:#1F2A3F; --ink:#E8EDF6; --muted:#A3AFC4;
+    --line:#34425E; --reihe:#7FA6E6; --reihe-soft:#1E2C47; --par:#4FC1B6; --par-soft:#16312F;
+    --lamp:#FFC933; --lamp-soft:#3A3217; --ok:#5CCB8A; --ok-soft:#173226; --bad:#F08A78; --bad-soft:#3B1F1B;
+    --wire:#C9D3E6; --knobel:#C29BE8; --knobel-soft:#2C2240;
+  }
+}
+:root[data-theme="dark"]{
+    --paper:#111827; --card:#1A2335; --grid:#1F2A3F; --ink:#E8EDF6; --muted:#A3AFC4;
+    --line:#34425E; --reihe:#7FA6E6; --reihe-soft:#1E2C47; --par:#4FC1B6; --par-soft:#16312F;
+    --lamp:#FFC933; --lamp-soft:#3A3217; --ok:#5CCB8A; --ok-soft:#173226; --bad:#F08A78; --bad-soft:#3B1F1B;
+    --wire:#C9D3E6; --knobel:#C29BE8; --knobel-soft:#2C2240;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; color:var(--ink); background:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  font-family:"Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  font-size:17px; line-height:1.5;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--reihe)}
+:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+
+.wrap{max-width:1360px;margin:0 auto;padding:0 18px}
+header.top{padding:22px 0 10px}
+.backlink{display:inline-block;margin:0 0 10px;font-size:.92rem;color:var(--muted);text-decoration:none}
+.backlink:hover{color:var(--ink);text-decoration:underline}
+h1{font-size:1.9rem;line-height:1.15;margin:0;letter-spacing:-.01em}
+.sub{margin:4px 0 0;color:var(--muted)}
+
+.layout{display:grid;grid-template-columns:1fr;gap:18px;align-items:start}
+@media (min-width:1100px){
+  .layout{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}
+  .simcol{position:sticky;top:10px;max-height:calc(100vh - 20px);overflow:auto}
+}
+
+/* ---------- Simulation ---------- */
+.simcard{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:10px 12px 12px}
+.simcard svg{width:100%;height:auto;display:block;touch-action:manipulation}
+svg .w{stroke:var(--wire);stroke-width:2.5;fill:none;stroke-linejoin:round}
+svg .cmp{fill:var(--card);stroke:var(--wire);stroke-width:2.5}
+svg .lbl{fill:var(--ink);font-size:16px;font-family:inherit}
+svg .val{fill:var(--muted);font-size:14px;font-family:inherit}
+svg .pl{fill:var(--ink);font-size:15px;font-weight:700;font-family:inherit}
+svg .node{fill:var(--wire)}
+svg .dotq{fill:var(--lamp);stroke:var(--wire);stroke-width:.8}
+svg .dotq.el{fill:var(--reihe);stroke:none}
+svg .hit{fill:transparent;cursor:pointer}
+svg [data-spot],svg [data-pt],svg [data-sw]{cursor:pointer}
+svg [data-spot]:focus,svg [data-pt]:focus,svg [data-sw]:focus{outline:none}
+svg [data-spot]:focus-visible .ring,svg [data-pt]:focus-visible .ring,svg [data-sw]:focus-visible .ring{stroke:var(--lamp);stroke-width:3}
+svg .ring{fill:none;stroke:transparent}
+svg .spot0{fill:var(--paper);stroke:var(--muted);stroke-width:1.5;stroke-dasharray:3 3}
+svg .spot0t{fill:var(--muted);font-size:10px;font-weight:700;text-anchor:middle;dominant-baseline:central}
+svg [data-spot]:hover .spot0{stroke:var(--ink);stroke-dasharray:none}
+svg .met{fill:var(--card);stroke:var(--wire);stroke-width:2.2}
+svg .mett{fill:var(--ink);font-size:15px;font-weight:700;text-anchor:middle;dominant-baseline:central}
+svg .tag{fill:var(--card);stroke:var(--line);stroke-width:1.5}
+svg .tagt{fill:var(--ink);font-size:14px;font-weight:700;text-anchor:middle;dominant-baseline:central;font-variant-numeric:tabular-nums}
+svg .pt{fill:var(--card);stroke:var(--wire);stroke-width:2}
+svg .pt.red{stroke:var(--bad);stroke-width:4}
+svg .pt.black{fill:var(--ink);stroke:var(--ink);stroke-width:4}
+svg [data-pt]:hover .pt{stroke-width:3.2}
+svg .vline{fill:none;stroke-width:2;stroke-dasharray:5 4}
+svg .mesh{fill:none;stroke-width:3;stroke-dasharray:9 6}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.85rem;color:var(--muted);margin:2px 4px 8px}
+.readout{background:var(--paper);border:1.5px solid var(--line);border-radius:10px;padding:7px 12px;margin:0 0 10px;font-size:.95rem}
+.readout b.num{font-variant-numeric:tabular-nums}
+.probe{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:-1px;margin:0 3px}
+.probe.r{border:3px solid var(--bad);background:var(--card)} .probe.k{background:var(--ink)}
+.controls{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px 18px}
+.ctl label{display:flex;justify-content:space-between;font-size:.92rem}
+.ctl output{font-weight:700;font-variant-numeric:tabular-nums}
+.ctl input[type=range]{width:100%;accent-color:var(--reihe)}
+.ctl.off{opacity:.45}
+.ctlrow{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-top:10px;font-size:.92rem}
+.ctlrow select{padding:4px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--card)}
+.ctlrow label{display:flex;gap:6px;align-items:center}
+
+.btn{border:1.5px solid var(--ink);background:var(--ink);color:var(--card);border-radius:9px;padding:7px 14px;cursor:pointer;text-decoration:none;display:inline-block;font-size:.95rem}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.small{padding:4px 10px;font-size:.88rem}
+
+/* ---------- Aufträge ---------- */
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+nav.tabs button{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:5px 13px;cursor:pointer;font-size:.92rem}
+nav.tabs button[aria-current="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+nav.tabs button.done::after{content:" ✓";color:var(--ok)}
+nav.tabs button[aria-current="true"].done::after{color:var(--lamp)}
+.task{display:none;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:20px 22px 24px;margin-bottom:24px}
+.task.show{display:block}
+.task[data-group="knoten"]{border-top:6px solid var(--reihe)}
+.task[data-group="masche"]{border-top:6px solid var(--par)}
+.task[data-group="anw"]{border-top:6px solid var(--knobel)}
+.task[data-group="info"]{border-top:6px solid var(--lamp)}
+.chip{font-size:.85rem;border-radius:6px;padding:2px 9px;font-weight:700;display:inline-block}
+.chip.knoten{background:var(--reihe-soft);color:var(--reihe)}
+.chip.masche{background:var(--par-soft);color:var(--par)}
+.chip.anw{background:var(--knobel-soft);color:var(--knobel)}
+h2{font-size:1.5rem;margin:6px 0 4px;line-height:1.2}
+h3{font-size:1.1rem;margin:20px 0 8px}
+.settings{background:var(--paper);border:1.5px dashed var(--line);border-radius:10px;padding:8px 12px;margin:10px 0}
+.settings p{margin:2px 0}
+.settings .actions{margin-top:6px}
+ol.steps{padding-left:1.3em;margin:6px 0}
+ol.steps li{margin:4px 0}
+.tablewrap{overflow-x:auto}
+table.mt{border-collapse:collapse;margin:6px 0}
+table.mt th,table.mt td{border:1.5px solid var(--line);padding:6px 7px;text-align:center}
+table.mt th{background:var(--paper);font-weight:700;font-size:.9rem}
+table.mt td.given{background:var(--paper);font-weight:700}
+table.mt input{width:78px;padding:5px 6px;border:1.5px solid var(--line);border-radius:6px;text-align:center;background:var(--card)}
+table.mt input.ok{border-color:var(--ok);background:var(--ok-soft)}
+table.mt input.bad{border-color:var(--bad);background:var(--bad-soft)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.fb{margin-top:10px;padding:9px 13px;border-radius:9px;display:none}
+.fb.ok{display:block;background:var(--ok-soft);color:var(--ok);border:1.5px solid var(--ok)}
+.fb.bad{display:block;background:var(--bad-soft);color:var(--bad);border:1.5px solid var(--bad)}
+.fb.info{display:block;background:var(--paper);border:1.5px solid var(--line)}
+.fb p{margin:3px 0}
+.fb ul{margin:4px 0;padding-left:1.2em}
+.cloze p{margin:8px 0;line-height:2}
+.cloze select{padding:3px 6px;border:1.5px solid var(--line);border-radius:6px;background:var(--card);max-width:100%}
+.cloze select.ok{border-color:var(--ok);background:var(--ok-soft)}
+.cloze select.bad{border-color:var(--bad);background:var(--bad-soft)}
+textarea{width:100%;min-height:70px;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);resize:vertical}
+label.ta{display:block;font-weight:700;margin:12px 0 4px}
+.muster{display:none;margin-top:10px;padding:10px 14px;border-left:5px solid var(--lamp);background:var(--lamp-soft);border-radius:0 10px 10px 0}
+.muster.on{display:block}
+details.zusatz{margin-top:22px;border:1.5px solid var(--line);border-radius:12px;background:var(--paper)}
+details.zusatz summary{cursor:pointer;padding:10px 14px;font-weight:700;list-style:none}
+details.zusatz summary::-webkit-details-marker{display:none}
+details.zusatz summary::before{content:"＋ ";color:var(--muted)}
+details.zusatz[open] summary::before{content:"－ "}
+details.zusatz .zin{padding:0 14px 14px}
+.opt{font-weight:400;color:var(--muted);font-size:.9rem}
+.info ul{padding-left:1.2em}
+.info li{margin:4px 0}
+.merk .law{border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;margin:10px 0;background:var(--paper)}
+.merk .law h3{margin:2px 0 6px}
+.locked{padding:14px;border:1.5px dashed var(--line);border-radius:10px;color:var(--muted)}
+footer{color:var(--muted);font-size:.85rem;padding:0 0 30px}
+
+@media print{
+  body{background:#fff;color:#000;font-size:12pt}
+  .simcol,nav.tabs,.actions,.noprint{display:none!important}
+  .layout{display:block}
+  .task{display:block!important;break-inside:avoid-page;border:1px solid #999;margin-bottom:12pt}
+  .muster{display:block!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="backlink noprint" href="../../../katalog.html?stufe=10&amp;fach=physik">← Alle Simulationen</a>
+    <h1>Kirchhoff’sche Gesetze erkunden</h1>
+    <p class="sub">Knotenregel und Maschenregel in einer verzweigten Schaltung – messen, vermuten, überprüfen</p>
+  </header>
+
+  <div class="layout">
+    <div class="simcol">
+      <div class="simcard">
+        <svg id="circ" viewBox="0 0 820 425" role="group" aria-label="Schaltung mit Spannungsquelle, Widerstand R1 und parallelen Zweigen. Messstellen und Messpunkte sind per Klick oder Tastatur bedienbar.">
+          <g id="gMesh"></g><g id="gWires"></g><g id="gDots"></g><g id="gParts"></g><g id="gSpots"></g><g id="gVm"></g><g id="gPts"></g>
+        </svg>
+        <div class="legend">
+          <span>◌ Messstelle: antippen, um einen Strommesser einzubauen</span>
+          <span>○ A, B, C …: Messpunkte für den Spannungsmesser</span>
+          <span>Schalter antippen: öffnen/schließen</span>
+        </div>
+        <div class="readout" id="readout" role="status"></div>
+        <div class="controls">
+          <div class="ctl"><label for="cU"><span>Quellspannung U<sub>0</sub></span> <output id="oU"></output></label><input type="range" id="cU" min="0" max="12" step="0.5"></div>
+          <div class="ctl"><label for="cR1"><span>Widerstand R<sub>1</sub></span> <output id="oR1"></output></label><input type="range" id="cR1" min="10" max="100" step="10"></div>
+          <div class="ctl"><label for="cR2"><span>Widerstand R<sub>2</sub></span> <output id="oR2"></output></label><input type="range" id="cR2" min="10" max="100" step="10"></div>
+          <div class="ctl"><label for="cR3"><span>Widerstand R<sub>3</sub></span> <output id="oR3"></output></label><input type="range" id="cR3" min="10" max="100" step="10"></div>
+          <div class="ctl" id="ctlR4"><label for="cR4"><span>Widerstand R<sub>4</sub></span> <output id="oR4"></output></label><input type="range" id="cR4" min="10" max="100" step="10"></div>
+        </div>
+        <div class="ctlrow">
+          <label><input type="checkbox" id="cB4"> <span>dritter Zweig mit R<sub>4</sub></span></label>
+          <label><span>Ladungsfluss</span> <select id="cFlow"><option value="aus">ausblenden</option><option value="tech">technische Stromrichtung (+ → −)</option><option value="el">Elektronen (− → +)</option></select></label>
+        </div>
+        <div class="ctlrow">
+          <button class="btn ghost small" type="button" id="bAmmOff">Strommesser entfernen</button>
+          <button class="btn ghost small" type="button" id="bSwap">Messspitzen tauschen</button>
+          <button class="btn ghost small" type="button" id="bVmOff">Spannungsmesser lösen</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <nav class="tabs" id="tabs" aria-label="Aufträge"></nav>
+      <main id="tasks"></main>
+      <footer>
+        Eingaben werden nur in diesem Browser gespeichert. Die Simulation rechnet mit idealen Messgeräten und einer idealen Spannungsquelle.
+        <div class="actions noprint">
+          <button class="btn ghost small" type="button" id="printBtn">Protokoll drucken / als PDF speichern</button>
+          <button class="btn ghost small" type="button" id="resetBtn">Alle Eingaben löschen</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   Physik: ideale Quelle U0, R1 in Reihe, dahinter parallel
+   R2 | R3 | (R4), jeder Zweig mit Schalter.
+   ========================================================= */
+function solve(s){
+  const on=[s.s2, s.s3, s.b4 && s.s4], R=[s.R2, s.R3, s.R4];
+  let G=0; on.forEach((o,i)=>{ if(o) G+=1/R[i]; });
+  let I1=0, Up=s.U;                 // ohne geschlossenen Zweig fließt kein Strom
+  if(G>0){ const Rp=1/G; I1=s.U/(s.R1+Rp); Up=I1*Rp; }
+  const I2=on[0]?Up/s.R2:0, I3=on[1]?Up/s.R3:0, I4=on[2]?Up/s.R4:0;
+  return {U0:s.U, I1, I2, I3, I4, I34:I3+I4, Up, U1:I1*s.R1, U2:I2*s.R2, U3:I3*s.R3, U4:I4*s.R4};
+}
+
+/* ---------- Speicher ---------- */
+const KEY='sim-kirchhoff-v1';
+let store={v:{}, done:{}};
+try{ const s=localStorage.getItem(KEY); if(s) store=JSON.parse(s); }catch(e){}
+store.v=store.v||{}; store.done=store.done||{};
+const save=()=>{ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} };
+
+const reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const DEF={U:9,R1:40,R2:30,R3:60,R4:60,b4:false,s2:true,s3:true,s4:true};
+let sim=Object.assign({},DEF,store.sim||{});
+let amm=new Set(store.amm||['a1','a3','a5']);
+let vm=Object.assign({red:null,black:null},store.vm||{});
+let flow=store.flow || (reduced?'aus':'tech');
+let mesh=0;
+const saveSim=()=>{ store.sim=sim; store.amm=[...amm]; store.vm=vm; store.flow=flow; save(); };
+
+/* ---------- Formatierung ---------- */
+const $=s=>document.querySelector(s);
+const de=(n,d)=>{ const t=(Math.abs(n)<5e-10?0:n).toFixed(d).replace('.',','); return t==='-0,'+'0'.repeat(d)?t.slice(1):t; };
+const fA=I=>de(I,3)+' A';
+const fV=(U,sign)=>(sign&&U>0.0005?'+':'')+de(U,2)+' V';
+const SUBS='₀₁₂₃₄₅₆₇₈₉';
+const uni=h=>h.replace(/<sub>([^<]*)<\/sub>/g,(m,t)=>t.replace(/\d/g,d=>SUBS[d])).replace(/<[^>]+>/g,'');
+
+/* ---------- Geometrie ---------- */
+const X0=90, YT=80, YB=370, YR=200, YS=300, BP=217, BM=233, XR1=245;
+const XS=()=>sim.b4?[400,560,720]:[400,560];
+const SPOTS=[
+  {id:'a1',x:135,y:YT,pos:'t',k:'I1',d:'in der Zuleitung vor R₁'},
+  {id:'a2',x:345,y:YT,pos:'t',k:'I1',d:'zwischen R₁ und Knoten K₁'},
+  {id:'a3',x:400,y:115,pos:'r',k:'I2',d:'im Zweig mit R₂'},
+  {id:'a4',x:480,y:YT,pos:'t',k:'I34',d:'oben zwischen den Zweigen R₂ und R₃'},
+  {id:'a5',x:560,y:115,pos:'r',k:'I3',d:'im Zweig mit R₃'},
+  {id:'a7',x:640,y:YT,pos:'t',k:'I4',d:'oben zwischen den Zweigen R₃ und R₄',b4:1},
+  {id:'a6',x:720,y:115,pos:'r',k:'I4',d:'im Zweig mit R₄',b4:1},
+  {id:'a10',x:640,y:YB,pos:'b',k:'I4',d:'unten zwischen den Zweigen R₄ und R₃',b4:1},
+  {id:'a8',x:480,y:YB,pos:'b',k:'I34',d:'unten zwischen den Zweigen R₃ und R₂'},
+  {id:'a9',x:260,y:YB,pos:'b',k:'I1',d:'in der Rückleitung hinter Knoten K₂'}
+];
+const PTS=[
+  {id:'A',x:175,y:YT,lp:'b'}, {id:'B',x:305,y:YT,lp:'b'}, {id:'C',x:175,y:YB,lp:'t'},
+  {id:'D',x:400,y:150,lp:'l'}, {id:'E',x:400,y:252,lp:'l'},
+  {id:'F',x:560,y:150,lp:'l'}, {id:'G',x:560,y:252,lp:'l'},
+  {id:'H',x:720,y:150,lp:'l',b4:1}, {id:'J',x:720,y:252,lp:'l',b4:1}
+];
+function phi(id,r){
+  switch(id){
+    case 'A': return r.U0;
+    case 'B': case 'D': case 'F': case 'H': return r.Up;
+    case 'C': return 0;
+    case 'E': return sim.s2?0:r.Up;   // offener Schalter: kein Strom durch R2, beide Enden auf Up
+    case 'G': return sim.s3?0:r.Up;
+    case 'J': return sim.s4?0:r.Up;
+  }
+}
+const visible=o=>!o.b4||sim.b4;
+
+/* ---------- Zeichnen ---------- */
+const pl=(pts,cls='w')=>`<polyline class="${cls}" points="${pts.map(p=>p.join(',')).join(' ')}"/>`;
+const tx=(x,y,t,a='middle',cls='lbl')=>`<text class="${cls}" x="${x}" y="${y}" text-anchor="${a}">${t}</text>`;
+
+function render(){
+  const r=solve(sim), xs=XS(), xl=xs[xs.length-1];
+  // Leitungen
+  let w=pl([[X0,BP],[X0,YT],[xl,YT]])+pl([[X0,BM],[X0,YB],[xl,YB]]);
+  xs.forEach(x=>{ w+=pl([[x,YT],[x,YS-20]])+pl([[x,YS+20],[x,YB]]); });
+  $('#gWires').innerHTML=w;
+
+  // Bauteile
+  let p='';
+  p+=`<line x1="${X0-18}" y1="${BP}" x2="${X0+18}" y2="${BP}" stroke="var(--wire)" stroke-width="2.5"/>
+      <line x1="${X0-10}" y1="${BM}" x2="${X0+10}" y2="${BM}" stroke="var(--wire)" stroke-width="6"/>
+      ${tx(X0-28,BP+2,'+')}${tx(X0-28,BM+12,'−')}
+      ${tx(X0+28,BP+4,'U₀','start','lbl')}${tx(X0+28,BM+14,de(sim.U,1)+' V','start','val')}`;
+  p+=`<rect class="cmp" x="${XR1-36}" y="${YT-13}" width="72" height="26"/>${tx(XR1,YT+36,'R₁ = '+sim.R1+' Ω','middle','lbl')}`;
+  const sw=['s2','s3','s4'];
+  xs.forEach((x,i)=>{
+    const n=i+2, closed=sim[sw[i]];
+    p+=`<rect class="cmp" x="${x-13}" y="${YR-36}" width="26" height="72"/>
+        ${tx(x+22,YR-4,'R'+SUBS[n],'start')}${tx(x+22,YR+16,sim['R'+n]+' Ω','start','val')}`;
+    const lx=closed?x:x+20, ly=closed?YS-20:YS-12;
+    p+=`<g data-sw="${sw[i]}" tabindex="0" role="button" aria-label="Schalter S${n} ${closed?'öffnen':'schließen'}">
+        <rect class="hit" x="${x-26}" y="${YS-32}" width="58" height="64"/>
+        <rect class="ring" x="${x-24}" y="${YS-30}" width="54" height="60" rx="8"/>
+        <line x1="${x}" y1="${YS+20}" x2="${lx}" y2="${ly}" stroke="var(--wire)" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="${x}" cy="${YS-20}" r="3.6" fill="var(--card)" stroke="var(--wire)" stroke-width="2"/>
+        <circle cx="${x}" cy="${YS+20}" r="3.6" fill="var(--wire)"/>
+        ${tx(x-14,YS+6,'S'+SUBS[n],'end')}</g>`;
+  });
+  p+=`<circle class="node" cx="400" cy="${YT}" r="4.5"/><circle class="node" cx="400" cy="${YB}" r="4.5"/>`;
+  if(sim.b4) p+=`<circle class="node" cx="560" cy="${YT}" r="4.5"/><circle class="node" cx="560" cy="${YB}" r="4.5"/>`;
+  p+=tx(408,YT-12,'K₁','start','pl')+tx(408,YB+24,'K₂','start','pl');
+  $('#gParts').innerHTML=p;
+
+  // Strommesser
+  let s='';
+  SPOTS.filter(visible).forEach(o=>{
+    const on=amm.has(o.id);
+    if(!on){
+      s+=`<g data-spot="${o.id}" tabindex="0" role="button" aria-label="Strommesser ${o.d} einbauen">
+          <circle class="hit" cx="${o.x}" cy="${o.y}" r="16"/><circle class="ring" cx="${o.x}" cy="${o.y}" r="13"/>
+          <circle class="spot0" cx="${o.x}" cy="${o.y}" r="9"/><text class="spot0t" x="${o.x}" y="${o.y}">A</text></g>`;
+    } else {
+      const v=fA(r[o.k]);
+      const [tx0,ty0]=o.pos==='t'?[o.x,o.y-31]:o.pos==='b'?[o.x,o.y+31]:[o.x+57,o.y];
+      s+=`<g data-spot="${o.id}" tabindex="0" role="button" aria-label="Strommesser ${o.d}: ${v.replace(',',' Komma ')}. Ausbauen">
+          <circle class="hit" cx="${o.x}" cy="${o.y}" r="17"/><circle class="ring" cx="${o.x}" cy="${o.y}" r="17"/>
+          <circle class="met" cx="${o.x}" cy="${o.y}" r="13"/><text class="mett" x="${o.x}" y="${o.y}">A</text>
+          <rect class="tag" x="${tx0-36}" y="${ty0-12}" width="72" height="24" rx="6"/><text class="tagt" x="${tx0}" y="${ty0}">${v}</text></g>`;
+    }
+  });
+  $('#gSpots').innerHTML=s;
+
+  // Messpunkte
+  let q='';
+  PTS.filter(visible).forEach(o=>{
+    const cls=vm.red===o.id?'red':vm.black===o.id?'black':'';
+    const [lx,ly,la]=o.lp==='b'?[o.x,o.y+26,'middle']:o.lp==='t'?[o.x,o.y-14,'middle']:[o.x-12,o.y+5,'end'];
+    q+=`<g data-pt="${o.id}" tabindex="0" role="button" aria-label="Messpunkt ${o.id}${cls==='red'?' (rote Messspitze)':cls==='black'?' (schwarze Messspitze)':''}">
+        <circle class="hit" cx="${o.x}" cy="${o.y}" r="14"/><circle class="ring" cx="${o.x}" cy="${o.y}" r="11"/>
+        <circle class="pt ${cls}" cx="${o.x}" cy="${o.y}" r="6"/>${tx(lx,ly,o.id,la,'pl')}</g>`;
+  });
+  $('#gPts').innerHTML=q;
+
+  // Spannungsmesser
+  const P=id=>PTS.find(o=>o.id===id && visible(o));
+  if(vm.red && !P(vm.red)) vm.red=null;
+  if(vm.black && !P(vm.black)) vm.black=null;
+  let v='', ro='';
+  if(vm.red && vm.black){
+    const a=P(vm.red), b=P(vm.black), U=phi(a.id,r)-phi(b.id,r);
+    const dx=b.x-a.x, dy=b.y-a.y, mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+    let nx,ny;
+    if(Math.abs(dx)<Math.abs(dy)){ nx=mx<250?1:-1; ny=0; } else { nx=0; ny=my>300?-1:1; }
+    const cx=mx+nx*70, cy=my+ny*70, vx=mx+nx*35, vy=my+ny*35;
+    v=`<path class="vline" d="M${a.x},${a.y} Q${cx},${cy} ${b.x},${b.y}" stroke="var(--ink)"/>
+       <circle class="met" cx="${vx}" cy="${vy}" r="14"/><text class="mett" x="${vx}" y="${vy}">V</text>
+       <rect class="tag" x="${vx-40}" y="${vy+17}" width="80" height="24" rx="6"/><text class="tagt" x="${vx}" y="${vy+29}">${fV(U,true)}</text>`;
+    ro=`Spannungsmesser: <span class="probe r"></span>rot an <b>${a.id}</b>, <span class="probe k"></span>schwarz an <b>${b.id}</b> → U<sub>${a.id}${b.id}</sub> = <b class="num">${fV(U,true)}</b>`;
+  } else if(vm.red){
+    ro=`Spannungsmesser: <span class="probe r"></span>rot an <b>${vm.red}</b>. Tippe jetzt den Punkt für die <span class="probe k"></span>schwarze Messspitze an.`;
+  } else {
+    ro=`Spannungsmesser: Tippe nacheinander zwei Messpunkte an – zuerst <span class="probe r"></span>rot, dann <span class="probe k"></span>schwarz.`;
+  }
+  $('#gVm').innerHTML=v; $('#readout').innerHTML=ro;
+
+  // Maschen
+  const M={1:{c:'var(--reihe)',x1:X0+18,x2:400-18,n:'I'},2:{c:'var(--par)',x1:400+18,x2:560-18,n:'II'},3:{c:'var(--knobel)',x1:X0+12,x2:560-12,n:'III'}}[mesh];
+  if(M){
+    const y1=YT+(mesh===3?12:18), y2=YB-(mesh===3?12:18), mx=(M.x1+M.x2)/2;
+    $('#gMesh').innerHTML=`<rect class="mesh" x="${M.x1}" y="${y1}" width="${M.x2-M.x1}" height="${y2-y1}" rx="16" stroke="${M.c}"/>
+      <polygon points="${mx-8},${y1-7} ${mx+8},${y1} ${mx-8},${y1+7}" fill="${M.c}"/>
+      <polygon points="${mx+8},${y2-7} ${mx-8},${y2} ${mx+8},${y2+7}" fill="${M.c}"/>
+      <text x="${mesh===2?mx:M.x1+30}" y="${(y1+y2)/2+(mesh===2?0:60)}" text-anchor="middle" style="fill:${M.c};font-weight:700;font-size:20px">${M.n}</text>`;
+  } else $('#gMesh').innerHTML='';
+
+  // Bedienelemente
+  ['U','R1','R2','R3','R4'].forEach(k=>{ $('#c'+k).value=sim[k]; $('#o'+k).textContent=k==='U'?de(sim.U,1)+' V':sim[k]+' Ω'; });
+  $('#cB4').checked=sim.b4; $('#ctlR4').classList.toggle('off',!sim.b4); $('#cR4').disabled=!sim.b4;
+  $('#cFlow').value=flow;
+  buildDots(r);
+  saveSim();
+}
+
+/* ---------- Ladungsfluss ---------- */
+let dots=[], offs={};
+function buildDots(r){
+  const xs=XS(), xl=xs[xs.length-1];
+  const segs=[{id:'m1',p:[[X0,BP],[X0,YT],[400,YT]],I:r.I1},{id:'t3',p:[[400,YT],[560,YT]],I:r.I34}];
+  if(sim.b4) segs.push({id:'t4',p:[[560,YT],[720,YT]],I:r.I4});
+  const Ib=[r.I2,r.I3,r.I4];
+  xs.forEach((x,i)=>segs.push({id:'b'+i+'o',p:[[x,YT],[x,YS-20]],I:Ib[i]},{id:'b'+i+'u',p:[[x,YS+20],[x,YB]],I:Ib[i]}));
+  if(sim.b4) segs.push({id:'u4',p:[[720,YB],[560,YB]],I:r.I4});
+  segs.push({id:'u3',p:[[560,YB],[400,YB]],I:r.I34},{id:'m2',p:[[400,YB],[X0,YB],[X0,BM]],I:r.I1});
+  let h=''; dots=[];
+  segs.forEach(sg=>{
+    let L=0; const cum=[0];
+    for(let i=1;i<sg.p.length;i++){ L+=Math.hypot(sg.p[i][0]-sg.p[i-1][0],sg.p[i][1]-sg.p[i-1][1]); cum.push(L); }
+    const n=Math.max(1,Math.round(L/24));
+    sg.L=L; sg.cum=cum; sg.n=n; sg.sp=L/n; offs[sg.id]=offs[sg.id]||0;
+    for(let k=0;k<n;k++) h+=`<circle class="dotq${flow==='el'?' el':''}" r="${flow==='el'?3:3.6}" data-s="${sg.id}"/>`;
+    dots.push(sg);
+  });
+  const g=$('#gDots'); g.innerHTML=flow==='aus'?'':h; g.style.display=flow==='aus'?'none':'';
+  if(flow!=='aus'){ const els=g.querySelectorAll('circle'); let j=0; dots.forEach(sg=>{ sg.els=[]; for(let k=0;k<sg.n;k++) sg.els.push(els[j++]); }); placeDots(0); }
+}
+function at(sg,s){
+  let i=1; while(i<sg.cum.length-1 && sg.cum[i]<s) i++;
+  const a=sg.p[i-1], b=sg.p[i], l=sg.cum[i]-sg.cum[i-1], t=l?(s-sg.cum[i-1])/l:0;
+  return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t];
+}
+function placeDots(dt){
+  const dir=flow==='el'?-1:1;
+  dots.forEach(sg=>{
+    offs[sg.id]=((offs[sg.id]+dir*sg.I*180*dt)%sg.sp+sg.sp)%sg.sp;
+    sg.els.forEach((el,k)=>{ const [x,y]=at(sg,(offs[sg.id]+k*sg.sp)%sg.L); el.setAttribute('cx',x.toFixed(1)); el.setAttribute('cy',y.toFixed(1)); });
+  });
+}
+let last=performance.now();
+function loop(t){
+  const dt=Math.min(.05,(t-last)/1000); last=t;
+  if(flow!=='aus' && !document.hidden) placeDots(dt);
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* ---------- Bedienung ---------- */
+['U','R1','R2','R3','R4'].forEach(k=>$('#c'+k).addEventListener('input',e=>{ sim[k]=+e.target.value; render(); }));
+$('#cB4').addEventListener('change',e=>{ sim.b4=e.target.checked; render(); });
+$('#cFlow').addEventListener('change',e=>{ flow=e.target.value; render(); });
+$('#bAmmOff').addEventListener('click',()=>{ amm.clear(); render(); });
+$('#bVmOff').addEventListener('click',()=>{ vm={red:null,black:null}; render(); });
+$('#bSwap').addEventListener('click',()=>{ if(vm.red&&vm.black){ vm={red:vm.black,black:vm.red}; render(); } });
+function svgAct(el){
+  if(!el) return false;
+  if(el.dataset.spot){ const id=el.dataset.spot; amm.has(id)?amm.delete(id):amm.add(id); }
+  else if(el.dataset.sw){ sim[el.dataset.sw]=!sim[el.dataset.sw]; }
+  else if(el.dataset.pt){
+    const id=el.dataset.pt;
+    if(!vm.red) vm.red=id;
+    else if(!vm.black && id!==vm.red) vm.black=id;
+    else vm={red:id,black:null};
+  } else return false;
+  const sel=el.dataset.spot?`[data-spot="${el.dataset.spot}"]`:el.dataset.sw?`[data-sw="${el.dataset.sw}"]`:`[data-pt="${el.dataset.pt}"]`;
+  render();
+  const n=document.querySelector('#circ '+sel); if(n) n.focus({preventScroll:true});   // Fokus bleibt nach dem Neuzeichnen erhalten
+  return true;
+}
+$('#circ').addEventListener('click',e=>svgAct(e.target.closest('[data-spot],[data-sw],[data-pt]')));
+$('#circ').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ const el=e.target.closest('[data-spot],[data-sw],[data-pt]'); if(el){ e.preventDefault(); svgAct(el); } } });
+
+/* =========================================================
+   Aufträge
+   ========================================================= */
+const S1={U:12,R1:20,R2:30,R3:60,R4:60,b4:false,s2:true,s3:true,s4:true};
+const S2={U:12,R1:10,R2:30,R3:60,R4:60,b4:true,s2:true,s3:true,s4:true};
+const S3={U:9,R1:40,R2:30,R3:60,R4:60,b4:false,s2:true,s3:true,s4:true};
+const S5={U:12,R1:20,R2:60,R3:30,R4:20,b4:false,s2:true,s3:true,s4:true};
+const setTxt=s=>`U<sub>0</sub> = ${s.U} V, R<sub>1</sub> = ${s.R1} Ω, R<sub>2</sub> = ${s.R2} Ω, R<sub>3</sub> = ${s.R3} Ω`+(s.b4?`, R<sub>4</sub> = ${s.R4} Ω (dritter Zweig an)`:', dritter Zweig aus')+', alle Schalter geschlossen';
+
+const TASKS=[
+{ id:1, group:'knoten', chip:'Knotenregel', title:'Wie teilt sich der Strom auf?', set:S1,
+  steps:['Übernehmt die Einstellungen. Die Punkte K<sub>1</sub> und K<sub>2</sub>, an denen sich die Leitung verzweigt, heißen <b>Knoten</b>.',
+         'Baut Strommesser ein: in der Zuleitung vor K<sub>1</sub>, im Zweig mit R<sub>2</sub>, im Zweig mit R<sub>3</sub> und in der Rückleitung hinter K<sub>2</sub>.',
+         'Tragt die Stromstärken in die Tabelle ein. Stellt danach R<sub>3</sub> auf 20 Ω und messt erneut.',
+         'Vergleicht die Ströme, die in den Knoten K<sub>1</sub> hineinfließen, mit denen, die herausfließen.'],
+  table:{cols:[{k:'R3',l:'R<sub>3</sub> in Ω',g:1},{k:'I1',l:'I<sub>1</sub> (Zuleitung) in A'},{k:'I2',l:'I<sub>2</sub> (Zweig R<sub>2</sub>) in A'},{k:'I3',l:'I<sub>3</sub> (Zweig R<sub>3</sub>) in A'},{k:'Ir',l:'I in der Rückleitung in A'}],
+    rows:[{R3:60},{R3:20}], exp:r=>{const x=solve({...S1,R3:r.R3}); return {...x, Ir:x.I1};}},
+  hint:'Prüft die Einstellungen (Button „Einstellungen übernehmen“) und setzt R<sub>3</sub> für die zweite Zeile auf 20 Ω. Die Werte stehen in Ampere am jeweiligen Strommesser.',
+  cloze:[['Am Knoten K<sub>1</sub> gilt: I<sub>1</sub> ',{o:['= I<sub>2</sub> + I<sub>3</sub>','= I<sub>2</sub> = I<sub>3</sub>','= I<sub>2</sub> − I<sub>3</sub>'],c:0},'.'],
+         ['In der Rückleitung fließt ',{o:['genauso viel Strom wie in der Zuleitung','weniger Strom als in der Zuleitung','kein Strom mehr'],c:0},'.'],
+         ['Durch den Zweig mit dem kleineren Widerstand fließt ',{o:['der größere Teilstrom','der kleinere Teilstrom','gleich viel Strom'],c:0},'.']],
+  muster:'<b>Knotenregel (1. Kirchhoff’sches Gesetz):</b> An jedem Knoten ist die Summe der zufließenden Ströme gleich der Summe der abfließenden Ströme. Für K<sub>1</sub>: <b>I<sub>1</sub> = I<sub>2</sub> + I<sub>3</sub></b>. Ladung geht am Knoten weder verloren, noch staut sie sich dort.',
+  zusatz:{text:'Betrachtet den Knoten K<sub>2</sub>: Welche Ströme fließen hinein, welcher fließt heraus? Formuliert die Knotenregel für K<sub>2</sub>.',
+    cloze:[['An K<sub>2</sub> gilt: ',{o:['I<sub>2</sub> + I<sub>3</sub> = I<sub>1</sub>','I<sub>2</sub> = I<sub>3</sub> + I<sub>1</sub>','I<sub>2</sub> − I<sub>3</sub> = I<sub>1</sub>'],c:0},'.']]}
+},
+{ id:2, group:'knoten', chip:'Knotenregel', title:'Drei Zweige und ein offener Schalter', set:S2,
+  steps:['Übernehmt die Einstellungen. Jetzt gibt es einen dritten Zweig mit R<sub>4</sub>.',
+         '<b>Vor dem Messen:</b> Wie groß ist der Strom oben zwischen den Zweigen R<sub>2</sub> und R<sub>3</sub>, wenn ihr I<sub>3</sub> und I<sub>4</sub> kennt? Schreibt eure Vermutung ins Textfeld.',
+         'Messt alle Ströme aus der Tabelle (Zeile 1).',
+         'Öffnet den Schalter S<sub>2</sub> durch Antippen und messt erneut (Zeile 2).'],
+  extraTa:'Unsere Vermutung vor dem Messen',
+  table:{cols:[{k:'S',l:'Schalter S<sub>2</sub>',g:1},{k:'I1',l:'I<sub>1</sub> in A'},{k:'I2',l:'I<sub>2</sub> in A'},{k:'I3',l:'I<sub>3</sub> in A'},{k:'I4',l:'I<sub>4</sub> in A'},{k:'I34',l:'I oben zwischen R<sub>2</sub>- und R<sub>3</sub>-Zweig in A'}],
+    rows:[{S:'geschlossen',s2:true},{S:'offen',s2:false}], exp:r=>solve({...S2,s2:r.s2})},
+  hint:'Achtet auf den Zustand von S<sub>2</sub>: In Zeile 1 ist er geschlossen, in Zeile 2 offen. Der Strom „oben zwischen den Zweigen“ wird an der Messstelle rechts neben K<sub>1</sub> gemessen.',
+  cloze:[['Auch bei drei Zweigen gilt: I<sub>1</sub> ',{o:['= I<sub>2</sub> + I<sub>3</sub> + I<sub>4</sub>','= I<sub>2</sub> + I<sub>3</sub>','= I<sub>2</sub> · I<sub>3</sub> · I<sub>4</sub>'],c:0},'.'],
+         ['Zwischen den Zweigen fließt oben der Strom ',{o:['I<sub>3</sub> + I<sub>4</sub>','I<sub>1</sub>','I<sub>2</sub>'],c:0},' – auch dort ist ein Knoten.'],
+         ['Wird der Zweig mit R<sub>2</sub> unterbrochen, ',{o:['wird der Strom in der Zuleitung kleiner','bleibt der Strom in der Zuleitung gleich','wird der Strom in der Zuleitung größer'],c:0},'. Die Knotenregel ',{o:['gilt weiter, jetzt mit I<sub>2</sub> = 0','gilt dann nicht mehr'],c:0},'.']],
+  muster:'Die Knotenregel gilt für beliebig viele Zweige: <b>I<sub>1</sub> = I<sub>2</sub> + I<sub>3</sub> + I<sub>4</sub></b>. Jede Verzweigung ist ein Knoten, z. B. fließt oben zwischen den Zweigen I<sub>3</sub> + I<sub>4</sub>. Ein offener Zweig führt keinen Strom (I = 0); weil der Gesamtwiderstand steigt, wird auch I<sub>1</sub> kleiner.',
+  zusatz:{text:'<b>Fehleranalyse:</b> Lea misst bei anderen Einstellungen I<sub>1</sub> = 0,50 A, I<sub>2</sub> = 0,25 A, I<sub>3</sub> = 0,15 A und I<sub>4</sub> = 0,15 A. Begründet, dass mindestens ein Messwert falsch sein muss.',
+    cloze:[['Die Teilströme ergeben zusammen ',{o:['0,55 A – mehr als I<sub>1</sub>','0,50 A – alles passt','0,45 A – weniger als I<sub>1</sub>'],c:0},'.']]}
+},
+{ id:3, group:'masche', chip:'Maschenregel', title:'Wie teilt sich die Spannung auf?', set:S3, meshes:[1,2,3],
+  steps:['Übernehmt die Einstellungen. Lasst euch nacheinander die <b>Maschen</b> I, II und III anzeigen: Eine Masche ist ein geschlossener Weg durch die Schaltung.',
+         'Messt mit dem Spannungsmesser: U<sub>0</sub> zwischen A und C, U<sub>1</sub> an R<sub>1</sub> (A–B), U<sub>2</sub> an R<sub>2</sub> (D–E) und U<sub>3</sub> an R<sub>3</sub> (F–G). Rote Messspitze jeweils an den ersten Buchstaben.',
+         'Stellt danach R<sub>1</sub> auf 10 Ω und messt erneut.',
+         'Vergleicht für jede Masche die Spannungen an den Widerständen mit der Quellspannung.'],
+  table:{cols:[{k:'R1',l:'R<sub>1</sub> in Ω',g:1},{k:'U0',l:'U<sub>0</sub> (A–C) in V'},{k:'U1',l:'U<sub>1</sub> (A–B) in V'},{k:'U2',l:'U<sub>2</sub> (D–E) in V'},{k:'U3',l:'U<sub>3</sub> (F–G) in V'}],
+    rows:[{R1:40},{R1:10}], exp:r=>solve({...S3,R1:r.R1})},
+  hint:'Rote Messspitze an den ersten, schwarze an den zweiten Punkt – sonst erscheint ein Minuszeichen. Für Zeile 2 R<sub>1</sub> auf 10 Ω stellen.',
+  cloze:[['In Masche I (Quelle, R<sub>1</sub>, R<sub>2</sub>) gilt: U<sub>0</sub> ',{o:['= U<sub>1</sub> + U<sub>2</sub>','= U<sub>1</sub> = U<sub>2</sub>','= U<sub>1</sub> − U<sub>2</sub>'],c:0},'.'],
+         ['In Masche III (Quelle, R<sub>1</sub>, R<sub>3</sub>) gilt: U<sub>0</sub> ',{o:['= U<sub>1</sub> + U<sub>3</sub>','= U<sub>1</sub> + U<sub>2</sub> + U<sub>3</sub>','= U<sub>3</sub>'],c:0},'.'],
+         ['In Masche II (R<sub>2</sub>, R<sub>3</sub>, ohne Quelle) gilt: ',{o:['U<sub>2</sub> = U<sub>3</sub>','U<sub>2</sub> + U<sub>3</sub> = U<sub>0</sub>','U<sub>2</sub> = 2 · U<sub>3</sub>'],c:0},', obwohl R<sub>2</sub> und R<sub>3</sub> ',{o:['verschieden groß','gleich groß'],c:0},' sind.']],
+  muster:'<b>Maschenregel (2. Kirchhoff’sches Gesetz):</b> In jeder Masche ist die Summe der Teilspannungen an den Widerständen gleich der Quellspannung: <b>U<sub>0</sub> = U<sub>1</sub> + U<sub>2</sub></b> und ebenso U<sub>0</sub> = U<sub>1</sub> + U<sub>3</sub>. Enthält eine Masche keine Quelle, sind die Spannungen in beiden Richtungen gleich: <b>U<sub>2</sub> = U<sub>3</sub></b>. Deutung: Auf jedem Weg durch den Stromkreis gibt die Ladung genau die Energie ab, die sie in der Quelle aufgenommen hat.',
+  zusatz:{text:'Öffnet den Schalter S<sub>3</sub>. Sagt vorher, wie sich U<sub>1</sub> und U<sub>2</sub> ändern, und überprüft dann. Gilt die Maschenregel in Masche I weiterhin?',
+    cloze:[['Mit offenem S<sub>3</sub> wird U<sub>1</sub> ',{o:['kleiner','größer','nicht verändert'],c:0},' und U<sub>2</sub> ',{o:['größer','kleiner','nicht verändert'],c:0},'. Die Summe U<sub>1</sub> + U<sub>2</sub> ',{o:['bleibt gleich U<sub>0</sub>','ändert sich ebenfalls'],c:0},'.']]}
+},
+{ id:4, group:'masche', chip:'Maschenregel', title:'Einmal rundherum: Spannungen mit Vorzeichen', set:S3, meshes:[1], optional:true,
+  steps:['Übernehmt die Einstellungen und zeigt Masche I an.',
+         'Lauft die Masche im Uhrzeigersinn ab: A → B → D → E → C → A. Setzt für jedes Teilstück die <b>rote</b> Messspitze an den Anfang und die <b>schwarze</b> an das Ende und notiert die Anzeige <b>mit Vorzeichen</b>.',
+         'Addiert alle fünf Spannungen.'],
+  table:{cols:[{k:'AB',l:'U<sub>AB</sub> in V'},{k:'BD',l:'U<sub>BD</sub> in V'},{k:'DE',l:'U<sub>DE</sub> in V'},{k:'EC',l:'U<sub>EC</sub> in V'},{k:'CA',l:'U<sub>CA</sub> in V'},{k:'S',l:'Summe in V'}],
+    rows:[{}], exp:()=>{const x=solve(S3); return {AB:x.U1,BD:0,DE:x.U2,EC:0,CA:-x.U0,S:0};}},
+  hint:'Auf die Reihenfolge der Messspitzen achten: Bei U<sub>CA</sub> ist rot an C und schwarz an A – dann zeigt das Gerät einen negativen Wert. Leitungsstücke ohne Bauteil haben 0 V.',
+  cloze:[['Über einem Leitungsstück ohne Bauteil ist die Spannung ',{o:['null','gleich U<sub>0</sub>','nicht messbar'],c:0},'.'],
+         ['Durchläuft man die Quelle vom Minus- zum Pluspol, ist die gemessene Spannung ',{o:['negativ','positiv'],c:0},'.'],
+         ['Bei einem vollständigen Umlauf ist die Summe aller Spannungen ',{o:['null','gleich U<sub>0</sub>','doppelt so groß wie U<sub>0</sub>'],c:0},'.']],
+  muster:'Durchläuft man eine Masche einmal vollständig und zählt die Spannungen mit Vorzeichen, ist ihre Summe null: <b>U<sub>AB</sub> + U<sub>BD</sub> + U<sub>DE</sub> + U<sub>EC</sub> + U<sub>CA</sub> = 0</b>. Das ist dieselbe Aussage wie U<sub>0</sub> = U<sub>1</sub> + U<sub>2</sub>, nur dass die Quellspannung beim Umlauf mit negativem Vorzeichen auftritt.',
+  zusatz:null
+},
+{ id:5, group:'anw', chip:'Anwenden', title:'Vorhersagen ohne Messgerät', set:S5,
+  steps:['Übernehmt die Einstellungen, aber <b>messt noch nicht</b>.',
+         'Aus einem Messprotokoll sind bekannt: U<sub>0</sub> = 12 V, I<sub>1</sub> = 0,30 A, I<sub>2</sub> = 0,10 A und U<sub>1</sub> = 6,0 V.',
+         'Bestimmt I<sub>3</sub>, U<sub>2</sub> und U<sub>3</sub> nur mit Knoten- und Maschenregel. Schreibt den Rechenweg auf und tragt die Ergebnisse ein.',
+         'Überprüft erst danach mit Strom- und Spannungsmesser.'],
+  extraTa:'Rechenweg',
+  checkLabel:'Vorhersage prüfen',
+  table:{cols:[{k:'I3',l:'I<sub>3</sub> in A'},{k:'U2',l:'U<sub>2</sub> in V'},{k:'U3',l:'U<sub>3</sub> in V'}], rows:[{}], exp:()=>solve(S5)},
+  hint:'I<sub>3</sub> folgt aus der Knotenregel an K<sub>1</sub>, U<sub>2</sub> aus der Maschenregel für Masche I, U<sub>3</sub> aus Masche II.',
+  cloze:[['Für I<sub>3</sub> braucht man ',{o:['die Knotenregel','die Maschenregel'],c:0},', für U<sub>2</sub> ',{o:['die Maschenregel','die Knotenregel'],c:0},'.']],
+  muster:'Knotenregel an K<sub>1</sub>: I<sub>3</sub> = I<sub>1</sub> − I<sub>2</sub> = 0,30 A − 0,10 A = <b>0,20 A</b>. Maschenregel (Masche I): U<sub>2</sub> = U<sub>0</sub> − U<sub>1</sub> = 12 V − 6 V = <b>6 V</b>. Masche II: U<sub>3</sub> = U<sub>2</sub> = <b>6 V</b>.',
+  zusatz:{text:'Schaltet zusätzlich den dritten Zweig mit R<sub>4</sub> = 20 Ω zu. Sagt vorher, wie sich I<sub>1</sub>, U<sub>1</sub> und U<sub>2</sub> verändern, und begründet. Überprüft anschließend.',
+    cloze:[['I<sub>1</sub> wird ',{o:['größer','kleiner','nicht verändert'],c:0},', U<sub>1</sub> wird ',{o:['größer','kleiner','nicht verändert'],c:0},' und U<sub>2</sub> wird ',{o:['kleiner','größer','nicht verändert'],c:0},'.']]}
+}
+];
+
+const INTRO=`<section class="task info" id="t-0" data-group="info" aria-labelledby="h-0">
+  <h2 id="h-0">So arbeitet ihr</h2>
+  <p>Links seht ihr eine verzweigte Schaltung: eine Spannungsquelle, einen Widerstand R<sub>1</sub> und dahinter mehrere parallele Zweige. Ihr findet heraus, nach welchen Regeln sich <b>Ströme an Verzweigungen</b> und <b>Spannungen in geschlossenen Wegen</b> aufteilen.</p>
+  <h3>Bedienung</h3>
+  <ul>
+    <li><b>Strommesser:</b> Eine gestrichelte Messstelle antippen – dort wird ein Amperemeter in die Leitung eingebaut. Nochmals antippen entfernt es.</li>
+    <li><b>Spannungsmesser:</b> Zwei Messpunkte antippen, zuerst den für die <b>rote</b>, dann den für die <b>schwarze</b> Messspitze. Die Anzeige hat ein Vorzeichen.</li>
+    <li><b>Schalter</b> S<sub>2</sub>, S<sub>3</sub>, S<sub>4</sub> antippen, um einen Zweig zu öffnen oder zu schließen.</li>
+    <li>Mit den Reglern verändert ihr Quellspannung und Widerstände. „Einstellungen übernehmen“ in einem Auftrag stellt alles passend ein.</li>
+    <li>Der <b>Ladungsfluss</b> zeigt, wie schnell sich Ladung in jedem Leitungsstück bewegt.</li>
+  </ul>
+  <h3>Ablauf</h3>
+  <p>Messwerte eintragen und prüfen, Ergebnis formulieren und prüfen – dann ist der Auftrag geschafft. Auftrag 4 und die Vertiefungen sind freiwillig. Dezimalzahlen könnt ihr mit Komma oder Punkt eingeben, Stromstärken in Ampere.</p>
+  <div class="actions noprint"><button class="btn" type="button" data-go="1">Los geht’s mit Auftrag 1</button></div>
+</section>`;
+
+const MERK=`<section class="task merk" id="t-9" data-group="info" aria-labelledby="h-9">
+  <h2 id="h-9">Merkseite</h2>
+  <div id="merkBody"></div>
+</section>`;
+const MERK_BODY=`<p>Übertragt beide Regeln mit einer Skizze ins Heft.</p>
+  <div class="law"><h3>1. Kirchhoff’sches Gesetz: Knotenregel</h3>
+    <p>An jedem Knoten ist die Summe der zufließenden Ströme gleich der Summe der abfließenden Ströme.</p>
+    <p><b>I<sub>zu</sub> = I<sub>ab</sub></b>, z. B. I<sub>1</sub> = I<sub>2</sub> + I<sub>3</sub></p>
+    <p>Grund: Ladung wird im Knoten weder erzeugt noch vernichtet und staut sich nicht.</p></div>
+  <div class="law"><h3>2. Kirchhoff’sches Gesetz: Maschenregel</h3>
+    <p>In jeder Masche ist die Summe der Teilspannungen an den Widerständen gleich der Quellspannung.</p>
+    <p><b>U<sub>0</sub> = U<sub>1</sub> + U<sub>2</sub></b>; in einer Masche ohne Quelle: U<sub>2</sub> = U<sub>3</sub></p>
+    <p>Mit Vorzeichen gezählt ist die Summe aller Spannungen beim Umlauf null.</p>
+    <p>Grund: Auf jedem Weg durch den Stromkreis gibt die Ladung genau die Energie ab, die sie in der Quelle aufgenommen hat.</p></div>
+  <div class="law"><h3>Zusammenhang mit Reihen- und Parallelschaltung</h3>
+    <p>Reihenschaltung: Spannungen addieren sich (Maschenregel), Stromstärke überall gleich (Knotenregel ohne Verzweigung).<br>
+       Parallelschaltung: Ströme addieren sich (Knotenregel), Spannung an allen Zweigen gleich (Maschenregel ohne Quelle).</p></div>`;
+
+/* ---------- Rendering der Aufträge ---------- */
+const fmtG=v=>typeof v==='number'?String(v).replace('.',','):v;
+function tableHTML(pre,tb){
+  let h=`<div class="tablewrap"><table class="mt"><thead><tr>${tb.rows.length>1?'<th>Nr.</th>':''}${tb.cols.map(c=>`<th>${c.l}</th>`).join('')}</tr></thead><tbody>`;
+  tb.rows.forEach((r,i)=>{
+    h+=`<tr>${tb.rows.length>1?`<td>${i+1}</td>`:''}`+tb.cols.map(c=>c.g?`<td class="given">${fmtG(r[c.k])}</td>`:
+      `<td><input inputmode="decimal" id="${pre}-r${i}-${c.k}" aria-label="Zeile ${i+1}, ${uni(c.l)}"></td>`).join('')+`</tr>`;
+  });
+  return h+`</tbody></table></div>`;
+}
+function clozeHTML(pre,cl){
+  return `<div class="cloze">`+cl.map((line,li)=>{ let si=0;
+    return `<p>`+line.map(part=>{ if(typeof part==='string') return part;
+      const id=`${pre}-c${li}-${si++}`;
+      return `<select id="${id}"><option value="">— bitte wählen —</option>${part.o.map((o,oi)=>`<option value="${oi}">${uni(o)}</option>`).join('')}</select>`;
+    }).join('')+`</p>`; }).join('')+`</div>`;
+}
+function taskHTML(t){
+  const p='t'+t.id;
+  let h=`<section class="task" id="t-${t.id}" data-group="${t.group}" aria-labelledby="h-${t.id}">
+    <span class="chip ${t.group}">Auftrag ${t.id} – ${t.chip}</span>${t.optional?' <span class="chip anw">freiwillig</span>':''}
+    <h2 id="h-${t.id}">${t.title}</h2>
+    <div class="settings"><p><b>Einstellungen:</b> ${setTxt(t.set)}</p>
+      <div class="actions noprint"><button class="btn small" type="button" data-set="${t.id}">Einstellungen übernehmen</button>
+      ${(t.meshes||[]).map(m=>`<button class="btn ghost small" type="button" data-mesh="${m}">Masche ${['','I','II','III'][m]} zeigen</button>`).join('')}
+      ${t.meshes?'<button class="btn ghost small" type="button" data-mesh="0">Maschen ausblenden</button>':''}</div></div>
+    <ol class="steps">${t.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+    ${t.extraTa?`<label class="ta" for="${p}-extra">${t.extraTa}</label><textarea id="${p}-extra"></textarea>`:''}
+    <h3>${t.checkLabel?'Eure Vorhersage':'Messtabelle'}</h3>
+    ${tableHTML(p+'-m',t.table)}
+    <div class="actions noprint"><button class="btn" type="button" data-act="check-m" data-t="${t.id}">${t.checkLabel||'Messwerte prüfen'}</button></div>
+    <div class="fb" id="${p}-mfb" role="status"></div>
+    <h3>Auswertung</h3>
+    <label class="ta" for="${p}-own">Euer Ergebnis in eigenen Worten</label>
+    <textarea id="${p}-own"></textarea>
+    <p style="margin:14px 0 0"><b>Überprüft euer Ergebnis:</b></p>
+    ${clozeHTML(p+'-k',t.cloze)}
+    <div class="actions noprint"><button class="btn" type="button" data-act="check-k" data-t="${t.id}">Ergebnis prüfen</button></div>
+    <div class="fb" id="${p}-kfb" role="status"></div>
+    <div class="muster" id="${p}-muster">${t.muster}</div>`;
+  if(t.zusatz){ const z=t.zusatz;
+    h+=`<details class="zusatz" id="${p}-zd"><summary>Vertiefung <span class="opt">(freiwillig)</span></summary><div class="zin">
+      <p>${z.text}</p>
+      <label class="ta" for="${p}-zv">Unsere Überlegung</label><textarea id="${p}-zv"></textarea>
+      ${z.cloze?clozeHTML(p+'-zk',z.cloze):''}
+      <div class="actions noprint"><button class="btn" type="button" data-act="check-z" data-t="${t.id}">Vertiefung prüfen</button></div>
+      <div class="fb" id="${p}-zfb" role="status"></div></div></details>`;
+  }
+  return h+`</section>`;
+}
+$('#tasks').innerHTML=INTRO+TASKS.map(taskHTML).join('')+MERK;
+
+/* ---------- Navigation ---------- */
+const TABS=[{id:0,l:'Start'},...TASKS.map(t=>({id:t.id,l:'Auftrag '+t.id+(t.optional?' (frei)':'')})),{id:9,l:'Merkseite'}];
+$('#tabs').innerHTML=TABS.map(t=>`<button type="button" data-go="${t.id}">${t.l}</button>`).join('');
+let current=store.cur??0;
+function go(id){
+  current=+id; store.cur=current; save();
+  document.querySelectorAll('.task').forEach(e=>e.classList.toggle('show',e.id==='t-'+current));
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-current',b.dataset.go==current?'true':'false'));
+  if(current===9) renderMerk();
+}
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]'); if(g){ go(g.dataset.go); $('#tabs').scrollIntoView({behavior:'smooth',block:'start'}); return; }
+  const s=e.target.closest('[data-set]'); if(s){ const t=TASKS.find(x=>x.id==s.dataset.set); sim=Object.assign({},t.set); mesh=0; render(); return; }
+  const m=e.target.closest('[data-mesh]'); if(m){ mesh=+m.dataset.mesh; render(); return; }
+  const a=e.target.closest('[data-act]'); if(a) act(a.dataset.act,+a.dataset.t);
+});
+
+/* ---------- Prüfen ---------- */
+const num=v=>{ const t=String(v??'').replace(/\s/g,'').replace(',','.').replace(/[−–]/g,'-').replace(/[^0-9.\-+]/g,''); return t===''||t==='-'?NaN:parseFloat(t); };
+const near=(x,e)=>Math.abs(x-e)<=Math.max(0.03*Math.abs(e),0.006);
+function checkTable(pre,tb){
+  let missing=0,wrong=0;
+  tb.rows.forEach((r,i)=>{ const ex=tb.exp(r);
+    tb.cols.filter(c=>!c.g).forEach(c=>{
+      const el=document.getElementById(`${pre}-r${i}-${c.k}`), x=num(el.value);
+      el.classList.remove('ok','bad');
+      if(isNaN(x)){ missing++; return; }
+      if(near(x,ex[c.k])) el.classList.add('ok'); else { el.classList.add('bad'); wrong++; }
+    });
+  });
+  return {missing,wrong,ok:!missing&&!wrong};
+}
+function checkCloze(pre,cl){
+  let missing=0,wrong=0;
+  cl.forEach((line,li)=>{ let si=0; line.forEach(part=>{ if(typeof part==='string') return;
+    const el=document.getElementById(`${pre}-c${li}-${si++}`); el.classList.remove('ok','bad');
+    if(el.value===''){ missing++; return; }
+    if(+el.value===part.c) el.classList.add('ok'); else { el.classList.add('bad'); wrong++; }
+  });});
+  return {missing,wrong,ok:!missing&&!wrong};
+}
+function fb(id,cls,html){ const e=document.getElementById(id); e.className='fb '+cls; e.innerHTML=html; }
+function act(kind,tid){
+  const t=TASKS.find(x=>x.id===tid), p='t'+tid;
+  store.done[tid]=store.done[tid]||{};
+  if(kind==='check-m'){
+    const r=checkTable(p+'-m',t.table);
+    if(r.ok){ fb(p+'-mfb','ok',t.checkLabel?'<p>Eure Vorhersage stimmt. Überprüft sie jetzt in der Simulation.</p>':'<p>Alle Messwerte passen. Jetzt geht es an die Auswertung.</p>'); store.done[tid].m=true; }
+    else if(r.missing&&!r.wrong){ fb(p+'-mfb','info',`<p>Es fehlen noch ${r.missing} Wert(e).</p>`); store.done[tid].m=false; }
+    else { fb(p+'-mfb','bad',`<p>${r.wrong} Wert(e) passen nicht${r.missing?`, ${r.missing} fehlen noch`:''}. Die rot markierten Felder bitte überprüfen.</p><p>${t.hint}</p>`); store.done[tid].m=false; }
+  }
+  if(kind==='check-k'){
+    const r=checkCloze(p+'-k',t.cloze);
+    if(r.ok){ store.done[tid].k=true; $('#'+p+'-muster').classList.add('on');
+      fb(p+'-kfb','ok',store.done[tid].m?'<p>Richtig! Vergleicht den Merksatz mit eurer Formulierung.</p>':'<p>Richtig! Prüft noch eure Werte in der Tabelle, dann ist der Auftrag geschafft.</p>'); }
+    else { store.done[tid].k=false; fb(p+'-kfb',r.wrong?'bad':'info',r.wrong?`<p>${r.wrong} Auswahl(en) passen noch nicht. Schaut in eure Tabelle.</p>`:'<p>Wählt in allen Feldern etwas aus.</p>'); }
+  }
+  if(kind==='check-z'){
+    const z=t.zusatz; let ok=true, parts=[];
+    if(z.cloze){ const r=checkCloze(p+'-zk',z.cloze); ok=r.ok; if(!r.ok) parts.push(r.wrong?'Eine Auswahl passt noch nicht – überprüft in der Simulation.':'Wählt in allen Feldern etwas aus.'); }
+    if(!(document.getElementById(p+'-zv').value||'').trim()){ ok=false; parts.push('Schreibt eure Überlegung auf.'); }
+    store.done[tid].z=ok;
+    fb(p+'-zfb',ok?'ok':'bad',ok?'<p>Vertiefung geschafft.</p>':'<ul>'+parts.map(x=>`<li>${x}</li>`).join('')+'</ul>');
+  }
+  save(); updateProgress();
+}
+const REQ=[1,2,3,5];
+const tDone=id=>{ const d=store.done[id]; return !!(d&&d.m&&d.k); };
+function updateProgress(){
+  TASKS.forEach(t=>{
+    document.querySelector(`#tabs [data-go="${t.id}"]`).classList.toggle('done',tDone(t.id));
+    if(store.done[t.id]&&store.done[t.id].k) $('#t'+t.id+'-muster').classList.add('on');
+  });
+  document.querySelector('#tabs [data-go="9"]').classList.toggle('done',REQ.every(tDone));
+  if(current===9) renderMerk();
+}
+function renderMerk(){
+  const open=REQ.filter(i=>!tDone(i));
+  $('#merkBody').innerHTML=!open.length?MERK_BODY:`<div class="locked">Die Merkseite wird freigeschaltet, sobald die Aufträge 1, 2, 3 und 5 geschafft sind. Noch offen: Auftrag ${open.join(', ')}.</div>`;
+}
+
+/* ---------- Eingaben speichern/laden ---------- */
+document.querySelectorAll('#tasks input[id], #tasks select[id], #tasks textarea[id]').forEach(el=>{
+  if(store.v[el.id]!=null) el.value=store.v[el.id];
+  el.addEventListener('input',()=>{ store.v[el.id]=el.value; save(); });
+});
+document.querySelectorAll('details.zusatz').forEach(d=>{ if(store.v[d.id]) d.open=true; d.addEventListener('toggle',()=>{ store.v[d.id]=d.open; save(); }); });
+
+$('#printBtn').addEventListener('click',()=>{ renderMerk(); document.querySelectorAll('details').forEach(d=>{ d.dataset.was=d.open; d.open=true; }); window.print(); });
+window.addEventListener('afterprint',()=>document.querySelectorAll('details').forEach(d=>d.open=d.dataset.was==='true'));
+$('#resetBtn').addEventListener('click',()=>{ if(confirm('Wirklich alle Eingaben und den Fortschritt löschen?')){ try{ localStorage.removeItem(KEY); }catch(e){} location.reload(); } });
+
+render(); updateProgress(); go(current);
+</script>
+</body>
+</html>
