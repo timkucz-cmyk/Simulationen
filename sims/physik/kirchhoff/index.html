@@ -182,7 +182,7 @@ footer{color:var(--muted);font-size:.85rem;padding:0 0 30px}
   <div class="layout">
     <div class="simcol">
       <div class="simcard">
-        <svg id="circ" viewBox="0 0 820 425" role="group" aria-label="Schaltung mit Spannungsquelle, Widerstand R1 und parallelen Zweigen. Messstellen und Messpunkte sind per Klick oder Tastatur bedienbar.">
+        <svg id="circ" viewBox="0 0 850 425" role="group" aria-label="Schaltung mit Spannungsquelle, Widerstand R1 und parallelen Zweigen. Messstellen und Messpunkte sind per Klick oder Tastatur bedienbar.">
           <g id="gMesh"></g><g id="gWires"></g><g id="gDots"></g><g id="gParts"></g><g id="gSpots"></g><g id="gVm"></g><g id="gPts"></g>
         </svg>
         <div class="legend">
@@ -200,7 +200,7 @@ footer{color:var(--muted);font-size:.85rem;padding:0 0 30px}
         </div>
         <div class="ctlrow">
           <label><input type="checkbox" id="cB4"> <span>dritter Zweig mit R<sub>4</sub></span></label>
-          <label><span>Ladungsfluss</span> <select id="cFlow"><option value="aus">ausblenden</option><option value="tech">technische Stromrichtung (+ → −)</option><option value="el">Elektronen (− → +)</option></select></label>
+          <label><span>Ladungsfluss</span> <select id="cFlow"><option value="el">Elektronenflussrichtung (− → +)</option><option value="tech">technische Stromrichtung (+ → −)</option><option value="aus">ausblenden</option></select></label>
         </div>
         <div class="ctlrow">
           <button class="btn ghost small" type="button" id="bAmmOff">Strommesser entfernen</button>
@@ -250,9 +250,9 @@ const DEF={U:9,R1:40,R2:30,R3:60,R4:60,b4:false,s2:true,s3:true,s4:true};
 let sim=Object.assign({},DEF,store.sim||{});
 let amm=new Set(store.amm||['a1','a3','a5']);
 let vm=Object.assign({red:null,black:null},store.vm||{});
-let flow=store.flow || (reduced?'aus':'tech');
+let flow=store.flow2 || (reduced?'aus':'el');
 let mesh=0;
-const saveSim=()=>{ store.sim=sim; store.amm=[...amm]; store.vm=vm; store.flow=flow; save(); };
+const saveSim=()=>{ store.sim=sim; store.amm=[...amm]; store.vm=vm; store.flow2=flow; save(); };
 
 /* ---------- Formatierung ---------- */
 const $=s=>document.querySelector(s);
@@ -294,6 +294,14 @@ function phi(id,r){
   }
 }
 const visible=o=>!o.b4||sim.b4;
+// Formelsymbole: Strom zwischen den Zweigen bewusst ohne Index (Auftrag 2 fragt danach)
+const ISYM={I1:'I₁',I2:'I₂',I3:'I₃',I4:'I₄',I34:'I'};
+// Spannung zwischen zwei Punkten: Bauteilspannung in Messrichtung als U₀…U₄, sonst U mit Punktnamen
+const USYM={AC:'₀',AB:'₁',DE:'₂',FG:'₃',HJ:'₄'};
+function uSym(a,b,svg){
+  if(USYM[a+b]) return 'U'+USYM[a+b];
+  return svg?`U<tspan dy="4" font-size="10">${a}${b}</tspan><tspan dy="-4"> </tspan>`:`U<sub>${a}${b}</sub>`;
+}
 
 /* ---------- Zeichnen ---------- */
 const pl=(pts,cls='w')=>`<polyline class="${cls}" points="${pts.map(p=>p.join(',')).join(' ')}"/>`;
@@ -341,12 +349,12 @@ function render(){
           <circle class="hit" cx="${o.x}" cy="${o.y}" r="16"/><circle class="ring" cx="${o.x}" cy="${o.y}" r="13"/>
           <circle class="spot0" cx="${o.x}" cy="${o.y}" r="9"/><text class="spot0t" x="${o.x}" y="${o.y}">A</text></g>`;
     } else {
-      const v=fA(r[o.k]);
-      const [tx0,ty0]=o.pos==='t'?[o.x,o.y-31]:o.pos==='b'?[o.x,o.y+31]:[o.x+57,o.y];
+      const v=ISYM[o.k]+' = '+fA(r[o.k]);
+      const [tx0,ty0]=o.pos==='t'?[o.x,o.y-31]:o.pos==='b'?[o.x,o.y+31]:[o.x+72,o.y];
       s+=`<g data-spot="${o.id}" tabindex="0" role="button" aria-label="Strommesser ${o.d}: ${v.replace(',',' Komma ')}. Ausbauen">
           <circle class="hit" cx="${o.x}" cy="${o.y}" r="17"/><circle class="ring" cx="${o.x}" cy="${o.y}" r="17"/>
           <circle class="met" cx="${o.x}" cy="${o.y}" r="13"/><text class="mett" x="${o.x}" y="${o.y}">A</text>
-          <rect class="tag" x="${tx0-36}" y="${ty0-12}" width="72" height="24" rx="6"/><text class="tagt" x="${tx0}" y="${ty0}">${v}</text></g>`;
+          <rect class="tag" x="${tx0-50}" y="${ty0-12}" width="100" height="24" rx="6"/><text class="tagt" x="${tx0}" y="${ty0}">${v}</text></g>`;
     }
   });
   $('#gSpots').innerHTML=s;
@@ -375,8 +383,8 @@ function render(){
     const cx=mx+nx*70, cy=my+ny*70, vx=mx+nx*35, vy=my+ny*35;
     v=`<path class="vline" d="M${a.x},${a.y} Q${cx},${cy} ${b.x},${b.y}" stroke="var(--ink)"/>
        <circle class="met" cx="${vx}" cy="${vy}" r="14"/><text class="mett" x="${vx}" y="${vy}">V</text>
-       <rect class="tag" x="${vx-40}" y="${vy+17}" width="80" height="24" rx="6"/><text class="tagt" x="${vx}" y="${vy+29}">${fV(U,true)}</text>`;
-    ro=`Spannungsmesser: <span class="probe r"></span>rot an <b>${a.id}</b>, <span class="probe k"></span>schwarz an <b>${b.id}</b> → U<sub>${a.id}${b.id}</sub> = <b class="num">${fV(U,true)}</b>`;
+       <rect class="tag" x="${vx-58}" y="${vy+17}" width="116" height="24" rx="6"/><text class="tagt" x="${vx}" y="${vy+29}">${uSym(a.id,b.id,true)}${USYM[a.id+b.id]?' ':''}= ${fV(U,true)}</text>`;
+    ro=`Spannungsmesser: <span class="probe r"></span>rot an <b>${a.id}</b>, <span class="probe k"></span>schwarz an <b>${b.id}</b> → ${USYM[a.id+b.id]?uSym(a.id,b.id)+' = ':''}U<sub>${a.id}${b.id}</sub> = <b class="num">${fV(U,true)}</b>`;
   } else if(vm.red){
     ro=`Spannungsmesser: <span class="probe r"></span>rot an <b>${vm.red}</b>. Tippe jetzt den Punkt für die <span class="probe k"></span>schwarze Messspitze an.`;
   } else {
@@ -541,9 +549,9 @@ const TASKS=[
 { id:5, group:'anw', chip:'Anwenden', title:'Vorhersagen ohne Messgerät', set:S5,
   steps:['Übernehmt die Einstellungen, aber <b>messt noch nicht</b>.',
          'Aus einem Messprotokoll sind bekannt: U<sub>0</sub> = 12 V, I<sub>1</sub> = 0,30 A, I<sub>2</sub> = 0,10 A und U<sub>1</sub> = 6,0 V.',
-         'Bestimmt I<sub>3</sub>, U<sub>2</sub> und U<sub>3</sub> nur mit Knoten- und Maschenregel. Schreibt den Rechenweg auf und tragt die Ergebnisse ein.',
+         'Bestimmt I<sub>3</sub>, U<sub>2</sub> und U<sub>3</sub> nur mit Knoten- und Maschenregel. Rechnet im Heft und tragt die Ergebnisse ein.',
          'Überprüft erst danach mit Strom- und Spannungsmesser.'],
-  extraTa:'Rechenweg',
+  noOwn:true,
   checkLabel:'Vorhersage prüfen',
   table:{cols:[{k:'I3',l:'I<sub>3</sub> in A'},{k:'U2',l:'U<sub>2</sub> in V'},{k:'U3',l:'U<sub>3</sub> in V'}], rows:[{}], exp:()=>solve(S5)},
   hint:'I<sub>3</sub> folgt aus der Knotenregel an K<sub>1</sub>, U<sub>2</sub> aus der Maschenregel für Masche I, U<sub>3</sub> aus Masche II.',
@@ -621,9 +629,9 @@ function taskHTML(t){
     <div class="actions noprint"><button class="btn" type="button" data-act="check-m" data-t="${t.id}">${t.checkLabel||'Messwerte prüfen'}</button></div>
     <div class="fb" id="${p}-mfb" role="status"></div>
     <h3>Auswertung</h3>
-    <label class="ta" for="${p}-own">Euer Ergebnis in eigenen Worten</label>
+    ${t.noOwn?'':`<label class="ta" for="${p}-own">Euer Ergebnis in eigenen Worten</label>
     <textarea id="${p}-own"></textarea>
-    <p style="margin:14px 0 0"><b>Überprüft euer Ergebnis:</b></p>
+    <p style="margin:14px 0 0"><b>Überprüft euer Ergebnis:</b></p>`}
     ${clozeHTML(p+'-k',t.cloze)}
     <div class="actions noprint"><button class="btn" type="button" data-act="check-k" data-t="${t.id}">Ergebnis prüfen</button></div>
     <div class="fb" id="${p}-kfb" role="status"></div>
