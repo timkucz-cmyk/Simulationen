@@ -63,27 +63,15 @@ nav.tabs button[aria-current="true"].done::after{color:var(--mathe-line)}
 h2{font-size:1.45rem;margin:4px 0 0;line-height:1.2}
 h3{font-size:1.1rem;margin:0 0 8px}
 
-/* Vorhersage */
-.vh-card{border:2px solid var(--mathe-line);background:var(--mathe-soft);border-radius:var(--radius-lg);padding:12px 16px 14px;margin-bottom:12px}
-.vh-card h3{color:var(--mathe-ink)}
+/* Aufträge und Fragen zur Beobachtung */
+.lead{margin:0 0 12px;max-width:75ch}
 .q{margin:8px 0 6px}
 .choices{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
 .choice{min-height:48px;min-width:96px;padding:8px 16px;border:2px solid var(--line-3);background:var(--surface-page);border-radius:var(--radius-md);cursor:pointer;font-size:1rem}
 .choice[aria-pressed="true"]{border-color:var(--mathe);background:var(--mathe);color:#fff;font-weight:600}
 .qrow{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:10px 0 0}
-.numin,.txtin{min-height:48px;padding:8px 12px;border:2px solid var(--line-3);border-radius:var(--radius-md);background:var(--surface-page);font-size:1.1rem}
-.numin{width:110px;text-align:center}
-.txtin{flex:1;min-width:240px}
-.vh-fest{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;border-left:5px solid var(--mathe);background:var(--surface-soft);border-radius:0 var(--radius-lg) var(--radius-lg) 0;padding:8px 14px;margin-bottom:12px}
-.vh-label{font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mathe-ink)}
-.vh-fest ul{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:4px 22px}
-.vgl{color:var(--fg-3)}
-
-/* Sperre */
-.explore{position:relative}
-.explore.locked .ex-inner{opacity:.3;filter:grayscale(.7);pointer-events:none;user-select:none;-webkit-user-select:none}
-.lockmsg{position:absolute;left:50%;top:60px;transform:translateX(-50%);background:var(--surface-page);border:2px solid var(--mathe);border-radius:var(--radius-lg);padding:12px 18px;font-weight:600;display:flex;gap:10px;align-items:center;box-shadow:0 8px 24px rgba(20,22,25,.12);max-width:90%}
-.lockmsg svg{flex:none;color:var(--mathe)}
+.qrow label,.qrow .m{font-size:1.15rem}
+.numin{min-height:48px;width:90px;padding:8px 12px;border:2px solid var(--line-3);border-radius:var(--radius-md);background:var(--surface-page);font-size:1.2rem;text-align:center}
 
 .fb{margin-top:10px;padding:9px 13px;border-radius:var(--radius-md);display:none}
 .fb.ok{display:block;background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
@@ -120,6 +108,13 @@ table.wt td.leer{color:var(--fg-3);font-style:italic}
 table.wt tr.neu td{background:var(--mathe-soft)}
 .prog{color:var(--fg-3);margin:8px 0 0}
 .auftrag{margin-top:14px;border:2px solid var(--mathe);border-radius:var(--radius-lg);padding:12px 14px}
+.auftrag p{margin:4px 0}
+.auftrag.erledigt{border:1px solid var(--line-2);background:var(--surface-soft);padding:8px 14px}
+.auftrag.erledigt h3{margin:0;color:var(--ok)}
+.auftrag.erledigt h3::before{content:"✓ "}
+.auftrag.erledigt p{color:var(--fg-2)}
+.anr{font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mathe-ink);display:block}
+.auftrag.erledigt .anr{color:var(--fg-3)}
 .termrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}
 .termrow label{font-size:1.15rem}
 .term{flex:1;min-width:180px;min-height:48px;padding:6px 12px;border:2px solid var(--line-3);border-radius:var(--radius-md);font-family:var(--font-math);font-size:1.4rem;background:var(--surface-page)}
@@ -213,7 +208,6 @@ const SV=s=>s.replace(/[ab]/g,'<tspan class="vi">$&</tspan>');                  
 const num=v=>{ const t=String(v??'').replace(/\s/g,'').replace(',','.').replace(/[−–]/g,'-'); return /^[-+]?\d*\.?\d+$/.test(t)?parseFloat(t):NaN; };
 const fmt=n=>{ const r=Math.round(n*1000)/1000; return String(r).replace('.',',').replace('-','−'); };
 const reduced=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-const LOCK_ICON='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>';
 
 function svgPt(svg,e){ return new DOMPoint(e.clientX,e.clientY).matrixTransform(svg.getScreenCTM().inverse()); }
 function dimH(y,x1,x2,label,up){ const ty=up?y-9:y+24;
@@ -271,16 +265,10 @@ function slider(st,k,min,max,val){
     <div class="sl-row"><button type="button" class="step" data-step="${st}:${k}:-1" aria-label="${k} um 1 verkleinern">−</button>
     <input type="range" id="r-${st}-${k}" data-st="${st}" data-k="${k}" min="${min}" max="${max}" step="1" value="${val}">
     <button type="button" class="step" data-step="${st}:${k}:1" aria-label="${k} um 1 vergrößern">+</button></div></div>`; }
-function shell(id,chip,title,s,vhHTML,fixHTML,exHTML){
-  const open=!!s.vh;
+function shell(id,chip,title,lead,exHTML){
   return `<div class="sthead"><div><span class="chip">${chip}</span><h2>${title}</h2></div>
       <button type="button" class="btn ghost small" data-reset="${id}">Station zurücksetzen</button></div>
-    ${open?`<div class="vh-fest"><span class="vh-label">Eure Vorhersage</span><div id="vhfix-${id}">${fixHTML}</div></div>`
-          :`<div class="vh-card"><h3>Erst vorhersagen, dann ausprobieren</h3>${vhHTML}
-             <div class="actions"><button type="button" class="btn" data-vh="${id}">Vorhersage festhalten</button></div>
-             <div class="fb" id="fbvh-${id}" role="status"></div></div>`}
-    <div class="explore${open?'':' locked'}"><div class="ex-inner"${open?'':' inert aria-hidden="true"'}>${exHTML}</div>
-      ${open?'':`<div class="lockmsg">${LOCK_ICON}<span>Haltet zuerst eure Vorhersage fest – dann geht die Station auf.</span></div>`}</div>`;
+    <p class="lead">${lead}</p>${exHTML}`;
 }
 function fb(id,cls,html){ const e=document.getElementById(id); if(!e) return; e.className='fb '+(cls||''); e.innerHTML=html||''; }
 
@@ -289,9 +277,9 @@ function fb(id,cls,html){ const e=document.getElementById(id); if(!e) return; e.
    ========================================================= */
 const S={};
 const INIT={
-  '1a':()=>({vh:null,draft:{},a:4,b:1,rows:[],term:'',termFb:null,done:false,last:null}),
-  '1b':()=>({vh:null,draft:{},pcs:init1B(),fill:{},done:false}),
-  '2': ()=>({vh:null,draft:{},a:7,b:3,cut:false,solved:false,pc:null})
+  '1a':()=>({a:3,b:2,rows:[],t:0,cmp:null,f:{},fb:{},term:'',termFb:null,done:false,last:null}),
+  '1b':()=>({pcs:init1B(),fill:{},done:false}),
+  '2': ()=>({a:7,b:3,cut:false,solved:false,pc:null,sides:null,sidesOk:false})
 };
 
 /* =========================================================
@@ -300,11 +288,11 @@ const INIT={
 function renderStart(){
   $('#st-0').innerHTML=`<div class="intro">
     <h2 id="h-0">So arbeitet ihr</h2>
-    <p>Ihr arbeitet zu zweit. Jede Station beginnt mit einer <b>Vorhersage</b>: Besprecht sie, gebt sie ein und haltet sie fest. Erst dann geht die Station auf. Eure Vorhersage bleibt oben stehen – vergleicht sie am Ende mit dem, was ihr herausgefunden habt.</p>
+    <p>Ihr arbeitet zu zweit. In jeder Station probiert ihr selbst aus und bearbeitet die <b>Aufträge</b> der Reihe nach. Besprecht, was ihr seht, bevor ihr eine Antwort eingebt. Am Ende jeder Station steht eine binomische Formel – gefunden habt ihr sie selbst.</p>
     <p>Teile verschiebt ihr mit dem Finger. Ein Teil kurz <b>antippen</b> dreht es um 90°.</p>
     <div class="karten">
       <button type="button" class="karte" data-go="1a"><span class="ic">${M('(a + b)²')}<br>?<br>${M('a² + b²')}</span>
-        <span><span class="k">Station 1A</span><b>Termwerte vergleichen</b><span class="k">Werte einsetzen, Tabelle anlegen, Term finden</span></span></button>
+        <span><span class="k">Station 1A</span><b>Termwerte vergleichen</b><span class="k">Zahlen einsetzen, Muster in der Tabelle finden</span></span></button>
       <button type="button" class="karte" data-go="1b"><span class="ic"><svg width="72" height="72" viewBox="0 0 80 80" aria-hidden="true">
           <rect x="6" y="6" width="42" height="42" fill="var(--f-a2)" stroke="var(--fg-1)" stroke-width="1.5"/>
           <rect x="48" y="48" width="26" height="26" fill="var(--f-b2)" stroke="var(--fg-1)" stroke-width="1.5"/>
@@ -320,33 +308,23 @@ function renderStart(){
     </div>
     <div class="actions"><button type="button" class="btn" data-go="1a">Los geht’s mit Station 1A</button></div>
     <details class="lehrkraft"><summary>Für Lehrkräfte</summary><div class="in"><dl>
-      <dt>Zweck</dt><dd>Die 1. binomische Formel über Termwerte (1A) und das Flächenmodell (1B) entdecken, die 3. binomische Formel durch Umlegen eines L-Stücks (2). Entdecken vor Erklären: Jede Station ist bis zur Eingabe einer Vorhersage gesperrt. Die 2. binomische Formel ist nicht enthalten.</dd>
+      <dt>Zweck</dt><dd>Die 1. binomische Formel über Termwerte (1A) und das Flächenmodell (1B) entdecken, die 3. binomische Formel durch Umlegen eines L-Stücks (2). Entdecken vor Erklären: Die Schüler:innen erzeugen erst Daten bzw. ein Bild und lesen daraus ab; Fragen beziehen sich immer auf das, was sie gerade vor sich haben. Die 2. binomische Formel ist nicht enthalten.</dd>
       <dt>Vorwissen</dt><dd>Flächenmodell für ${M('(x + 3)(x + 4)')}, Malkreuz, „Das Minus gehört zum Summanden dahinter“. Farben der Teilflächen wie im Flächenmodell aus Skript 1.</dd>
       <dt>Ablauf</dt><dd>Partnerarbeit, je zwei an einem iPad (Querformat).<br>Station 1 (1A Termwerte, 1B Flächenpuzzle): ca. 15 min · Station 2 (L-Stück): ca. 10 min.</dd>
-      <dt>Hinweise</dt><dd>1A: Der Termauftrag erscheint nach fünf gespeicherten Wertepaaren. Die Prüfung setzt mehrere Zahlenpaare ein, äquivalente Terme werden akzeptiert; ein Gegenbeispiel wird genannt, die Lösung nicht. Terme mit Hochzahl werden als richtig, aber „geht kürzer“ zurückgemeldet.<br>
-        Es werden keine Daten gespeichert oder übertragen; Neuladen löscht alles. „Station zurücksetzen“ setzt auch die Vorhersage zurück.</dd>
+      <dt>Hinweise</dt><dd>1A: Vier aufeinander aufbauende Aufträge – (1) Gilt ${M('(a + b)²')} = ${M('a² + b²')}? (2) Differenz für ${M('b')} = 1 als Vielfaches von ${M('a')}, (3) dasselbe für ${M('b')} = 2, (4) allgemeiner Term. Die Tabelle ist nach ${M('b')} und ${M('a')} sortiert, damit das Muster sichtbar wird. Bei falschen Antworten wird ein Gegenbeispiel aus der eigenen Tabelle genannt. Die Termprüfung setzt mehrere Zahlenpaare ein und akzeptiert äquivalente Terme; Terme mit Hochzahl werden als richtig, aber „geht kürzer“ zurückgemeldet.<br>
+        1B: Das Puzzle ist selbsterklärend; die Verbindung zu 1A („Wo steckt die Differenz im Bild?“) eignet sich für die Sicherung.<br>
+        2: Nach dem Umlegen lesen die Schüler:innen die Seitenlängen am Rechteck ab, erst dann erscheint die Formel.<br>
+        Es werden keine Daten gespeichert oder übertragen; Neuladen löscht alles.</dd>
     </dl></div></details></div>`;
 }
 
 /* =========================================================
    Station 1A – Termwerte vergleichen
    ========================================================= */
-const CMP={'größer':['größer','<b>größer</b> als'],'kleiner':['kleiner','<b>kleiner</b> als'],'gleich':['gleich','<b>gleich</b>'],'kommt drauf an':['kommt drauf an','']};
-function fix1A(){
-  const s=S['1a'], v=s.vh, row=(a,b)=>s.rows.find(r=>r.a===a&&r.b===b);
-  const cmp=v.cmp==='kommt drauf an'?`Ob ${M('(a + b)²')} größer, kleiner oder gleich ${M('a² + b²')} ist, <b>kommt drauf an</b>.`
-    :`${M('(a + b)²')} ist ${CMP[v.cmp][1]} ${M('a² + b²')}.`;
-  const d=(a,b,x)=>{ const r=row(a,b); return `Unterschied für ${M('a')} = ${a}, ${M('b')} = ${b}: <b>${fmt(x)}</b>`+(r?` <span class="vgl">(Tabelle: ${r.d})</span>`:''); };
-  return `<ul><li>${cmp}</li><li>${d(3,3,v.d1)}</li><li>${d(5,2,v.d2)}</li></ul>`;
-}
+/* Aufträge 2 und 3: Differenz für festes b als Vielfaches von a ablesen */
+const FEST={1:1,2:2};          // Auftrag → festgehaltenes b
 function render1A(){
   const s=S['1a'];
-  const vh=`<p class="q"><b>1.</b> Ist ${M('(a + b)²')} größer, kleiner oder gleich ${M('a² + b²')}?</p>
-    ${choices('1a','cmp',Object.keys(CMP).map(k=>[k,CMP[k][0]]),s.draft.cmp)}
-    <div class="qrow"><label for="vh1a-d1"><b>2.</b> Wie groß ist der Unterschied für ${M('a')} = 3, ${M('b')} = 3?</label>
-      <input id="vh1a-d1" class="numin" inputmode="decimal" autocomplete="off" value="${esc(s.draft.d1||'')}"></div>
-    <div class="qrow"><label for="vh1a-d2"><b>3.</b> Wie groß ist der Unterschied für ${M('a')} = 5, ${M('b')} = 2?</label>
-      <input id="vh1a-d2" class="numin" inputmode="decimal" autocomplete="off" value="${esc(s.draft.d2||'')}"></div>`;
   const ex=`<div class="grid2">
     <div class="panel">
       ${slider('1a','a',1,10,s.a)}${slider('1a','b',1,10,s.b)}
@@ -356,10 +334,10 @@ function render1A(){
     <div class="panel">
       <h3>Eure Wertetabelle</h3>
       <table class="wt"><thead><tr><th>${M('a')}</th><th>${M('b')}</th><th>${M('(a + b)²')}</th><th>${M('a² + b²')}</th><th>Differenz</th></tr></thead><tbody id="tb1a"></tbody></table>
-      <p class="prog" id="prog1a"></p>
-      <div id="term1a"></div>
+      <div id="auf1a"></div>
     </div></div>`;
-  $('#st-1a').innerHTML=shell('1a','Station 1A · 1. binomische Formel','Termwerte vergleichen',s,vh,s.vh?fix1A():'',ex);
+  $('#st-1a').innerHTML=shell('1a','Station 1A · 1. binomische Formel','Termwerte vergleichen',
+    `Stellt mit den Reglern Zahlen für ${M('a')} und ${M('b')} ein und speichert die Wertepaare in der Tabelle. Bearbeitet rechts die Aufträge der Reihe nach.`,ex);
   upd1A(); table1A();
 }
 function upd1A(){
@@ -372,25 +350,69 @@ function upd1A(){
 }
 function table1A(){
   const s=S['1a'], tb=$('#tb1a'); if(!tb) return;
-  tb.innerHTML=s.rows.length?s.rows.map(r=>`<tr${r===s.last?' class="neu"':''}><td>${r.a}</td><td>${r.b}</td><td>${r.L}</td><td>${r.R}</td><td><b>${r.d}</b></td></tr>`).join('')
+  const rows=[...s.rows].sort((p,q)=>p.b-q.b||p.a-q.a);
+  tb.innerHTML=rows.length?rows.map(r=>`<tr${r===s.last?' class="neu"':''}><td>${r.a}</td><td>${r.b}</td><td>${r.L}</td><td>${r.R}</td><td><b>${r.d}</b></td></tr>`).join('')
     :`<tr><td colspan="5" class="leer">Noch keine Wertepaare gespeichert.</td></tr>`;
-  const n=s.rows.length;
-  $('#prog1a').textContent=n<5?`Noch ${5-n} Wertepaar${5-n===1?'':'e'} speichern – probiert verschiedene Zahlen aus.`:`${n} Wertepaare gespeichert.`;
-  if(n>=5 && !$('#term-in')) renderTerm1A();
-  if(s.vh) $('#vhfix-1a').innerHTML=fix1A();
+  auf1A();
 }
-function renderTerm1A(){
-  const s=S['1a'];
-  const keys=['a','b','+','−','·','²','(',')'];
-  $('#term1a').innerHTML=`<div class="auftrag"><h3>Auftrag: Findet einen Term für die Differenz.</h3>
+function auf1A(){
+  const s=S['1a'], el=$('#auf1a'); if(!el) return;
+  const box=(i,title,body)=>{
+    const fertig=s.t>i;
+    return `<div class="auftrag${fertig?' erledigt':''}"><span class="anr">Auftrag ${i+1}</span><h3>${title}</h3>
+      ${fertig?(s.fb[i]?`<p>${s.fb[i][2]}</p>`:''):body}</div>`; };
+  const fbd=i=>`<div class="fb${s.fb[i]?' '+s.fb[i][0]:''}" id="fb1a-${i}" role="status">${s.fb[i]?`<p>${s.fb[i][1]}</p>`:''}</div>`;
+  let h='';
+  // Auftrag 1
+  const n=s.rows.length;
+  h+=box(0,`Gilt ${M('(a + b)²')} = ${M('a² + b²')}?`,
+    `<p>Viele vermuten, dass man beim Quadrieren einfach jeden Summanden quadrieren darf. Prüft das: Speichert mindestens <b>drei</b> verschiedene Wertepaare.</p>`+
+    (n<3?`<p class="prog">Gespeichert: ${n} von 3</p>`
+        :`<p class="q">Was zeigt eure Tabelle?</p>`+choices('1a','cmp',[['gleich','Beide Terme sind gleich.'],['groesser',`${M('(a + b)²')} ist größer.`],['kleiner',`${M('a² + b²')} ist größer.`],['mal','Mal so, mal so.']],s.cmp)+fbd(0)));
+  // Aufträge 2 und 3
+  [1,2].forEach(i=>{ if(s.t<i) return;
+    const b=FEST[i], k=s.rows.filter(r=>r.b===b).length;
+    h+=box(i,i===1?'Wie groß ist die Differenz?':`Und für ${M('b')} = 2?`,
+      `<p>${i===1?'Haltet ':'Haltet jetzt '}${M('b')} = ${b} fest und speichert mindestens <b>drei</b> Wertepaare mit verschiedenen Zahlen für ${M('a')}. Schaut euch die Spalte „Differenz“ an.</p>`+
+      (k<3?`<p class="prog">Wertepaare mit ${M('b')} = ${b}: ${k} von 3${s.b!==b?` · Stellt den Regler auf ${M('b')} = ${b}.`:''}</p>`
+          :`<div class="qrow"><label for="f1a-${i}">Für ${M('b')} = ${b} gilt: Differenz =</label>
+              <input id="f1a-${i}" class="numin" inputmode="decimal" autocomplete="off" value="${esc(s.f[i]||'')}"><span class="m">· <i>a</i></span>
+              <button type="button" class="btn small" data-chk="${i}">Prüfen</button></div>`+fbd(i)));
+  });
+  // Auftrag 4
+  if(s.t>=3) h+=`<div class="auftrag"><span class="anr">Auftrag 4</span><h3>Findet einen Term für die Differenz – für alle ${M('a')} und ${M('b')}.</h3>
+    <p>Wie hängt die Zahl vor ${M('a')} mit ${M('b')} zusammen? Wenn ihr unsicher seid, probiert auch ${M('b')} = 3 aus.</p>
     <div class="termrow"><label for="term-in">Differenz =</label>
       <input id="term-in" class="term" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Term mit a und b" value="${esc(s.term)}"></div>
-    <div class="keypad" aria-label="Eingabehilfe">${keys.map(k=>`<button type="button" data-key="${k}">${k==='a'||k==='b'?`<i>${k}</i>`:k}</button>`).join('')}
+    <div class="keypad" aria-label="Eingabehilfe">${['a','b','+','−','·','²','(',')'].map(k=>`<button type="button" data-key="${k}">${k==='a'||k==='b'?`<i>${k}</i>`:k}</button>`).join('')}
       ${'1234567890'.split('').map(k=>`<button type="button" data-key="${k}">${k}</button>`).join('')}
       <button type="button" class="del" data-key="del" aria-label="Zeichen löschen">⌫ löschen</button></div>
     <div class="actions"><button type="button" class="btn" id="termCheck">Term prüfen</button></div>
     <div class="fb" id="fbterm" role="status"></div></div>`;
+  el.innerHTML=h;
   if(s.termFb) fb('fbterm',s.termFb[0],s.termFb[1]);
+}
+/* Rückmeldungen: [Klasse, Text im offenen Auftrag, Merksatz im erledigten Auftrag] */
+function cmp1A(v){
+  const s=S['1a']; s.cmp=v;
+  if(v==='groesser'){
+    s.fb[0]=['ok','',`Nein: ${M('(a + b)²')} ist immer größer als ${M('a² + b²')}. Es fehlt also etwas.`]; s.t=1;
+  } else {
+    const r=s.rows[0];
+    s.fb[0]=['bad',`Vergleicht Zeile für Zeile die Spalten ${M('(a + b)²')} und ${M('a² + b²')}. Bei ${M('a')} = ${r.a}, ${M('b')} = ${r.b} steht dort ${r.L} und ${r.R}.`];
+  }
+  auf1A();
+}
+function chk1A(i){
+  const s=S['1a'], b=FEST[i], v=num(s.f[i]);
+  if(isNaN(v)){ s.fb[i]=['info','Gebt eine Zahl ein.']; auf1A(); return; }
+  const wrong=s.rows.find(r=>r.b===b&&Math.abs(v*r.a-r.d)>1e-9);
+  if(!wrong){
+    s.fb[i]=['ok','',`Für ${M('b')} = ${b} ist die Differenz immer ${M(2*b+' · a')}.`]; s.t=i+1;
+  } else {
+    s.fb[i]=['bad',`Für ${M('a')} = ${wrong.a} ergäbe das ${fmt(v)} · ${wrong.a} = ${fmt(v*wrong.a)}. In eurer Tabelle steht als Differenz aber ${wrong.d}.`];
+  }
+  auf1A();
 }
 function save1A(){
   const s=S['1a'], a=s.a, b=s.b;
@@ -445,7 +467,8 @@ function checkTerm(){
   }
   if(/[²³^]/.test(src)){ s.termFb=['info',`<p>Euer Term stimmt für alle getesteten Zahlenpaare. Geht es auch kürzer, ohne Hochzahl? Schaut auf die Spalte „Differenz“.</p>`]; fb('fbterm',...s.termFb); return; }
   s.done=true; updTabs();
-  s.termFb=['ok',`<p><b>Richtig!</b> Euer Term passt für alle getesteten Zahlenpaare. Vergleicht mit eurer Vorhersage oben.</p>
+  s.termFb=['ok',`<p><b>Richtig!</b> Euer Term passt für alle getesteten Zahlenpaare. Die Differenz ist also immer ${M('2ab')}.</p>
+    <div class="formel">${M('(a + b)²')} = ${M('a² + b²')} + ${M('2ab')} = ${M('a² + 2ab + b²')}</div>
     <div class="actions"><button type="button" class="btn" data-go="1b">Weiter zu Station 1B: Warum ist das so?</button></div>`];
   fb('fbterm',...s.termFb);
 }
@@ -468,18 +491,13 @@ function init1B(){
   const P=(id,x,y,w,h,wl,hl)=>({id,x,y,w,h,wl,hl,home:{x,y,w,h,wl,hl},locked:false,in:null});
   return [P('p1',460,75,PA,PB,'a','b'),P('p2',460,235,PA,PB,'a','b'),P('p3',700,75,PB,PB,'b','b'),P('p4',670,215,PA+PB,PA,'a + b','a')];
 }
-function fix1B(){
-  const o={zweiAB:`zwei Rechtecke ${M('a × b')}`,zweiBB:`zwei Quadrate ${M('b × b')}`,einAAB:`ein Rechteck ${M('a × (a + b)')}`,mix:`ein Quadrat ${M('b × b')} und ein Rechteck ${M('a × b')}`};
-  return `In die beiden Lücken passen <b>${o[S['1b'].vh.teile]}</b>.`;
-}
 function render1B(){
   const s=S['1b'];
-  const vh=`<p class="q">Das große Quadrat hat die Seitenlänge ${M('a + b')}. Die Teile ${M('a²')} und ${M('b²')} liegen schon. Was passt eurer Meinung nach in die beiden Lücken?</p>
-    ${choices('1b','teile',[['zweiBB',`zwei Quadrate ${M('b × b')}`],['zweiAB',`zwei Rechtecke ${M('a × b')}`],['einAAB',`ein Rechteck ${M('a × (a + b)')}`],['mix',`ein Quadrat ${M('b × b')} und ein Rechteck ${M('a × b')}`]],s.draft.teile)}`;
   const ex=`<div class="puzzlecard"><svg class="puzzle" id="svg1b" viewBox="0 0 ${VW1} ${VH1}" role="img" aria-label="Quadrat mit Seitenlänge a plus b, darin a² und b². Rechts die Teile-Ablage."></svg></div>
     <p class="hinweis">Teil ziehen: verschieben · Teil kurz antippen: um 90° drehen</p>
     <div class="fb" id="fb1b" role="status"></div><div id="res1b"></div>`;
-  $('#st-1b').innerHTML=shell('1b','Station 1B · 1. binomische Formel','Flächenpuzzle',s,vh,s.vh?fix1B():'',ex);
+  $('#st-1b').innerHTML=shell('1b','Station 1B · 1. binomische Formel','Flächenpuzzle',
+    `Das große Quadrat hat die Seitenlänge ${M('a + b')}. Die Teile ${M('a²')} und ${M('b²')} liegen schon. Füllt die beiden Lücken mit passenden Teilen aus der Ablage.`,ex);
   draw1B(); result1B();
   enableDrag($('#svg1b'),{
     get:id=>s.pcs.find(p=>p.id===id),
@@ -526,7 +544,7 @@ function result1B(){
   const el=$('#res1b'); if(!el) return;
   el.innerHTML=S['1b'].done?`<div class="ergebnis"><h3>Das Quadrat ist vollständig.</h3>
     <div class="formel">${M('(a + b)²')} = <span class="t t-a2">${M('a²')}</span> + <span class="t t-ab1">${M('ab')}</span> + <span class="t t-ab2">${M('ab')}</span> + <span class="t t-b2">${M('b²')}</span> = ${M('a² + 2ab + b²')}</div>
-    <div class="schnell"><b>Für Schnelle:</b> Erklärt mit dem Bild, warum die Differenz aus Station 1A genau so groß ist.</div>
+    <div class="schnell"><b>Zum Besprechen:</b> In Station 1A hat euch bei ${M('a² + b²')} immer ${M('2ab')} gefehlt. Zeigt im Bild, wo diese ${M('2ab')} stecken.</div>
     <div class="actions"><button type="button" class="btn" data-go="2">Weiter zu Station 2</button></div></div>`:'';
 }
 
@@ -542,14 +560,8 @@ function geo2(){
     tgt:{x:OX,y:OY,w:d*u,h:b*u}};
 }
 function home2(){ const h=geo2().home; S['2'].pc={id:'p',...h,wl:'b',hl:'a − b',locked:!S['2'].cut}; }
-function fix2(){ const v=S['2'].vh;
-  return `<ul><li>Lässt sich der Rest zu einem Rechteck umlegen? <b>${v.yn}</b></li>${v.txt?`<li>Seitenlängen: <b>${esc(v.txt)}</b></li>`:''}</ul>`; }
 function render2(){
   const s=S['2']; if(!s.pc) home2();
-  const vh=`<p class="q"><b>1.</b> Aus einem Quadrat ${M('a²')} wird in einer Ecke ein Quadrat ${M('b²')} herausgeschnitten. Lässt sich der Rest zu einem Rechteck umlegen?</p>
-    ${choices('2','yn',[['ja','ja'],['nein','nein']],s.draft.yn)}
-    <div class="qrow"><label for="vh2-txt"><b>2.</b> Welche Seitenlängen hätte es?</label>
-      <input id="vh2-txt" class="txtin" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="z. B. … und …" value="${esc(s.draft.txt||'')}"></div>`;
   const ex=`<div class="grid-s2">
     <div><div class="puzzlecard"><svg class="puzzle" id="svg2" viewBox="0 0 ${VW2} ${VH2}" role="img" aria-label="Quadrat a mal a mit herausgeschnittenem Quadrat b mal b oben rechts"></svg></div>
       <p class="hinweis" id="hint2"></p></div>
@@ -559,7 +571,8 @@ function render2(){
       <div id="res2"></div>
       <div class="panel"><h3>Andere Größen</h3>${slider('2','a',5,10,s.a)}${slider('2','b',2,8,s.b)}</div>
     </div></div>`;
-  $('#st-2').innerHTML=shell('2','Station 2 · 3. binomische Formel','L-Stück umlegen',s,vh,s.vh?fix2():'',ex);
+  $('#st-2').innerHTML=shell('2','Station 2 · 3. binomische Formel','L-Stück umlegen',
+    `Aus einem Quadrat ${M('a²')} wurde oben rechts ein Quadrat ${M('b²')} herausgeschnitten. Übrig bleibt ein L-Stück mit dem Flächeninhalt ${M('a² − b²')}. Schneidet es auseinander und legt es zu einem Rechteck um.`,ex);
   draw2(); result2(); sliders2();
   enableDrag($('#svg2'),{
     get:()=>s.pc,
@@ -586,7 +599,8 @@ function draw2(){
   h+=`<rect class="fl ab1${s.cut?'':' nostroke'}" x="${strip.x}" y="${strip.y}" width="${strip.w}" height="${strip.h}"/>`;
   h+=`<rect class="hatchbox" x="${cut.x}" y="${cut.y}" width="${cut.w}" height="${cut.h}"/><text class="area" x="${cut.x+cut.w/2}" y="${cut.y+cut.h/2}">${SV('b²')}</text>`;
   if(s.solved){
-    h+=dimV(OX-16,OY,OY+(a+b)*u,'a + b',true)+dimH(sq.y+sq.h+14,strip.x,strip.x+strip.w,'a − b',false);
+    h+=(s.sidesOk?dimV(OX-16,OY,OY+(a+b)*u,'a + b',true):dimV(OX-16,OY,OY+b*u,'b',true)+dimV(OX-16,OY+b*u,OY+(a+b)*u,'a',true))
+      +dimH(sq.y+sq.h+14,strip.x,strip.x+strip.w,'a − b',false);
   } else {
     h+=dimV(OX-16,sq.y,sq.y+sq.h,'a',true)+dimH(sq.y+sq.h+14,strip.x,strip.x+strip.w,'a − b',false)+dimV(sq.x+sq.w+14,cut.y,cut.y+cut.h,'b',false);
   }
@@ -608,11 +622,24 @@ function result2(){
   const s=S['2'], el=$('#res2'); if(!el) return;
   if(!s.solved){ el.innerHTML=''; return; }
   const {a,b}=s;
-  el.innerHTML=`<div class="ergebnis" style="margin-top:0"><h3>Ein Rechteck!</h3>
-    <p>Seitenlängen: ${M('a + b')} und ${M('a − b')}. Sein Flächeninhalt ist ${M('a² − b²')} – der Rest des Quadrats.</p>
+  if(!s.sidesOk){
+    el.innerHTML=`<div class="auftrag" style="margin-top:0"><h3>Ein Rechteck! Welche Seitenlängen hat es?</h3>
+      <p>Lest die Längen am Bild ab.</p>
+      ${choices('2','sides',[['a_b',`${M('a')} und ${M('b')}`],['a_amb',`${M('a')} und ${M('a − b')}`],['apb_b',`${M('a + b')} und ${M('b')}`],['apb_amb',`${M('a + b')} und ${M('a − b')}`]],s.sides)}
+      <div class="fb${s.sides?' bad':''}" role="status">${!s.sides?'':s.sides==='apb_b'?`<p>Die linke Seite stimmt. Schaut noch einmal auf die untere Seite.</p>`
+        :`<p>Schaut auf die linke Seite: Sie besteht aus zwei Stücken, ${M('b')} und ${M('a')}. Wie lang ist sie zusammen?</p>`}</div></div>`;
+    return;
+  }
+  el.innerHTML=`<div class="ergebnis" style="margin-top:0"><h3>Ein Rechteck mit den Seiten ${M('a + b')} und ${M('a − b')}</h3>
+    <p>Sein Flächeninhalt ist ${M('(a + b) · (a − b)')}. Es ist aber auch der Rest des Quadrats, also ${M('a² − b²')}.</p>
     <div class="formel">${M('(a + b) · (a − b) = a² − b²')}</div>
     <p class="m" style="white-space:normal">(${a} + ${b}) · (${a} − ${b}) = ${a+b} · ${a-b} = ${(a+b)*(a-b)} &nbsp;und&nbsp; ${a}² − ${b}² = ${a*a} − ${b*b} = ${a*a-b*b}</p>
     <p class="hinweis" style="margin:0">Ändert ${M('a')} und ${M('b')} unten und prüft die Formel an anderen Größen.</p></div>`;
+}
+function sides2(v){
+  const s=S['2']; s.sides=v;
+  if(v==='apb_amb'){ s.sidesOk=true; updTabs(); draw2(); }
+  result2();
 }
 function sliders2(){
   const s=S['2'], rb=$('#r-2-b'); if(!rb) return;
@@ -637,36 +664,17 @@ function go(id){
   document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===id?'true':'false'));
 }
 function updTabs(){
-  const d={'1a':S['1a'].done,'1b':S['1b'].done,'2':S['2'].solved};
+  const d={'1a':S['1a'].done,'1b':S['1b'].done,'2':S['2'].sidesOk};
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('done',!!d[b.dataset.go]));
 }
 const RENDER={'1a':render1A,'1b':render1B,'2':render2};
 
-function submitVh(id){
-  const s=S[id], d=s.draft;
-  if(id==='1a'){
-    const d1=num($('#vh1a-d1').value), d2=num($('#vh1a-d2').value);
-    if(!d.cmp||isNaN(d1)||isNaN(d2)){ fb('fbvh-1a','bad','<p>Beantwortet erst alle drei Fragen (bei 2 und 3 eine Zahl).</p>'); return; }
-    s.vh={cmp:d.cmp,d1,d2};
-  } else if(id==='1b'){
-    if(!d.teile){ fb('fbvh-1b','bad','<p>Wählt erst eine Antwort aus.</p>'); return; }
-    s.vh={teile:d.teile};
-  } else {
-    const txt=($('#vh2-txt').value||'').trim();
-    if(!d.yn){ fb('fbvh-2','bad','<p>Beantwortet erst Frage 1.</p>'); return; }
-    if(d.yn==='ja'&&!txt){ fb('fbvh-2','bad','<p>Schreibt bei Frage 2 eure Vermutung für die Seitenlängen auf.</p>'); return; }
-    s.vh={yn:d.yn,txt};
-  }
-  RENDER[id]();
-}
-
 document.addEventListener('click',e=>{
   const t=e.target;
   const g=t.closest('[data-go]'); if(g){ go(g.dataset.go); $('#tabs').scrollIntoView({block:'start',behavior:reduced?'auto':'smooth'}); return; }
-  const r=t.closest('[data-reset]'); if(r){ const id=r.dataset.reset; if(confirm('Diese Station zurücksetzen? Auch eure Vorhersage wird gelöscht.')){ S[id]=INIT[id](); RENDER[id](); updTabs(); } return; }
-  const c=t.closest('.choice'); if(c){ const box=c.closest('.choices'); S[box.dataset.st].draft[box.dataset.q]=c.dataset.val;
-    box.querySelectorAll('.choice').forEach(b=>b.setAttribute('aria-pressed',b===c?'true':'false')); return; }
-  const v=t.closest('[data-vh]'); if(v){ submitVh(v.dataset.vh); return; }
+  const r=t.closest('[data-reset]'); if(r){ const id=r.dataset.reset; if(confirm('Diese Station zurücksetzen? Alle Eingaben dieser Station werden gelöscht.')){ S[id]=INIT[id](); RENDER[id](); updTabs(); } return; }
+  const c=t.closest('.choice'); if(c){ const box=c.closest('.choices'); (box.dataset.st==='1a'?cmp1A:sides2)(c.dataset.val); return; }
+  const ck=t.closest('[data-chk]'); if(ck){ chk1A(+ck.dataset.chk); return; }
   const st=t.closest('[data-step]'); if(st){ const [sid,k,dv]=st.dataset.step.split(':');
     if(sid==='1a'){ S['1a'][k]=Math.max(1,Math.min(10,S['1a'][k]+(+dv))); upd1A(); } else set2(k,S['2'][k]+(+dv)); return; }
   const k=t.closest('[data-key]'); if(k){ keyIn(k.dataset.key==='del'?'del':k.dataset.key); return; }
@@ -678,13 +686,13 @@ document.addEventListener('input',e=>{
   const t=e.target;
   if(t.type==='range'){ const sid=t.dataset.st, k=t.dataset.k;
     if(sid==='1a'){ S['1a'][k]=+t.value; upd1A(); } else set2(k,+t.value); return; }
-  if(t.id==='vh1a-d1') S['1a'].draft.d1=t.value;
-  if(t.id==='vh1a-d2') S['1a'].draft.d2=t.value;
-  if(t.id==='vh2-txt') S['2'].draft.txt=t.value;
+  if(/^f1a-/.test(t.id)) S['1a'].f[t.id.slice(4)]=t.value;
   if(t.id==='term-in'){ S['1a'].term=t.value; caret=[t.selectionStart,t.selectionEnd]; }
 });
 ['keyup','click','select','focusout'].forEach(ev=>document.addEventListener(ev,e=>{ if(e.target.id==='term-in') caret=[e.target.selectionStart,e.target.selectionEnd]; }));
-document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.id==='term-in'){ e.preventDefault(); checkTerm(); } });
+document.addEventListener('keydown',e=>{ if(e.key!=='Enter') return;
+  if(e.target.id==='term-in'){ e.preventDefault(); checkTerm(); }
+  else if(/^f1a-/.test(e.target.id)){ e.preventDefault(); chk1A(+e.target.id.slice(4)); } });
 
 Object.keys(INIT).forEach(k=>S[k]=INIT[k]());
 renderStart(); render1A(); render1B(); render2(); updTabs(); go('0');

@@ -89,7 +89,7 @@ window.SIMULATIONEN = [
     fach: "mathe",
     stufen: ["8"],
     thema: "Terme und Gleichungen",
-    beschreibung: "Drei Stationen mit Pflicht-Vorhersage: Termwerte von (a + b)² und a² + b² vergleichen und einen Term für die Differenz finden, das Quadrat (a + b)² als Flächenpuzzle legen und ein L-Stück zum Rechteck (a + b) · (a − b) umlegen.",
+    beschreibung: "Drei Stationen mit aufeinander aufbauenden Aufträgen: Termwerte von (a + b)² und a² + b² vergleichen und im Muster der Differenz 2ab entdecken, das Quadrat (a + b)² als Flächenpuzzle legen und ein L-Stück zum Rechteck (a + b) · (a − b) umlegen.",
     pfad: "sims/mathe/binomische-formeln/",
     vorschau: "sims/mathe/binomische-formeln/vorschau.png",
     sozialform: "Partnerarbeit",
