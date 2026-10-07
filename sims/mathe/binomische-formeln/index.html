@@ -311,7 +311,7 @@ function renderStart(){
       <dt>Zweck</dt><dd>Die 1. binomische Formel über Termwerte (1A) und das Flächenmodell (1B) entdecken, die 3. binomische Formel durch Umlegen eines L-Stücks (2). Entdecken vor Erklären: Die Schüler:innen erzeugen erst Daten bzw. ein Bild und lesen daraus ab; Fragen beziehen sich immer auf das, was sie gerade vor sich haben. Die 2. binomische Formel ist nicht enthalten.</dd>
       <dt>Vorwissen</dt><dd>Flächenmodell für ${M('(x + 3)(x + 4)')}, Malkreuz, „Das Minus gehört zum Summanden dahinter“. Farben der Teilflächen wie im Flächenmodell aus Skript 1.</dd>
       <dt>Ablauf</dt><dd>Partnerarbeit, je zwei an einem iPad (Querformat).<br>Station 1 (1A Termwerte, 1B Flächenpuzzle): ca. 15 min · Station 2 (L-Stück): ca. 10 min.</dd>
-      <dt>Hinweise</dt><dd>1A: Vier aufeinander aufbauende Aufträge – (1) Gilt ${M('(a + b)²')} = ${M('a² + b²')}? (2) Differenz für ${M('b')} = 1 als Vielfaches von ${M('a')}, (3) dasselbe für ${M('b')} = 2, (4) allgemeiner Term. Die Tabelle ist nach ${M('b')} und ${M('a')} sortiert, damit das Muster sichtbar wird. Bei falschen Antworten wird ein Gegenbeispiel aus der eigenen Tabelle genannt. Die Termprüfung setzt mehrere Zahlenpaare ein und akzeptiert äquivalente Terme; Terme mit Hochzahl werden als richtig, aber „geht kürzer“ zurückgemeldet.<br>
+      <dt>Hinweise</dt><dd>1A: Vier aufeinander aufbauende Aufträge – (1) Gilt ${M('(a + b)²')} = ${M('a² + b²')}? (2) Differenz für ${M('b')} = 1 als Vielfaches von ${M('a')}, (3) dasselbe für ${M('b')} = 2, (4) allgemeiner Term. Nach Auftrag 1 wird die Tabelle geleert, damit Auftrag 2 nur Wertepaare mit festem ${M('b')} enthält. Die Tabelle ist nach ${M('b')} und ${M('a')} sortiert, damit das Muster sichtbar wird. Bei falschen Antworten wird ein Gegenbeispiel aus der eigenen Tabelle genannt. Die Termprüfung setzt mehrere Zahlenpaare ein und akzeptiert äquivalente Terme; Terme mit Hochzahl werden als richtig, aber „geht kürzer“ zurückgemeldet.<br>
         1B: Das Puzzle ist selbsterklärend; die Verbindung zu 1A („Wo steckt die Differenz im Bild?“) eignet sich für die Sicherung.<br>
         2: Nach dem Umlegen lesen die Schüler:innen die Seitenlängen am Rechteck ab, erst dann erscheint die Formel.<br>
         Es werden keine Daten gespeichert oder übertragen; Neuladen löscht alles.</dd>
@@ -373,7 +373,7 @@ function auf1A(){
   [1,2].forEach(i=>{ if(s.t<i) return;
     const b=FEST[i], k=s.rows.filter(r=>r.b===b).length;
     h+=box(i,i===1?'Wie groß ist die Differenz?':`Und für ${M('b')} = 2?`,
-      `<p>${i===1?'Haltet ':'Haltet jetzt '}${M('b')} = ${b} fest und speichert mindestens <b>drei</b> Wertepaare mit verschiedenen Zahlen für ${M('a')}. Schaut euch die Spalte „Differenz“ an.</p>`+
+      `<p>${i===1?'Haltet ':'Haltet jetzt '}<b>${M('b')} = ${b}</b> fest und speichert mindestens <b>drei</b> Wertepaare mit verschiedenen Zahlen für ${M('a')}. Schaut euch die Spalte „Differenz“ an.</p>`+
       (k<3?`<p class="prog">Wertepaare mit ${M('b')} = ${b}: ${k} von 3${s.b!==b?` · Stellt den Regler auf ${M('b')} = ${b}.`:''}</p>`
           :`<div class="qrow"><label for="f1a-${i}">Für ${M('b')} = ${b} gilt: Differenz =</label>
               <input id="f1a-${i}" class="numin" inputmode="decimal" autocomplete="off" value="${esc(s.f[i]||'')}"><span class="m">· <i>a</i></span>
@@ -396,7 +396,8 @@ function auf1A(){
 function cmp1A(v){
   const s=S['1a']; s.cmp=v;
   if(v==='groesser'){
-    s.fb[0]=['ok','',`Nein: ${M('(a + b)²')} ist immer größer als ${M('a² + b²')}. Es fehlt also etwas.`]; s.t=1;
+    s.fb[0]=['ok','',`Nein: ${M('(a + b)²')} ist immer größer als ${M('a² + b²')}. Es fehlt also etwas. Für Auftrag 2 ist die Tabelle wieder leer.`]; s.t=1;
+    s.rows=[]; s.last=null; table1A(); return;
   } else {
     const r=s.rows[0];
     s.fb[0]=['bad',`Vergleicht Zeile für Zeile die Spalten ${M('(a + b)²')} und ${M('a² + b²')}. Bei ${M('a')} = ${r.a}, ${M('b')} = ${r.b} steht dort ${r.L} und ${r.R}.`];
