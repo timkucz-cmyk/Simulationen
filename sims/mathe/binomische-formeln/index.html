@@ -107,9 +107,9 @@ table.wt th{background:var(--surface-soft);font-weight:600}
 table.wt td.leer{color:var(--fg-3);font-style:italic}
 table.wt tr.neu td{background:var(--mathe-soft)}
 .prog{color:var(--fg-3);margin:8px 0 0}
-.auftrag{margin-top:14px;border:2px solid var(--mathe);border-radius:var(--radius-lg);padding:12px 14px}
+.auftrag{margin:0 0 12px;border:2px solid var(--mathe);border-radius:var(--radius-lg);padding:12px 14px}
 .auftrag p{margin:4px 0}
-.auftrag.erledigt{border:1px solid var(--line-2);background:var(--surface-soft);padding:8px 14px}
+.auftrag.erledigt{border:1px solid var(--line-2);background:var(--surface-soft);padding:6px 14px;margin-bottom:8px}
 .auftrag.erledigt h3{margin:0;color:var(--ok)}
 .auftrag.erledigt h3::before{content:"✓ "}
 .auftrag.erledigt p{color:var(--fg-2)}
@@ -325,7 +325,8 @@ function renderStart(){
 const FEST={1:1,2:2};          // Auftrag → festgehaltenes b
 function render1A(){
   const s=S['1a'];
-  const ex=`<div class="grid2">
+  const ex=`<div id="auf1a"></div>
+    <div class="grid2">
     <div class="panel">
       ${slider('1a','a',1,10,s.a)}${slider('1a','b',1,10,s.b)}
       <div class="werte" id="w1a" aria-live="polite"></div>
@@ -334,10 +335,9 @@ function render1A(){
     <div class="panel">
       <h3>Eure Wertetabelle</h3>
       <table class="wt"><thead><tr><th>${M('a')}</th><th>${M('b')}</th><th>${M('(a + b)²')}</th><th>${M('a² + b²')}</th><th>Differenz</th></tr></thead><tbody id="tb1a"></tbody></table>
-      <div id="auf1a"></div>
     </div></div>`;
   $('#st-1a').innerHTML=shell('1a','Station 1A · 1. binomische Formel','Termwerte vergleichen',
-    `Stellt mit den Reglern Zahlen für ${M('a')} und ${M('b')} ein und speichert die Wertepaare in der Tabelle. Bearbeitet rechts die Aufträge der Reihe nach.`,ex);
+    `Bearbeitet die Aufträge der Reihe nach. Mit den Reglern stellt ihr Zahlen für ${M('a')} und ${M('b')} ein und speichert die Wertepaare in der Tabelle.`,ex);
   upd1A(); table1A();
 }
 function upd1A(){
