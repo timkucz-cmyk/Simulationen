@@ -95,5 +95,18 @@ window.SIMULATIONEN = [
     sozialform: "Partnerarbeit",
     dauer: "ca. 25 min",
     datum: "2026-10-06"
+  },
+  {
+    id: "ungleichungen",
+    titel: "Ungleichungen – warum dreht sich das Zeichen?",
+    fach: "mathe",
+    stufen: ["8"],
+    thema: "Terme und Gleichungen",
+    beschreibung: "Zwei Zahlen auf der Zahlengeraden addieren oder mit einem Faktor multiplizieren: Bei negativen Faktoren wird an der 0 gespiegelt und die Reihenfolge dreht sich um. Im zweiten Teil Lösungsmengen Zahl für Zahl prüfen und falsche Umformungen entlarven.",
+    pfad: "sims/mathe/ungleichungen/",
+    vorschau: "sims/mathe/ungleichungen/vorschau.png",
+    sozialform: "Unterrichtsgespräch am Beamer",
+    dauer: "ca. 10 min",
+    datum: "2026-10-23"
   }
 ];

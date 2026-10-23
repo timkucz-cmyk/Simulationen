@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ungleichungen – warum dreht sich das Zeichen?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Tokens aus dem LMG-Designsystem (Werte wie in assets/lmg.css, hier eigenständig) */
+:root{
+  --surface-page:#ffffff; --surface-soft:#f6f6f4; --surface-sunken:#ecece8;
+  --fg-1:#17181a; --fg-2:#3d4147; --fg-3:#646a72; --fg-4:#9097a0; --fg-5:#c2c7cd;
+  --line-1:#e4e5e3; --line-2:#cfd1cf; --line-3:#a8acaa;
+  --mathe:#B61E33; --mathe-soft:#f5e1e3; --mathe-line:#e8b8be; --mathe-ink:#6f0f1c;
+  --physik:#2C5282; --physik-soft:#e8eef5; --physik-line:#b9c8da;
+  --ok:#3f6e3a; --ok-soft:#e7eee5; --warn:#8a6a1e; --warn-soft:#f3ecd9;
+  --hl-soft:#ede5f2; --hl-ink:#6b4a8a;
+  --radius-sm:4px; --radius-md:6px; --radius-lg:10px; --radius-pill:999px;
+  --shadow-1:0 1px 2px rgba(20,22,25,.04),0 1px 1px rgba(20,22,25,.03);
+  --font-math:"Cambria Math","STIX Two Math","STIX Two Text",Cambria,"Times New Roman",Georgia,serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}
+body{margin:0;background:var(--surface-soft);color:var(--fg-1);
+  font-family:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  font-size:19px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+a{color:var(--mathe)}
+:focus-visible{outline:2px solid var(--mathe);outline-offset:3px;border-radius:var(--radius-sm)}
+.m{font-family:var(--font-math);white-space:nowrap}
+.m i{font-style:italic}
+
+.brandline{height:4px;background:linear-gradient(90deg,var(--mathe) 0 50%,var(--physik) 50% 100%)}
+.wrap{max-width:1280px;margin:0 auto;padding:0 16px}
+@media (min-width:700px){.wrap{padding:0 24px}}
+header.top{padding:12px 0 0}
+.backlink{display:inline-block;margin:0 0 4px;font-size:.9rem;color:var(--fg-3);text-decoration:none;padding:6px 0}
+.backlink:hover{color:var(--fg-1);text-decoration:underline}
+h1{font-size:clamp(26px,4vw,36px);line-height:1.15;margin:0;letter-spacing:-.01em}
+.sub{margin:2px 0 0;color:var(--fg-2)}
+
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+nav.tabs button{border:1px solid var(--line-2);background:var(--surface-page);border-radius:var(--radius-pill);padding:6px 18px;cursor:pointer;font-size:1rem;min-height:44px}
+nav.tabs button[aria-current="true"]{background:var(--fg-1);color:var(--surface-page);border-color:var(--fg-1)}
+
+.station{display:none;background:var(--surface-page);border:1px solid var(--line-2);border-top:6px solid var(--mathe);border-radius:var(--radius-lg);padding:14px 18px 18px;margin-bottom:20px;box-shadow:var(--shadow-1)}
+.station.show{display:block}
+h2{font-size:1.4rem;margin:2px 0 6px;line-height:1.2}
+.lead{margin:0 0 12px;max-width:80ch;color:var(--fg-2)}
+
+.btn{border:1px solid var(--mathe);background:var(--mathe);color:#fff;border-radius:var(--radius-md);padding:8px 16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:1rem;font-weight:600;min-height:44px}
+.btn.ghost{background:var(--surface-page);color:var(--mathe)}
+.btn[aria-pressed="true"]{background:var(--mathe-ink);border-color:var(--mathe-ink);color:#fff}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+.layout{display:grid;grid-template-columns:1fr;gap:16px}
+@media (min-width:980px){.layout{grid-template-columns:340px minmax(0,1fr)}}
+.panel{border:1px solid var(--line-1);border-radius:var(--radius-lg);padding:12px 14px;background:var(--surface-page)}
+.panel h3{font-size:1rem;margin:0 0 6px;color:var(--fg-3);text-transform:uppercase;letter-spacing:.08em}
+
+.sl{margin:0 0 12px}
+.sl-l{display:flex;justify-content:space-between;align-items:baseline;font-size:1.15rem;margin-bottom:2px}
+.sl-l output{font-weight:700;font-variant-numeric:tabular-nums;font-family:var(--font-math);font-size:1.35rem}
+.sl-row{display:flex;align-items:center;gap:8px}
+.step{flex:none;width:44px;height:44px;border:2px solid var(--line-3);border-radius:var(--radius-md);background:var(--surface-page);font-size:1.4rem;font-weight:700;cursor:pointer;line-height:1}
+.step:active{background:var(--mathe-soft)}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;min-width:0;height:44px;background:transparent;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:5px;background:var(--line-2)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:36px;height:36px;border-radius:50%;background:var(--mathe);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);margin-top:-13px}
+input[type=range]::-moz-range-track{height:10px;border-radius:5px;background:var(--line-2)}
+input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--mathe);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.seg{display:flex;gap:0;margin:0 0 12px}
+.seg button{flex:1;min-height:44px;border:1px solid var(--line-3);background:var(--surface-page);cursor:pointer;font-size:1.05rem}
+.seg button:first-child{border-radius:var(--radius-md) 0 0 var(--radius-md)}
+.seg button:last-child{border-radius:0 var(--radius-md) var(--radius-md) 0;border-left:0}
+.seg button[aria-pressed="true"]{background:var(--fg-1);color:#fff;border-color:var(--fg-1)}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 0}
+.quick button{min-width:52px;min-height:40px;border:1px solid var(--line-3);border-radius:var(--radius-md);background:var(--surface-soft);cursor:pointer;font-family:var(--font-math);font-size:1.1rem}
+
+svg.nl{width:100%;height:auto;display:block;user-select:none}
+svg.nl .axis{stroke:var(--fg-1);stroke-width:2}
+svg.nl .tick{stroke:var(--fg-1);stroke-width:1.5}
+svg.nl .tick.small{stroke:var(--fg-4);stroke-width:1}
+svg.nl .lab{font-size:15px;fill:var(--fg-2);text-anchor:middle;font-family:var(--font-math)}
+svg.nl .rowlab{font-size:17px;fill:var(--fg-3);font-weight:600}
+svg.nl .zero{stroke:var(--hl-ink);stroke-width:2;stroke-dasharray:5 5;opacity:0}
+svg.nl .zero.on{opacity:.8}
+svg.nl .pt{transition:transform .45s cubic-bezier(.22,.61,.36,1)}
+svg.nl .pt text{font-size:18px;font-weight:700;text-anchor:middle;font-family:var(--font-math)}
+svg.nl .guide{stroke-width:2;stroke-dasharray:4 5;opacity:.55}
+svg.nl .ptA circle{fill:var(--mathe)} svg.nl .ptA text{fill:var(--mathe)} svg.nl .gA{stroke:var(--mathe)}
+svg.nl .ptB circle{fill:var(--physik)} svg.nl .ptB text{fill:var(--physik)} svg.nl .gB{stroke:var(--physik)}
+svg.nl .hidden{opacity:0}
+
+.aussagen{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;align-items:center;margin-top:10px;font-size:1.35rem}
+.aussagen .k{color:var(--fg-3);font-size:1rem;text-transform:uppercase;letter-spacing:.08em}
+.badge{display:inline-block;margin-left:10px;padding:2px 10px;border-radius:var(--radius-pill);font-family:"Source Sans 3",sans-serif;font-size:1rem;font-weight:700;vertical-align:middle}
+.badge.w{background:var(--ok-soft);color:var(--ok)}
+.badge.f{background:var(--mathe-soft);color:var(--mathe-ink)}
+.hint{margin-top:8px;padding:9px 13px;border-radius:var(--radius-md);background:var(--surface-soft);border:1px solid var(--line-2);color:var(--fg-2);font-size:1.05rem;min-height:2.2em}
+.veil{color:var(--fg-4);font-style:italic}
+
+/* Station 2 */
+.preset{display:flex;flex-direction:column;gap:6px}
+.preset button{text-align:left;min-height:44px;border:1px solid var(--line-3);border-radius:var(--radius-md);background:var(--surface-page);cursor:pointer;padding:6px 12px;font-family:var(--font-math);font-size:1.15rem}
+.preset button[aria-pressed="true"]{border:2px solid var(--mathe);background:var(--mathe-soft)}
+svg.nl .dotw{fill:var(--ok)} svg.nl .dotf{fill:var(--mathe);opacity:.35}
+svg.nl .cursor{stroke:var(--fg-1);stroke-width:2}
+svg.nl .rowtxt{font-family:var(--font-math);font-size:19px;fill:var(--fg-1)}
+.legende{display:flex;gap:18px;flex-wrap:wrap;color:var(--fg-3);font-size:.95rem;margin-top:6px}
+.legende i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+
+details.lehrkraft{margin-top:18px;border:1px solid var(--line-2);border-radius:var(--radius-lg);background:var(--surface-soft)}
+details.lehrkraft summary{cursor:pointer;padding:12px 14px;font-weight:600;color:var(--fg-2);min-height:44px}
+details.lehrkraft .in{padding:0 16px 12px}
+details.lehrkraft dl{margin:0}
+details.lehrkraft dt{font-weight:700;margin-top:8px}
+details.lehrkraft dd{margin:0}
+footer{color:var(--fg-4);font-size:.85rem;padding:8px 0 24px}
+@media print{.noprint{display:none}}
+</style>
+</head>
+<body>
+<div class="brandline"></div>
+<div class="wrap">
+  <header class="top">
+    <a class="backlink noprint" href="../../../katalog.html?stufe=8&amp;fach=mathe">← Alle Simulationen</a>
+    <h1>Ungleichungen – warum dreht sich das Zeichen?</h1>
+    <p class="sub">Zwei Zahlen auf der Zahlengeraden – was passiert mit ihrer Reihenfolge, wenn man rechnet?</p>
+  </header>
+
+  <nav class="tabs" id="tabs" aria-label="Teile">
+    <button data-t="s1" aria-current="true">1 · Zeichen umdrehen?</button>
+    <button data-t="s2">2 · Lösungsmenge prüfen</button>
+  </nav>
+
+  <!-- ===================== Station 1 ===================== -->
+  <section class="station show" id="s1">
+    <h2>Bleibt die Aussage wahr?</h2>
+    <p class="lead">Wähle zwei Zahlen <span class="m"><i>a</i></span> und <span class="m"><i>b</i></span> und eine Rechnung. Oben stehen die Zahlen vorher, unten nachher. Erst vorhersagen, dann aufdecken.</p>
+    <div class="layout">
+      <div class="panel">
+        <h3>Zahlen</h3>
+        <div class="sl"><div class="sl-l"><label for="ra"><span class="m"><i>a</i></span></label><output id="oa">2</output></div>
+          <div class="sl-row"><button class="step" data-s="ra" data-d="-1" aria-label="a kleiner">−</button><input type="range" id="ra" min="-6" max="6" step="1" value="2"><button class="step" data-s="ra" data-d="1" aria-label="a größer">+</button></div></div>
+        <div class="sl"><div class="sl-l"><label for="rb"><span class="m"><i>b</i></span></label><output id="ob">6</output></div>
+          <div class="sl-row"><button class="step" data-s="rb" data-d="-1" aria-label="b kleiner">−</button><input type="range" id="rb" min="-6" max="6" step="1" value="6"><button class="step" data-s="rb" data-d="1" aria-label="b größer">+</button></div></div>
+        <h3 style="margin-top:14px">Rechnung auf beiden Seiten</h3>
+        <div class="seg" role="group" aria-label="Rechenart">
+          <button id="opMul" aria-pressed="true">· Faktor</button>
+          <button id="opAdd" aria-pressed="false">+ Zahl</button>
+        </div>
+        <div class="sl" id="slK"><div class="sl-l"><label for="rk" id="lk">Faktor <span class="m"><i>k</i></span></label><output id="ok">1</output></div>
+          <div class="sl-row"><button class="step" data-s="rk" data-d="-1" aria-label="kleiner">−</button><input type="range" id="rk" min="-12" max="12" step="1" value="4"><button class="step" data-s="rk" data-d="1" aria-label="größer">+</button></div>
+          <div class="quick" id="quickK"></div></div>
+        <div class="actions" style="margin-top:12px">
+          <button class="btn ghost" id="veilBtn" aria-pressed="false">Nachher verdecken</button>
+          <button class="btn" id="showBtn" hidden>Aufdecken</button>
+        </div>
+      </div>
+      <div class="panel">
+        <svg class="nl" id="nl1" viewBox="0 0 900 260" aria-label="Zahlengerade vorher und nachher"></svg>
+        <div class="aussagen">
+          <span class="k">vorher</span><span id="sVor"></span>
+          <span class="k">nachher</span><span id="sNach"></span>
+        </div>
+        <div class="hint" id="hint1"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Station 2 ===================== -->
+  <section class="station" id="s2">
+    <h2>Stimmt die Lösungsmenge?</h2>
+    <p class="lead">Zieh <span class="m"><i>x</i></span> über die Zahlengerade. Jede getestete Zahl hinterlässt einen Punkt: grün, wenn die Ungleichung wahr ist, rot, wenn sie falsch ist. Vergleiche die Zeilen.</p>
+    <div class="layout">
+      <div class="panel">
+        <h3>Ungleichung</h3>
+        <div class="preset" id="presets"></div>
+        <h3 style="margin-top:14px">Testzahl</h3>
+        <div class="sl"><div class="sl-l"><label for="rx"><span class="m"><i>x</i></span></label><output id="ox">0</output></div>
+          <div class="sl-row"><button class="step" data-s="rx" data-d="-1" aria-label="x kleiner">−</button><input type="range" id="rx" min="-16" max="16" step="1" value="0"><button class="step" data-s="rx" data-d="1" aria-label="x größer">+</button></div></div>
+        <div class="actions">
+          <button class="btn" id="sweep">Alle Zahlen testen</button>
+          <button class="btn ghost" id="clear">Punkte löschen</button>
+        </div>
+      </div>
+      <div class="panel">
+        <svg class="nl" id="nl2" viewBox="0 0 900 330" aria-label="Lösungsmengen auf der Zahlengeraden"></svg>
+        <div class="legende"><span><i style="background:var(--ok)"></i>Aussage wahr</span><span><i style="background:var(--mathe);opacity:.35"></i>Aussage falsch</span></div>
+        <div class="hint" id="hint2"></div>
+      </div>
+    </div>
+  </section>
+
+  <details class="lehrkraft"><summary>Für Lehrkräfte</summary><div class="in"><dl>
+    <dt>Zweck</dt>
+    <dd>Demonstration am Beamer im Unterrichtsgespräch (eine Person bedient, die Klasse sagt voraus). Teil 1 zeigt, warum das Relationszeichen beim Multiplizieren mit einer negativen Zahl umgedreht werden muss: Mal eine negative Zahl spiegelt an der 0, dadurch tauschen die Punkte ihre Reihenfolge. Teil 2 macht Lösungsmengen sichtbar und entlarvt den typischen Fehler (nicht umgedreht).</dd>
+    <dt>Vorwissen</dt>
+    <dd>Äquivalenzumformungen bei Gleichungen; Begriff Ungleichung und Lösungsmenge (kurz vorher eingeführt); Tabelle „Bleibt es wahr?“ mit 2 &lt; 6 im Heft.</dd>
+    <dt>Ablauf (ca. 7 min + 3 min)</dt>
+    <dd>Teil 1: a = 2, b = 6. Faktor 3, 1, 0,5 zeigen (Abstand ändert sich, Reihenfolge nicht). „Nachher verdecken“ einschalten, Faktor −1 einstellen, Vorhersage per Handzeichen, aufdecken. Danach Faktor langsam von 1 bis −2 ziehen: Bei 0 fallen beide Punkte zusammen, danach liegen sie gespiegelt. Zum Vergleich „+ Zahl“: Verschieben ändert nie die Reihenfolge.<br>Teil 2: Leas Rechnung (−2x + 5 &lt; 11 → x &lt; −3) mit „Alle Zahlen testen“ prüfen; die Zeilen passen nicht zusammen. Korrigierte Zeile stimmt mit der Ausgangsungleichung überein.</dd>
+    <dt>Hinweise</dt>
+    <dd>Keine Eingaben werden gespeichert. Faktor in Viertelschritten von −3 bis 3, Schnellwahl für typische Werte. Auf dem Lehrerrechner im Vollbild (F11) gut lesbar.</dd>
+  </dl></div></details>
+  <footer>LMG Uetersen · Mathematik Klasse 8 · Terme und Gleichungen</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+const fmt=v=>{ if(Math.abs(v)<1e-9) v=0; let s=(Math.round(v*100)/100).toString().replace(".",","); return s.replace("-","−"); };
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+
+/* ---------- Tabs ---------- */
+document.querySelectorAll("#tabs button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("#tabs button").forEach(x=>x.setAttribute("aria-current",x===b?"true":"false"));
+  document.querySelectorAll(".station").forEach(s=>s.classList.toggle("show",s.id===b.dataset.t));
+}));
+/* ---------- Plus/Minus an Reglern ---------- */
+document.querySelectorAll(".step").forEach(b=>b.addEventListener("click",()=>{
+  const r=$(b.dataset.s); r.value=Math.min(+r.max,Math.max(+r.min,+r.value+(+b.dataset.d))); r.dispatchEvent(new Event("input"));
+}));
+
+/* =========================================================
+   Station 1
+   ========================================================= */
+const svg1=$("nl1");
+const LO=-20,HI=20,X0=40,X1=860;
+const X=v=>X0+(v-LO)/(HI-LO)*(X1-X0);
+const YV=80,YN=200;
+function axis(svg,y,label,lo,hi,x0,x1,labStep,small){
+  const Xf=v=>x0+(v-lo)/(hi-lo)*(x1-x0);
+  el("line",{x1:x0-14,y1:y,x2:x1+20,y2:y,class:"axis"},svg);
+  el("path",{d:`M${x1+22},${y} l-12,-6 l0,12 z`,fill:"var(--fg-1)"},svg);
+  for(let v=lo;v<=hi;v++){
+    const major=v%labStep===0;
+    if(!major&&!small) continue;
+    el("line",{x1:Xf(v),y1:y-(major?8:4),x2:Xf(v),y2:y+(major?8:4),class:"tick"+(major?"":" small")},svg);
+    if(major){const t=el("text",{x:Xf(v),y:y+28,class:"lab"},svg);t.textContent=fmt(v);}
+  }
+  if(label){const t=el("text",{x:0,y:y-30,class:"rowlab"},svg);t.textContent=label;}
+}
+axis(svg1,YV,"vorher",LO,HI,X0,X1,2,true);
+axis(svg1,YN,"nachher",LO,HI,X0,X1,2,true);
+const zero=el("line",{x1:X(0),y1:YV-40,x2:X(0),y2:YN+14,class:"zero"},svg1);
+const gA=el("line",{class:"guide gA"},svg1), gB=el("line",{class:"guide gB"},svg1);
+function point(cls,name,y){
+  const g=el("g",{class:"pt "+cls},svg1);
+  el("circle",{cx:0,cy:y,r:11},g);
+  const t=el("text",{x:0,y:y-20},g); t.textContent=name;
+  return g;
+}
+const pA=point("ptA","a",YV), pB=point("ptB","b",YV), qA=point("ptA","a′",YN), qB=point("ptB","b′",YN);
+
+let mode="mul", veiled=false, revealed=true;
+const kVal=()=>mode==="mul"? (+$("rk").value)/4 : +$("rk").value;
+function setMode(m){
+  mode=m; $("opMul").setAttribute("aria-pressed",m==="mul"); $("opAdd").setAttribute("aria-pressed",m==="add");
+  const r=$("rk");
+  if(m==="mul"){ r.min=-12; r.max=12; r.value=4; $("lk").innerHTML='Faktor <span class="m"><i>k</i></span>'; }
+  else { r.min=-10; r.max=10; r.value=3; $("lk").innerHTML='Zahl <span class="m"><i>c</i></span>'; }
+  buildQuick(); hideIfVeiled(); draw1();
+}
+function buildQuick(){
+  const q=$("quickK"); q.innerHTML="";
+  const vals= mode==="mul" ? [3,1,0.5,0,-0.5,-1,-2,-3] : [5,2,-2,-5];
+  vals.forEach(v=>{const b=document.createElement("button"); b.type="button"; b.textContent=(mode==="mul"?"· ":"+ ")+(v<0?"("+fmt(v)+")":fmt(v));
+    b.addEventListener("click",()=>{ $("rk").value= mode==="mul"? v*4 : v; hideIfVeiled(); draw1(); }); q.appendChild(b);});
+}
+function rel(u,v){ return u<v?"<":(u>v?">":"="); }
+function draw1(){
+  const a=+$("ra").value, b=+$("rb").value, k=kVal();
+  $("oa").textContent=fmt(a); $("ob").textContent=fmt(b); $("ok").textContent=fmt(k);
+  const a2= mode==="mul"? k*a : a+k, b2= mode==="mul"? k*b : b+k;
+  pA.style.transform=`translateX(${X(a)}px)`; pB.style.transform=`translateX(${X(b)}px)`;
+  qA.style.transform=`translateX(${X(a2)}px)`; qB.style.transform=`translateX(${X(b2)}px)`;
+  [["x1",X(a)],["y1",YV+12],["x2",X(a2)],["y2",YN-12]].forEach(([k_,v])=>gA.setAttribute(k_,v));
+  [["x1",X(b)],["y1",YV+12],["x2",X(b2)],["y2",YN-12]].forEach(([k_,v])=>gB.setAttribute(k_,v));
+  const hide = veiled && !revealed;
+  zero.classList.toggle("on", mode==="mul" && k<0 && !hide);
+  [qA,qB,gA,gB].forEach(n=>n.classList.toggle("hidden",hide));
+  const s0=rel(a,b);
+  const op = mode==="mul" ? "· "+(k<0?"("+fmt(k)+")":fmt(k)) : (k<0?"− "+fmt(-k):"+ "+fmt(k));
+  $("sVor").innerHTML=`<span class="m">${fmt(a)} ${s0} ${fmt(b)}</span>`;
+  if(s0==="="){ $("sNach").innerHTML='<span class="veil">Wähle zwei verschiedene Zahlen.</span>'; $("hint1").textContent=""; return; }
+  if(hide){ $("sNach").innerHTML=`<span class="m">${fmt(a)} ${op} &nbsp;?&nbsp; ${fmt(b)} ${op}</span> <span class="veil">– erst vorhersagen</span>`; $("hint1").textContent="Wo landen a′ und b′? Bleibt die Aussage wahr?"; return; }
+  const wahr = rel(a2,b2)===s0;
+  $("sNach").innerHTML=`<span class="m">${fmt(a2)} ${s0} ${fmt(b2)}</span><span class="badge ${wahr?"w":"f"}">${wahr?"wahr":"falsch"}</span>`+
+     (!wahr && rel(a2,b2)!=="=" ? ` &nbsp;<span class="m">→ ${fmt(a2)} ${rel(a2,b2)} ${fmt(b2)}</span>` : "");
+  let h="";
+  if(mode==="add") h="Beim Addieren werden beide Punkte gleich weit verschoben. Die Reihenfolge bleibt.";
+  else if(k>1) h="Der Abstand wird größer (gestreckt). Die Reihenfolge bleibt.";
+  else if(k===1) h="Mal 1 ändert nichts.";
+  else if(k>0) h="Der Abstand wird kleiner (gestaucht). Die Reihenfolge bleibt.";
+  else if(k===0) h="Mal 0: Beide Punkte landen auf der 0. Aus „kleiner“ wird „gleich“ – keine Äquivalenzumformung.";
+  else h="Negativer Faktor: Die Punkte werden an der 0 gespiegelt. Was links lag, liegt jetzt rechts – das Zeichen muss umgedreht werden.";
+  $("hint1").textContent=h;
+}
+function hideIfVeiled(){ if(veiled){ revealed=false; $("showBtn").hidden=false; } }
+["ra","rb","rk"].forEach(id=>$(id).addEventListener("input",()=>{ if(id==="rk") hideIfVeiled(); draw1(); }));
+$("opMul").addEventListener("click",()=>setMode("mul"));
+$("opAdd").addEventListener("click",()=>setMode("add"));
+$("veilBtn").addEventListener("click",()=>{
+  veiled=!veiled; $("veilBtn").setAttribute("aria-pressed",veiled);
+  $("veilBtn").textContent= veiled? "Verdecken ist an" : "Nachher verdecken";
+  revealed=!veiled; $("showBtn").hidden=!veiled; draw1();
+});
+$("showBtn").addEventListener("click",()=>{ revealed=true; $("showBtn").hidden=true; draw1(); });
+setMode("mul");
+
+/* =========================================================
+   Station 2
+   ========================================================= */
+const P2=[
+  {name:"−2x + 5 < 11  (Lea)", rows:[
+     {t:"−2x + 5 < 11", f:x=>-2*x+5<11, label:"Ausgangsungleichung"},
+     {t:"x < −3", f:x=>x<-3, label:"Leas Ergebnis"},
+     {t:"x > −3", f:x=>x>-3, label:"korrigiert"}],
+   hint:"Leas Zeile ist genau „verkehrt herum“: Beim Teilen durch (−2) hat sie das Zeichen nicht umgedreht. −3 selbst ist in keiner Zeile eine Lösung."},
+  {name:"−5x < 2x + 21", rows:[
+     {t:"−5x < 2x + 21", f:x=>-5*x<2*x+21, label:"Ausgangsungleichung"},
+     {t:"x > −3", f:x=>x>-3, label:"Ergebnis"}],
+   hint:"Beide Wege aus dem Buch führen zu x > −3 – die Zeilen stimmen überein."},
+  {name:"3x − 4 ≤ 11", rows:[
+     {t:"3x − 4 ≤ 11", f:x=>3*x-4<=11+1e-9, label:"Ausgangsungleichung"},
+     {t:"x ≤ 5", f:x=>x<=5+1e-9, label:"Ergebnis"}],
+   hint:"Bei ≤ gehört der Randpunkt dazu: x = 5 macht die Ungleichung wahr (voller Punkt)."},
+  {name:"−x ≥ 2", rows:[
+     {t:"−x ≥ 2", f:x=>-x>=2-1e-9, label:"Ausgangsungleichung"},
+     {t:"x ≥ −2", f:x=>x>=-2-1e-9, label:"Vorschlag 1"},
+     {t:"x ≤ −2", f:x=>x<=-2+1e-9, label:"Vorschlag 2"}],
+   hint:"−x ≥ 2 heißt: (−1) · x ≥ 2. Teilen durch (−1) dreht das Zeichen um."},
+  {name:"x · 0 < 5 · 0  ?", rows:[
+     {t:"x < 5", f:x=>x<5, label:"vorher"},
+     {t:"0 · x < 0 · 5", f:x=>0<0, label:"nach „· 0“"}],
+   hint:"Nach „· 0“ ist keine einzige Zahl mehr Lösung. Mit 0 multiplizieren ist auch bei Ungleichungen verboten."}
+];
+const svg2=$("nl2");
+const L2=-8,H2=8,A0=60,A1=870;
+const X2=v=>A0+(v-L2)/(H2-L2)*(A1-A0);
+let cur=0; let tested=new Set();
+function buildPresets(){
+  const box=$("presets"); box.innerHTML="";
+  P2.forEach((p,i)=>{const b=document.createElement("button"); b.type="button"; b.textContent=p.name; b.setAttribute("aria-pressed",i===cur);
+    b.addEventListener("click",()=>{cur=i; tested=new Set(); buildPresets(); draw2();}); box.appendChild(b);});
+}
+function draw2(){
+  const p=P2[cur]; const x=(+$("rx").value)/2; $("ox").textContent=fmt(x);
+  tested.add(x);
+  svg2.innerHTML="";
+  const n=p.rows.length, top=50, gap=n===3?100:130;
+  svg2.setAttribute("viewBox",`0 0 900 ${top+gap*(n-1)+70}`);
+  p.rows.forEach((r,i)=>{
+    const y=top+i*gap+20;
+    const lab=el("text",{x:0,y:y-30,class:"rowlab"},svg2); lab.textContent=r.label+":";
+    const tt=el("text",{x:200,y:y-30,class:"rowtxt"},svg2); tt.textContent=r.t;
+    axis(svg2,y,null,L2,H2,A0,A1,1,false);
+    [...tested].forEach(v=>{ el("circle",{cx:X2(v),cy:y,r:7,class:r.f(v)?"dotw":"dotf"},svg2); });
+  });
+  el("line",{x1:X2(x),y1:top-10,x2:X2(x),y2:top+gap*(n-1)+40,class:"cursor"},svg2);
+  const res=p.rows.map(r=>r.f(x));
+  const same=res.every(v=>v===res[0]);
+  $("hint2").innerHTML=`x = ${fmt(x)}: `+p.rows.map((r,i)=>`${r.label} <b style="color:${res[i]?"var(--ok)":"var(--mathe)"}">${res[i]?"wahr":"falsch"}</b>`).join(" · ")+
+     (tested.size>20? `<br>${p.hint}`:"");
+}
+$("rx").addEventListener("input",draw2);
+$("clear").addEventListener("click",()=>{tested=new Set(); draw2();});
+$("sweep").addEventListener("click",()=>{
+  const r=$("rx"); let v=+r.min;
+  const t=setInterval(()=>{ r.value=v; draw2(); v++; if(v>+r.max){clearInterval(t);} },45);
+});
+buildPresets(); draw2();
+})();
+</script>
+</body>
+</html>
