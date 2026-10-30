@@ -97,6 +97,19 @@ window.SIMULATIONEN = [
     datum: "2026-10-06"
   },
   {
+    id: "logarithmus",
+    titel: "Logarithmus – wie oft mal b?",
+    fach: "mathe",
+    stufen: ["10"],
+    thema: "Exponentialfunktionen",
+    beschreibung: "Auf einer Doppelleiter Exponenten als Anzahl der Faktoren zählen, mit einer Lupe nicht ganzzahlige Exponenten eingrenzen und dabei sehen, warum man nicht linear schätzen darf. Dann erst der Taschenrechner, zum Schluss eine Exponentialgleichung im Sachkontext (Papier bis zum Mond).",
+    pfad: "sims/mathe/logarithmus/",
+    vorschau: "sims/mathe/logarithmus/vorschau.png",
+    sozialform: "Partnerarbeit",
+    dauer: "ca. 50 min",
+    datum: "2026-10-30"
+  },
+  {
     id: "ungleichungen",
     titel: "Ungleichungen – warum dreht sich das Zeichen?",
     fach: "mathe",

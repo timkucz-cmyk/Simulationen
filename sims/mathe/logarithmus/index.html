@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Logarithmus – wie oft mal b?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Tokens aus dem LMG-Designsystem (Werte wie in assets/lmg.css, hier eigenständig) */
+:root{
+  --surface-page:#ffffff; --surface-soft:#f6f6f4; --surface-sunken:#ecece8;
+  --fg-1:#17181a; --fg-2:#3d4147; --fg-3:#646a72; --fg-4:#9097a0; --fg-5:#c2c7cd;
+  --line-1:#e4e5e3; --line-2:#cfd1cf; --line-3:#a8acaa;
+  --mathe:#B61E33; --mathe-soft:#f5e1e3; --mathe-line:#e8b8be; --mathe-ink:#6f0f1c;
+  --physik:#2C5282;
+  --ok:#3f6e3a; --ok-soft:#e7eee5; --warn:#8a6a1e; --warn-soft:#f3ecd9;
+  --radius-sm:4px; --radius-md:6px; --radius-lg:10px; --radius-pill:999px;
+  --shadow-1:0 1px 2px rgba(20,22,25,.04),0 1px 1px rgba(20,22,25,.03);
+  --font-math:"Cambria Math","STIX Two Math","STIX Two Text",Cambria,"Times New Roman",Georgia,serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}
+body{margin:0;background:var(--surface-soft);color:var(--fg-1);
+  font-family:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+a{color:var(--mathe)}
+:focus-visible{outline:2px solid var(--mathe);outline-offset:3px;border-radius:var(--radius-sm)}
+.m{font-family:var(--font-math);white-space:nowrap}
+.m i{font-style:italic}
+.m sup{font-size:.72em;line-height:0}
+.m sub{font-size:.72em;line-height:0}
+
+.brandline{height:4px;background:linear-gradient(90deg,var(--mathe) 0 50%,var(--physik) 50% 100%)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+@media (min-width:700px){.wrap{padding:0 24px}}
+header.top{padding:12px 0 0}
+.backlink{display:inline-block;margin:0 0 4px;font-size:.92rem;color:var(--fg-3);text-decoration:none;padding:6px 0}
+.backlink:hover{color:var(--fg-1);text-decoration:underline}
+h1{font-size:clamp(26px,4vw,34px);line-height:1.15;margin:0;letter-spacing:-.01em}
+.sub{margin:2px 0 0;color:var(--fg-2)}
+
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 12px}
+nav.tabs button{border:1px solid var(--line-2);background:var(--surface-page);border-radius:var(--radius-pill);padding:6px 16px;cursor:pointer;font-size:1rem;min-height:44px}
+nav.tabs button[aria-current="true"]{background:var(--fg-1);color:var(--surface-page);border-color:var(--fg-1)}
+nav.tabs button.done::after{content:" ✓";color:var(--ok)}
+nav.tabs button[aria-current="true"].done::after{color:var(--mathe-line)}
+
+.btn{border:1px solid var(--mathe);background:var(--mathe);color:#fff;border-radius:var(--radius-md);padding:8px 16px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;font-size:1rem;font-weight:600;min-height:44px}
+.btn:active{background:var(--mathe-ink);border-color:var(--mathe-ink)}
+.btn.ghost{background:var(--surface-page);color:var(--mathe)}
+.btn.ghost:active{background:var(--mathe-soft)}
+.btn.small{padding:6px 12px;font-size:.92rem}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+
+.station{display:none;background:var(--surface-page);border:1px solid var(--line-2);border-top:6px solid var(--mathe);border-radius:var(--radius-lg);padding:14px 18px 18px;margin-bottom:20px;box-shadow:var(--shadow-1)}
+.station.show{display:block}
+.sthead{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.chip{font-size:.85rem;border-radius:var(--radius-sm);padding:2px 9px;font-weight:700;display:inline-block;background:var(--mathe-soft);color:var(--mathe-ink)}
+h2{font-size:1.45rem;margin:4px 0 0;line-height:1.2}
+h3{font-size:1.1rem;margin:0 0 8px}
+.lead{margin:0 0 12px;max-width:75ch}
+
+/* Aufträge */
+.q{margin:8px 0 6px}
+.choices{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
+.choice{min-height:48px;min-width:96px;padding:8px 16px;border:2px solid var(--line-3);background:var(--surface-page);border-radius:var(--radius-md);cursor:pointer;font-size:1rem;text-align:left}
+.choice[aria-pressed="true"]{border-color:var(--mathe);background:var(--mathe);color:#fff;font-weight:600}
+.qrow{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:10px 0 0}
+.qrow label,.qrow .m{font-size:1.15rem}
+.numin{min-height:48px;width:110px;padding:8px 12px;border:2px solid var(--line-3);border-radius:var(--radius-md);background:var(--surface-page);font-size:1.2rem;text-align:center}
+.fb{margin-top:10px;padding:9px 13px;border-radius:var(--radius-md);display:none}
+.fb.ok{display:block;background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
+.fb.bad{display:block;background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.fb.info{display:block;background:var(--surface-soft);border:1px solid var(--line-2)}
+.fb p{margin:2px 0}
+.prog{color:var(--fg-3);margin:8px 0 0}
+.auftrag{margin:0 0 12px;border:2px solid var(--mathe);border-radius:var(--radius-lg);padding:12px 14px}
+.auftrag p{margin:4px 0}
+.auftrag.erledigt{border:1px solid var(--line-2);background:var(--surface-soft);padding:6px 14px;margin-bottom:8px}
+.auftrag.erledigt h3{margin:0;color:var(--ok)}
+.auftrag.erledigt h3::before{content:"✓ "}
+.auftrag.erledigt p{color:var(--fg-2)}
+.anr{font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mathe-ink);display:block}
+.auftrag.erledigt .anr{color:var(--fg-3)}
+details.hilfe{margin:8px 0 0;border:1px dashed var(--line-3);border-radius:var(--radius-md);background:var(--surface-page)}
+details.hilfe summary{cursor:pointer;padding:8px 12px;min-height:44px;color:var(--fg-2);font-weight:600}
+details.hilfe p{margin:0;padding:0 12px 10px}
+
+.panel{border:1px solid var(--line-1);border-radius:var(--radius-lg);padding:12px 14px;background:var(--surface-page);margin-bottom:14px}
+.vis{width:100%;height:auto;display:block;user-select:none;-webkit-user-select:none}
+.vis .ax{stroke:var(--fg-2);stroke-width:2}
+.vis .tk{stroke:var(--fg-2);stroke-width:1.6}
+.vis .tk.min{stroke:var(--line-3);stroke-width:1.2}
+.vis .con{stroke:var(--line-2);stroke-width:1;stroke-dasharray:3 4}
+.vis text{fill:var(--fg-1);font-family:var(--font-math);font-size:18px}
+.vis text.sm{font-size:15px;fill:var(--fg-3)}
+.vis text.ttl{font-family:"Source Sans 3",system-ui,sans-serif;font-size:15px;font-weight:700;fill:var(--fg-3);letter-spacing:.04em}
+.vis .arc{fill:none;stroke:var(--mathe);stroke-width:2}
+.vis text.arcl{fill:var(--mathe-ink);font-size:16px}
+.vis .mk{stroke:var(--mathe);stroke-width:4;stroke-linecap:round}
+.vis .mkd{fill:var(--mathe);stroke:#fff;stroke-width:2}
+.vis .start{fill:var(--surface-page);stroke:var(--fg-1);stroke-width:2}
+.vis .mid{stroke:var(--fg-3);stroke-width:1.5;stroke-dasharray:5 4}
+.vis .try{stroke:var(--fg-5);stroke-width:2}
+.vis .tgt{fill:var(--fg-1)}
+.vis text.hl{fill:var(--mathe-ink);font-weight:700}
+.readout{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;background:var(--surface-soft);border-radius:var(--radius-md);padding:8px 14px;margin:8px 0;font-size:1.25rem}
+.readout b{font-variant-numeric:tabular-nums}
+
+/* Regler */
+.sl-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.step{flex:none;min-width:48px;height:48px;padding:0 8px;border:2px solid var(--line-3);border-radius:var(--radius-md);background:var(--surface-page);font-size:1.05rem;font-weight:700;cursor:pointer;line-height:1}
+.step:active{background:var(--mathe-soft)}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;min-width:160px;height:48px;background:transparent;margin:0;touch-action:pan-y}
+input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:5px;background:var(--line-2)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:40px;height:40px;border-radius:50%;background:var(--mathe);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);margin-top:-15px}
+input[type=range]::-moz-range-track{height:10px;border-radius:5px;background:var(--line-2)}
+input[type=range]::-moz-range-thumb{width:32px;height:32px;border-radius:50%;background:var(--mathe);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+
+table.wt{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;margin-top:8px}
+table.wt th,table.wt td{border:1px solid var(--line-2);padding:5px 8px;text-align:center}
+table.wt th{background:var(--surface-soft);font-weight:600}
+table.wt td.leer{color:var(--fg-3);font-style:italic}
+table.wt tr.neu td{background:var(--mathe-soft)}
+.savemsg{color:var(--fg-3);font-size:.95rem}
+
+.ergebnis{border:2px solid var(--ok);background:var(--ok-soft);border-radius:var(--radius-lg);padding:12px 16px;margin-top:12px}
+.ergebnis h3{color:var(--ok)}
+.ergebnis p,.ergebnis li{max-width:80ch}
+.ergebnis ol{margin:4px 0;padding-left:22px}
+.formel{font-family:var(--font-math);font-size:1.35rem;background:var(--surface-page);border-radius:var(--radius-md);padding:8px 14px;margin:8px 0;line-height:1.9}
+
+/* Start */
+.intro p{max-width:75ch}
+.karten{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:14px 0}
+.karte{display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:center;text-align:left;border:1px solid var(--line-2);border-radius:var(--radius-lg);background:var(--surface-page);padding:12px;cursor:pointer;min-height:110px}
+.karte:active{border-color:var(--mathe)}
+.karte .ic{width:84px;height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--surface-soft);border-radius:var(--radius-md);font-family:var(--font-math);font-size:17px;line-height:1.3;text-align:center}
+.karte .ic .nw{white-space:nowrap;font-size:15px}
+.karte b{display:block;font-size:1.1rem}
+.karte span.k{color:var(--fg-3);font-size:.92rem}
+details.lehrkraft{margin-top:18px;border:1px solid var(--line-2);border-radius:var(--radius-lg);background:var(--surface-soft)}
+details.lehrkraft summary{cursor:pointer;padding:12px 14px;font-weight:600;color:var(--fg-2);min-height:44px}
+details.lehrkraft .in{padding:0 16px 12px}
+details.lehrkraft dl{margin:0}
+details.lehrkraft dt{font-weight:700;margin-top:8px}
+details.lehrkraft dd{margin:0}
+footer{color:var(--fg-3);font-size:.88rem;padding:0 0 28px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="brandline"></div>
+<div class="wrap">
+  <header class="top">
+    <a class="backlink noprint" href="../../../katalog.html?stufe=10&amp;fach=mathe">← Alle Simulationen</a>
+    <h1>Logarithmus – wie oft mal <i>b</i>?</h1>
+    <p class="sub">Exponenten zählen, zwischen den Stufen eingrenzen, Exponentialgleichungen lösen</p>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="Stationen"></nav>
+  <main>
+    <section class="station" id="st-0" aria-labelledby="h-0"></section>
+    <section class="station" id="st-1" aria-label="Station 1"></section>
+    <section class="station" id="st-2" aria-label="Station 2"></section>
+    <section class="station" id="st-3" aria-label="Station 3"></section>
+    <section class="station" id="st-4" aria-label="Station 4"></section>
+  </main>
+  <footer>Diese Seite speichert und überträgt nichts. Beim Neuladen sind alle Eingaben weg.</footer>
+</div>
+
+<script>
+/* =========================================================
+   Hilfen
+   ========================================================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=v=>{ const t=String(v??'').replace(/\s/g,'').replace(',','.').replace(/[−–]/g,'-'); return /^[-+]?\d*\.?\d+$/.test(t)?parseFloat(t):NaN; };
+/* Zahl deutsch: Komma, schmale Tausendertrennung, echtes Minus; d = höchstens d Nachkommastellen */
+const de=(v,d=3)=>{ const r=Number(v.toFixed(d)); let [i,f]=String(Math.abs(r)).split('.');
+  i=i.replace(/\B(?=(\d{3})+(?!\d))/g,' '); return (r<0?'−':'')+i+(f?','+f:''); };
+const fx=(v,d)=>v.toFixed(d).replace('.',',').replace('-','−');      // feste Nachkommastellen
+const sg=n=>String(n).replace('-','−');
+const P=(b,e)=>`<span class="m">${b}<sup>${e}</sup></span>`;          // Potenz
+const LOG=(b,c)=>`<span class="m">log<sub>${b}</sub>(${c})</span>`;
+const M=s=>`<span class="m">${s}</span>`;
+const reduced=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const svgPow=(b,e)=>`${b}<tspan dy="-9" font-size="13">${e}</tspan>`;
+/* Wert auf der Leiter: positive Stufen als ganze Zahl, negative als Bruch */
+const stufenwert=(b,k)=>k>=0?de(b**k,0):`1/${de(b**-k,0)}`;
+
+function fb(id,cls,html){ const e=document.getElementById(id); if(!e) return; e.className='fb '+(cls||''); e.innerHTML=html||''; }
+function shell(id,chip,title,lead,exHTML){
+  return `<div class="sthead"><div><span class="chip">${chip}</span><h2>${title}</h2></div>
+      <button type="button" class="btn ghost small" data-reset="${id}">Station zurücksetzen</button></div>
+    <p class="lead">${lead}</p>${exHTML}`;
+}
+
+/* =========================================================
+   Darstellungen
+   ========================================================= */
+/* Doppelleiter (Stifel): oben die Stufe x, unten der Wert b^x. Jede Stufe nach rechts = · b. */
+function ladder(b,nmin,nmax,n,mark){
+  const L=104,R=950,yT=62,yB=172, px=k=>L+(k-nmin)*(R-L)/(nmax-nmin);
+  let h=`<text class="ttl" x="10" y="${yT+5}">STUFE <tspan font-style="italic">x</tspan></text><text class="ttl" x="10" y="${yB+5}">WERT</text>
+    <line class="ax" x1="${L-14}" y1="${yT}" x2="${R+14}" y2="${yT}"/><line class="ax" x1="${L-14}" y1="${yB}" x2="${R+14}" y2="${yB}"/>`;
+  for(let k=nmin;k<=nmax;k++){ const x=px(k);
+    h+=`<line class="con" x1="${x}" y1="${yT}" x2="${x}" y2="${yB}"/>
+      <line class="tk" x1="${x}" y1="${yT-7}" x2="${x}" y2="${yT+7}"/><line class="tk" x1="${x}" y1="${yB-7}" x2="${x}" y2="${yB+7}"/>
+      <text x="${x}" y="${yT-16}" text-anchor="middle"${k===n?' class="hl"':''}>${sg(k)}</text>
+      <text x="${x}" y="${yB+30}" text-anchor="middle" class="${k===n?'hl':'sm'}">${stufenwert(b,k)}</text>`; }
+  // Bögen von 1 (Stufe 0) bis zur eingestellten Stufe: so oft wurde mit b multipliziert bzw. durch b geteilt
+  const dir=n>=0?1:-1;
+  for(let j=0;j!==n;j+=dir){ const x1=px(j),x2=px(j+dir),xm=(x1+x2)/2;
+    h+=`<path class="arc" d="M${x1} ${yB-6} Q${xm} ${yB-52} ${x2} ${yB-6}"/><text class="arcl" x="${xm}" y="${yB-34}" text-anchor="middle">${dir>0?'·':':'}${b}</text>`; }
+  (mark||[]).forEach(k=>{ h+=`<circle cx="${px(k)}" cy="${yB}" r="7" class="mkd" opacity=".45"/>`; });
+  h+=`<circle class="start" cx="${px(0)}" cy="${yB}" r="7"/>`;
+  const x=px(n); h+=`<line class="mk" x1="${x}" y1="${yT}" x2="${x}" y2="${yB}"/><circle class="mkd" cx="${x}" cy="${yT}" r="8"/><circle class="mkd" cx="${x}" cy="${yB}" r="8"/>`;
+  return `<svg class="vis" viewBox="0 0 1000 215" role="img" aria-label="Doppelleiter: oben Stufe ${sg(n)}, unten ${b} hoch ${sg(n)} gleich ${stufenwert(b,n)}">${h}</svg>`;
+}
+/* Lupe zwischen zwei Stufen: oben x von lo bis lo + 1, unten 2^x von 2^lo bis 2^(lo+1) – beide gleichmäßig */
+function zoom(lo,x,ziel,tries){
+  const L=80,R=930,yT=64,yB=200, a=2**lo, pT=v=>L+(v-lo)*(R-L), pB=v=>L+(v-a)/a*(R-L);
+  let h=`<text class="ttl" x="10" y="${yT+5}"><tspan font-style="italic">x</tspan></text><text class="ttl" x="10" y="${yB+5}">2<tspan dy="-7" font-size="11" font-style="italic">x</tspan></text>
+    <line class="ax" x1="${L-10}" y1="${yT}" x2="${R+10}" y2="${yT}"/><line class="ax" x1="${L-10}" y1="${yB}" x2="${R+10}" y2="${yB}"/>`;
+  for(let i=0;i<=10;i++){ const v=lo+i/10, X=pT(v), big=i%5===0;
+    h+=`<line class="tk${big?'':' min'}" x1="${X}" y1="${yT-(big?8:5)}" x2="${X}" y2="${yT+(big?8:5)}"/>`+
+       `<text x="${X}" y="${yT-16}" text-anchor="middle" class="${big?'':'sm'}">${fx(v,1)}</text>`; }
+  const st=a/8;
+  for(let i=0;i<=8;i++){ const v=a+i*st, X=pB(v);
+    h+=`<line class="tk" x1="${X}" y1="${yB-7}" x2="${X}" y2="${yB+7}"/><text x="${X}" y="${yB+30}" text-anchor="middle" class="${i%4===0?'':'sm'}">${de(v)}</text>`; }
+  h+=`<line class="mid" x1="${pT(lo+.5)}" y1="${yT+12}" x2="${pT(lo+.5)}" y2="${yT+40}"/><text class="sm" x="${pT(lo+.5)+6}" y="${yT+36}">Mitte</text>
+      <line class="mid" x1="${pB(1.5*a)}" y1="${yB-12}" x2="${pB(1.5*a)}" y2="${yB-40}"/><text class="sm" x="${pB(1.5*a)+6}" y="${yB-26}">Mitte</text>`;
+  tries.forEach(t=>{ h+=`<line class="try" x1="${pT(t)}" y1="${yT}" x2="${pB(2**t)}" y2="${yB}"/>`; });
+  const Z=pB(ziel); h+=`<path class="tgt" d="M${Z} ${yB+40} l-8 12 h16 z"/><text class="hl" x="${Z}" y="${yB+70}" text-anchor="middle">Ziel: ${de(ziel)}</text>`;
+  const X1=pT(x), X2=pB(2**x);
+  h+=`<line class="mk" x1="${X1}" y1="${yT}" x2="${X2}" y2="${yB}"/><circle class="mkd" cx="${X1}" cy="${yT}" r="8"/><circle class="mkd" cx="${X2}" cy="${yB}" r="8"/>`;
+  return `<svg class="vis" viewBox="0 0 1000 285" role="img" aria-label="Lupe zwischen x gleich ${lo} und ${lo+1}: eingestellt x gleich ${fx(x,2)}, 2 hoch x gleich ${fx(2**x,2)}">${h}</svg>`;
+}
+
+/* =========================================================
+   Aufträge: gemeinsamer Ablauf
+   Ein Auftrag hat title, body(s), optional ready(s)/wait(s) (erst dann Eingabe),
+   entweder fields (Zahlen) oder opts (Auswahl) und check(s,werte) → [ok?, Text, Merksatz]
+   ========================================================= */
+const S={}, T={}, ERGEBNIS={};
+function renderTasks(st){
+  const s=S[st], el=$('#auf-'+st); if(!el) return;
+  let h='';
+  T[st].forEach((a,i)=>{ if(i>s.t) return;
+    const title=typeof a.title==='function'?a.title(s):a.title;
+    if(i<s.t){ h+=`<div class="auftrag erledigt"><span class="anr">Auftrag ${i+1}</span><h3>${title}</h3><p>${s.merk[i]||''}</p></div>`; return; }
+    h+=`<div class="auftrag"><span class="anr">Auftrag ${i+1}</span><h3>${title}</h3>${a.body?a.body(s):''}`;
+    if(a.ready&&!a.ready(s)) h+=`<p class="prog">${a.wait(s)}</p>`;
+    else if(a.opts){ h+=`<p class="q">${a.q}</p><div class="choices" role="group">`+a.opts.map(([v,l])=>
+        `<button type="button" class="choice" data-ch="${st}:${i}" data-val="${esc(v)}" aria-pressed="${s.val[i]===v}">${l}</button>`).join('')+`</div>`; }
+    else { h+=`<div class="qrow">`+a.fields.map((f,j)=>`<label for="f-${st}-${i}-${j}">${f[0]}</label>
+        <input id="f-${st}-${i}-${j}" class="numin" inputmode="decimal" autocomplete="off" value="${esc((s.val[i]||[])[j]||'')}">${f[1]?`<span>${f[1]}</span>`:''}`).join('')+
+        `<button type="button" class="btn small" data-chk="${st}:${i}">Prüfen</button></div>`; }
+    if(a.hilfe) h+=a.hilfe.map((t,j)=>`<details class="hilfe"><summary>Hilfe ${j+1}</summary><p>${t}</p></details>`).join('');
+    h+=`<div class="fb" id="fb-${st}-${i}" role="status"></div></div>`;
+  });
+  if(s.t>=T[st].length&&ERGEBNIS[st]) h+=ERGEBNIS[st](s);
+  el.innerHTML=h;
+  const f=s.fb; if(f&&f.i===s.t) fb(`fb-${st}-${f.i}`,f.cls,f.html);
+}
+function answer(st,i,v){
+  const s=S[st], a=T[st][i]; s.val[i]=v;
+  let w=v; if(a.fields){ w=v.map(num); if(w.some(isNaN)){ s.fb={i,cls:'info',html:'<p>Gebt in jedes Feld eine Zahl ein.</p>'}; renderTasks(st); return; } }
+  const [ok,txt,merk]=a.check(s,w);
+  if(ok){ s.merk[i]=merk; s.t=i+1; s.fb=null; if(a.after) a.after(s); if(s.t>=T[st].length){ s.done=true; updTabs(); } RENDER[st](); }
+  else { s.fb={i,cls:ok===null?'info':'bad',html:`<p>${txt}</p>`}; renderTasks(st); }
+}
+
+/* =========================================================
+   Start
+   ========================================================= */
+function renderStart(){
+  $('#st-0').innerHTML=`<div class="intro">
+    <h2 id="h-0">So arbeitet ihr</h2>
+    <p>Ihr arbeitet zu zweit und bearbeitet die Stationen der Reihe nach. In jeder Station gibt es <b>Aufträge</b>: Erst ausprobieren und beobachten, dann besprechen, dann eingeben. Den Taschenrechner braucht ihr erst, wenn ein Auftrag es sagt.</p>
+    <p>Die Leitfrage für heute: Bei ${P(2,'<i>x</i>')} = 64 ist nicht die Basis gesucht, sondern der <b>Exponent</b>. Wie findet man ihn – auch wenn er keine ganze Zahl ist?</p>
+    <div class="karten">
+      <button type="button" class="karte" data-go="1"><span class="ic"><span class="nw">${P(2,'?')} = 64</span></span>
+        <span><span class="k">Station 1 · ca. 15 min</span><b>Faktoren zählen</b><span class="k">Wie oft muss man mit der Basis multiplizieren?</span></span></button>
+      <button type="button" class="karte" data-go="2"><span class="ic"><span class="nw">8 &lt; 12 &lt; 16</span></span>
+        <span><span class="k">Station 2 · ca. 20 min</span><b>Zwischen den Stufen</b><span class="k">Nicht ganzzahlige Exponenten eingrenzen, dann mit dem Taschenrechner</span></span></button>
+      <button type="button" class="karte" data-go="3"><span class="ic"><span class="nw">0,1 · ${P(2,'<i>x</i>')}</span></span>
+        <span><span class="k">Station 3 · ca. 12 min</span><b>Papier bis zum Mond</b><span class="k">Erst umformen, dann logarithmieren, dann prüfen</span></span></button>
+      <button type="button" class="karte" data-go="4"><span class="ic"><span class="nw">4 · 32</span><span class="nw">2 + 5</span></span>
+        <span><span class="k">Station 4 · für Schnelle</span><b>Malnehmen auf der Leiter</b><span class="k">Was passiert mit den Stufen, wenn man multipliziert?</span></span></button>
+    </div>
+    <div class="actions"><button type="button" class="btn" data-go="1">Los geht’s mit Station 1</button></div>
+    <details class="lehrkraft"><summary>Für Lehrkräfte</summary><div class="in"><dl>
+      <dt>Zweck</dt><dd>Erstbegegnung mit dem Logarithmus als Werkzeug für Exponentialgleichungen (Klasse 10, LMG-Stoffverteilung: „Logarithmen nur als Lösungswerkzeug“). Ziel-Grundvorstellung: ${LOG('<i>b</i>','<i>c</i>')} zählt, wie oft man 1 mit ${M('<i>b</i>')} multiplizieren muss, um ${M('<i>c</i>')} zu erhalten (C. Weber 2016: Anzahl der Faktoren). Kern ist die Erweiterung auf nicht ganzzahlige Exponenten: Zwischen zwei Stufen wird multipliziert, nicht addiert – ein halber Schritt ist ${M('· √2')}. Logarithmusgesetze sind bewusst nicht Ziel; Station 4 zeigt nur die Beobachtung „Malnehmen ↔ Stufen addieren“.</dd>
+      <dt>Vorwissen</dt><dd>Potenzen mit negativen Exponenten (Skript 1), allgemeine Exponentialfunktion und Wertemenge (Skript 2). Taschenrechner Casio fx-991DE X mit Taste ${M('log<sub>■</sub>□')}.</dd>
+      <dt>Ablauf</dt><dd>Partnerarbeit, je zwei an einem iPad (Querformat), Arbeitsblatt daneben. Station 1 ca. 15 min · Station 2 ca. 20 min · Station 3 ca. 12 min · Station 4 für Schnelle. Danach Arbeitsblatt (Regelhefteintrag, Übung, Fehleranalyse).</dd>
+      <dt>Hinweise</dt><dd>Station 1: Doppelleiter nach Stifel (1544), Bögen zählen die Faktoren; Basis 10 zählt die Nullen (Weber 2012: verallgemeinerte Stellenanzahl); negative Stufen; keine Lösung für ${M('<i>c</i> ≤ 0')}.<br>
+        Station 2: Die Lupe zeigt oben ${M('<i>x</i>')} und unten ${M('2<sup><i>x</i></sup>')} jeweils gleichmäßig. Bei ${M('<i>x</i> = 3,5')} trifft die Verbindungslinie unten nicht die Mitte 12, sondern 11,31 – das widerlegt die lineare Interpolation (De Bock u. a. 2007, „Illusion of Linearity“) an eigenen Daten. Danach Intervallschachtelung (Fachanforderungen: „Probierverfahren“), dann erst Taschenrechner; Auftrag 5 übt die Plausibilitätskontrolle bei vertauschter Basis.<br>
+        Station 3: Tims Einstiegsaufgabe aus Skript 2 (Folie 60). Typischer Fehler ${M('0,1 · 2<sup><i>x</i></sup> → 0,2<sup><i>x</i></sup>')} wird mit einem Gegenbeispiel zurückgemeldet. Schätzen über ${M('2<sup>10</sup> ≈ 1000')}; Antwort im Sachzusammenhang aufrunden (42).<br>
+        Es werden keine Daten gespeichert oder übertragen; Neuladen löscht alles.</dd>
+    </dl></div></details></div>`;
+}
+
+/* =========================================================
+   Station 1 – Faktoren zählen (Doppelleiter)
+   ========================================================= */
+const BEREICH={2:[-4,10],3:[-3,6],10:[-3,6]};
+T['1']=[
+  {b:2, title:`${P(2,'<i>x</i>')} = 64`,
+   body:()=>`<p>Stellt mit dem Regler die Stufe ein, bei der unten 64 steht. Zählt die Bögen: Wie oft wurde ab 1 mit 2 multipliziert?</p>`,
+   fields:[[M('<i>x</i> =')]],
+   check:(s,[v])=>v===6?[true,'',`${P(2,6)} = 64: sechsmal mit 2 multipliziert. Man schreibt ${LOG(2,64)} = 6.`]
+     :[false,`Stellt die Leiter auf Stufe ${sg(v)}: Unten steht dann ${stufenwert(2,v)}, nicht 64.`]},
+  {b:3, title:`${P(3,'<i>x</i>')} = 243`,
+   body:()=>`<p>Jetzt ist die Basis 3: Jede Stufe nach rechts heißt <b>mal 3</b>.</p>`,
+   fields:[[M('<i>x</i> =')]],
+   check:(s,[v])=>v===5?[true,'',`${P(3,5)} = 243, also ${LOG(3,243)} = 5.`]
+     :[false,`Bei Stufe ${sg(v)} steht unten ${stufenwert(3,v)}. Sucht 243.`]},
+  {b:10, title:`${P(10,'<i>x</i>')} = 100 000`,
+   body:()=>`<p>Basis 10. Achtet darauf, was bei jeder Stufe mit den Nullen passiert.</p>`,
+   fields:[[M('<i>x</i> =')]],
+   check:(s,[v])=>v===5?[true,'',`${LOG(10,'100 000')} = 5. Bei der Basis 10 zählt der Exponent die Nullen: Mit jeder Stufe kommt eine Null dazu.`]
+     :[false,`Zählt die Nullen von 100 000 und vergleicht mit der Leiter.`]},
+  {b:2, title:`${P(2,'<i>x</i>')} = 0,125`,
+   body:()=>`<p>Geht mit dem Regler nach links unter die Stufe 0. Was passiert unten bei jedem Schritt nach links? Hinweis: 0,125 = 1/8.</p>`,
+   fields:[[M('<i>x</i> =')]],
+   check:(s,[v])=>v===-3?[true,'',`${P(2,'−3')} = 1/8 = 0,125: dreimal durch 2 geteilt. Also ${LOG(2,'0,125')} = −3.`]
+     :v===3?[false,`${P(2,3)} = 8. Gesucht ist aber 1/8 – dafür muss man durch 2 teilen, also nach links gehen.`]
+     :[false,`Bei Stufe ${sg(v)} steht unten ${stufenwert(2,v)}. Sucht 1/8.`]},
+  {b:2, title:`Für welche Zahlen ${M('<i>c</i>')} hat ${P(2,'<i>x</i>')} = ${M('<i>c</i>')} eine Lösung?`,
+   body:()=>`<p>Schiebt den Regler ganz nach links und ganz nach rechts. Beobachtet, welche Werte unten vorkommen können.</p>`,
+   q:'Was stimmt?',
+   opts:[['alle','Für alle Zahlen'],['pos',`Nur für ${M('<i>c</i> > 0')}`],['eins',`Nur für ${M('<i>c</i> ≥ 1')}`],['ganz',`Nur für ganze Zahlen ${M('<i>c</i>')}`]],
+   check:(s,v)=>v==='pos'?[true,'',`Nach links wird immer nur halbiert: Der Wert wird kleiner, bleibt aber positiv. ${P(2,'<i>x</i>')} = 0 oder ${P(2,'<i>x</i>')} = −8 hat keine Lösung – ${LOG(2,0)} und ${LOG(2,'−8')} gibt es nicht.`]
+     :v==='alle'?[false,'Wird unten jemals 0 oder eine negative Zahl erreicht? Jeder Schritt nach links halbiert nur.']
+     :v==='eins'?[false,`In Auftrag 4 war ${M('<i>c</i> = 0,125')} kleiner als 1 – und es gab eine Lösung.`]
+     :[false,`Auch 0,125 ist keine ganze Zahl. Und der Graph von ${P(2,'<i>x</i>')} ist durchgehend: Zwischen 8 und 16 kommen alle Werte vor. Darum geht es in Station 2.`]}
+];
+ERGEBNIS['1']=()=>`<div class="ergebnis"><h3>Der Logarithmus</h3>
+  <div class="formel">${P('<i>b</i>','<i>x</i>')} = <i>c</i> &nbsp;⇔&nbsp; <i>x</i> = ${LOG('<i>b</i>','<i>c</i>')}</div>
+  <p>${LOG('<i>b</i>','<i>c</i>')} beantwortet die Frage: <b>Wie oft muss ich 1 mit ${M('<i>b</i>')} multiplizieren</b> (oder durch ${M('<i>b</i>')} teilen), <b>um ${M('<i>c</i>')} zu erhalten?</b> ${M('<i>b</i>')} heißt Basis, ${M('<i>c</i>')} Numerus. Den Logarithmus gibt es nur für ${M('<i>c</i> > 0')}.</p>
+  <p>Vergleich: Bei ${M('<i>x</i><sup>2</sup> = 16')} ist die Basis gesucht (Wurzel), bei ${P(2,'<i>x</i>')} = 16 der Exponent (Logarithmus).</p>
+  <div class="actions"><button type="button" class="btn" data-go="2">Weiter zu Station 2: Und wenn es keine ganze Zahl ist?</button></div></div>`;
+function render1(){
+  const s=S['1'], a=T['1'][Math.min(s.t,T['1'].length-1)], b=a.b, [lo,hi]=BEREICH[b];
+  if(s.b!==b){ s.b=b; s.n=0; }
+  $('#st-1').innerHTML=shell('1','Station 1 · Exponenten zählen','Faktoren zählen',
+    `Oben steht die Stufe ${M('<i>x</i>')}, unten der Wert ${P('<i>b</i>','<i>x</i>')}. Gestartet wird bei 1 (Stufe 0). Jeder Schritt nach rechts heißt <b>mal ${M('<i>b</i>')}</b>, jeder Schritt nach links <b>durch ${M('<i>b</i>')}</b>.`,
+    `<div class="panel"><div id="vis1"></div>
+      <div class="sl-row"><button type="button" class="step" data-n1="-1" aria-label="eine Stufe nach links">−</button>
+        <input type="range" id="r1" min="${lo}" max="${hi}" step="1" value="${s.n}" aria-label="Stufe x">
+        <button type="button" class="step" data-n1="1" aria-label="eine Stufe nach rechts">+</button></div>
+      <div class="readout" id="ro1" aria-live="polite"></div></div>
+    <div id="auf-1"></div>`);
+  vis1(); renderTasks('1');
+}
+function vis1(){
+  const s=S['1'], [lo,hi]=BEREICH[s.b];
+  $('#vis1').innerHTML=ladder(s.b,lo,hi,s.n);
+  $('#ro1').innerHTML=`<span>Basis ${M('<i>b</i> = '+s.b)}</span><span>Stufe ${M('<i>x</i> = '+sg(s.n))}</span><span>${P(s.b,sg(s.n))} = <b>${stufenwert(s.b,s.n)}</b>${s.n<0?` = ${de(s.b**s.n,6)}`:''}</span>`;
+  const r=$('#r1'); if(r) r.value=s.n;
+}
+
+/* =========================================================
+   Station 2 – Zwischen den Stufen (Lupe, Eingrenzen, Taschenrechner)
+   ========================================================= */
+const zielVon=s=>s.t>=5?24:12, loVon=s=>s.t>=5?4:3;
+T['2']=[
+  {title:`${P(2,'<i>x</i>')} = 12: Zwischen welchen ganzen Zahlen liegt ${M('<i>x</i>')}?`,
+   body:()=>`<p>In Station 1 kam 12 auf der Leiter nicht vor. Nutzt Potenzen von 2, die ihr kennt.</p>`,
+   fields:[[M('<i>x</i> liegt zwischen')],['und']],
+   check:(s,[a,b])=>(a===3&&b===4)?[true,'',`${P(2,3)} = 8 &lt; 12 &lt; 16 = ${P(2,4)}, also liegt ${M('<i>x</i>')} zwischen 3 und 4. Unten ist jetzt die Lupe für diesen Abschnitt.`]
+     :[false,`Rechnet ${P(2,sg(a))} = ${isFinite(2**a)?de(2**a,4):'?'} und ${P(2,sg(b))} = ${isFinite(2**b)?de(2**b,4):'?'}. Liegt 12 dazwischen – und sind es benachbarte Stufen?`]},
+  {title:`Liegt ${P(2,'3,5')} genau in der Mitte?`,
+   body:()=>`<p>3,5 liegt oben genau in der Mitte zwischen 3 und 4. Stellt ${M('<i>x</i> = 3,5')} ein und schaut, wo die Linie unten ankommt.</p>`,
+   ready:s=>Math.abs(s.x-3.5)<.005, wait:s=>`Stellt den Regler auf ${M('<i>x</i> = 3,50')} (jetzt: ${fx(s.x,2)}).`,
+   q:`Wo liegt ${P(2,'3,5')} zwischen 8 und 16?`,
+   opts:[['mitte','Genau in der Mitte, bei 12'],['unter','Links von der Mitte, unter 12'],['ueber','Rechts von der Mitte, über 12']],
+   check:(s,v)=>v==='unter'?[true,'',`${P(2,'3,5')} ≈ 11,31 – nicht 12. Ein halber Schritt oben heißt unten nicht „+ 4“, sondern <b>mal ${M('√2 ≈ 1,41')}</b>: 8 · 1,41 ≈ 11,31 und 11,31 · 1,41 ≈ 16. Die Lösung von ${P(2,'<i>x</i>')} = 12 ist also größer als 3,5.`]
+     :[false,`Lest den Wert im Kasten unter der Lupe ab und vergleicht ihn mit 12.`]},
+  {title:`Grenzt ${M('<i>x</i>')} auf zwei Nachkommastellen ein`,
+   body:s=>`<p>Verändert ${M('<i>x</i>')} mit den Tasten ±0,1 und ±0,01, bis ${P(2,'<i>x</i>')} möglichst nah bei 12 liegt. Speichert unterwegs mindestens drei Versuche – die Tabelle zeigt, ob ihr zu klein oder zu groß seid.</p>`,
+   ready:s=>s.tries.length>=3, wait:s=>`Gespeicherte Versuche: ${s.tries.length} von 3`,
+   fields:[[M('<i>x</i> ≈')]],
+   check:(s,[v])=>{ const w=2**v;
+     if(Math.abs(v*100-Math.round(v*100))>1e-6) return [null,`Gebt ${M('<i>x</i>')} mit genau zwei Nachkommastellen an.`];
+     if(v>=3.575&&v<=3.595) return [true,'',`${P(2,fx(v,2))} ≈ ${de(w,2)}. Die Lösung liegt zwischen 3,58 und 3,59: ${P(2,'3,58')} ≈ 11,96 und ${P(2,'3,59')} ≈ 12,04.`];
+     return [false,`${P(2,fx(v,2))} ≈ ${de(w,2)} – das ist ${w<12?'zu klein':'zu groß'}.`]; }},
+  {title:`Jetzt mit dem Taschenrechner: ${LOG(2,12)}`,
+   body:()=>`<p>Tippt auf dem Taschenrechner die Taste ${M('log<sub>■</sub>□')}, dann Basis 2, dann 12, dann „=“. Tragt das Ergebnis mit drei Nachkommastellen ein.</p>`,
+   fields:[[M(LOG(2,12)+' ≈')]],
+   check:(s,[v])=>Math.abs(v-Math.log2(12))<.0011?[true,'',`${LOG(2,12)} ≈ 3,585 – das liegt in eurem Intervall zwischen 3,58 und 3,59. Probe: ${P(2,'3,585')} ≈ 12,00.`]
+     :Math.abs(v-Math.log(2)/Math.log(12))<.002?[false,'Das Ergebnis liegt nicht zwischen 3 und 4. Habt ihr Basis und Numerus vertauscht? Die Basis 2 steht unten klein.']
+     :[false,'Das passt nicht zu eurem Intervall. Prüft die Eingabe: Taste log, Basis 2, Numerus 12.']},
+  {title:'Ein Ergebnis prüfen, ohne nachzurechnen',
+   body:()=>`<p>Ein Mitschüler hat für ${P(2,'<i>x</i>')} = 12 mit dem Taschenrechner ${M('<i>x</i> ≈ 0,279')} erhalten.</p>`,
+   q:'Woran erkennt ihr den Fehler, und was hat er vermutlich getippt?',
+   opts:[['tausch',`0,279 liegt nicht zwischen 3 und 4 – er hat ${LOG(12,2)} getippt.`],['geteilt','Er hat 12 : 2 gerechnet.'],['ok','0,279 kann stimmen, der Taschenrechner rechnet genauer.']],
+   check:(s,v)=>v==='tausch'?[true,'',`Kontrolle vor jeder Rechnung: Zwischen welchen Stufen muss das Ergebnis liegen? Probe: ${P(2,'0,279')} ≈ 1,21, nicht 12. Basis und Numerus waren vertauscht.`]
+     :v==='geteilt'?[false,'12 : 2 = 6, nicht 0,279. Woran seht ihr ohne Rechnung, dass 0,279 nicht stimmen kann?']
+     :[false,`Macht die Probe: ${P(2,'0,279')} ≈ 1,21. Und aus Auftrag 1 wisst ihr, wo die Lösung liegen muss.`],
+   after:s=>{ s.x=4; s.tries=[]; s.last=null; }},
+  {title:`Neue Gleichung: ${P(2,'<i>x</i>')} = 24`,
+   body:()=>`<p>Die Lupe zeigt jetzt den Abschnitt von 4 bis 5 (16 bis 32). 24 liegt unten genau in der Mitte. Stellt ${M('<i>x</i> = 4,5')} ein.</p>`,
+   ready:s=>Math.abs(s.x-4.5)<.005, wait:s=>`Stellt den Regler auf ${M('<i>x</i> = 4,50')} (jetzt: ${fx(s.x,2)}).`,
+   q:`Was folgt für die Lösung von ${P(2,'<i>x</i>')} = 24?`,
+   opts:[['kl',M('<i>x</i> &lt; 4,5')],['gl',M('<i>x</i> = 4,5')],['gr',M('<i>x</i> > 4,5')]],
+   check:(s,v)=>v==='gr'?[true,'',`${P(2,'4,5')} ≈ 22,63 &lt; 24, also ${M('<i>x</i> > 4,5')}. Tatsächlich ist ${LOG(2,24)} ≈ 4,585 – genau 1 mehr als ${LOG(2,12)}. Warum, zeigt Station 4.`]
+     :[false,`Lest ${P(2,'4,5')} ab und vergleicht mit 24. Muss ${M('<i>x</i>')} dann größer oder kleiner werden?`]}
+];
+ERGEBNIS['2']=()=>`<div class="ergebnis"><h3>Zwischen den Stufen</h3>
+  <p>Auch zwischen zwei Stufen gilt: Oben wird <b>addiert</b>, unten <b>multipliziert</b>. Ein halber Schritt oben bedeutet unten ${M('· √2')}, nicht die Hälfte des Abstands. Deshalb darf man nicht linear schätzen.</p>
+  <p>So geht ihr vor: <b>1.</b> Zwischen welchen ganzen Zahlen liegt ${M('<i>x</i>')}? <b>2.</b> Taschenrechner: ${M('<i>x</i> = '+LOG('<i>b</i>','<i>c</i>'))}. <b>3.</b> Liegt das Ergebnis im Intervall? Probe ${P('<i>b</i>','<i>x</i>')} ≈ ${M('<i>c</i>')}.</p>
+  <div class="actions"><button type="button" class="btn" data-go="3">Weiter zu Station 3</button></div></div>`;
+function render2(){
+  const s=S['2'];
+  $('#st-2').innerHTML=shell('2','Station 2 · Nicht ganzzahlige Exponenten','Zwischen den Stufen',
+    `Gesucht ist die Lösung von ${P(2,'<i>x</i>')} = 12. Bearbeitet die Aufträge der Reihe nach.`,
+    `<div class="panel" id="pan2"${s.t<1?' hidden':''}><h3>Lupe: oben ${M('<i>x</i>')}, unten ${P(2,'<i>x</i>')} – beide gleichmäßig eingeteilt</h3><div id="vis2"></div>
+      <div class="sl-row"><button type="button" class="step" data-x2="-0.1">−0,1</button><button type="button" class="step" data-x2="-0.01">−0,01</button>
+        <input type="range" id="r2" step="0.01" aria-label="x">
+        <button type="button" class="step" data-x2="0.01">+0,01</button><button type="button" class="step" data-x2="0.1">+0,1</button></div>
+      <div class="readout" id="ro2" aria-live="polite"></div>
+      <div class="actions" style="margin-top:0"><button type="button" class="btn ghost" id="save2">Versuch speichern</button><span class="savemsg" id="savemsg2" role="status"></span></div>
+      <table class="wt"><thead><tr><th>${M('<i>x</i>')}</th><th>${P(2,'<i>x</i>')}</th><th>Vergleich mit dem Ziel</th></tr></thead><tbody id="tb2"></tbody></table></div>
+    <div id="auf-2"></div>`);
+  vis2(); renderTasks('2');
+}
+function vis2(){
+  const s=S['2'], lo=loVon(s), z=zielVon(s), r=$('#r2'); if(!r) return;
+  r.min=lo; r.max=lo+1; r.value=s.x;
+  $('#vis2').innerHTML=zoom(lo,s.x,z,s.tries);
+  const w=2**s.x;
+  $('#ro2').innerHTML=`<span>${M('<i>x</i> = '+fx(s.x,2))}</span><span>${P(2,fx(s.x,2))} ≈ <b>${fx(w,2).replace('.',',')}</b></span><span class="savemsg">Ziel: ${z}</span>`;
+  const tb=$('#tb2'), rows=[...s.tries].sort((p,q)=>p-q);
+  tb.innerHTML=rows.length?rows.map(t=>{ const v=2**t, d=v-z;
+      return `<tr${t===s.last?' class="neu"':''}><td>${fx(t,2)}</td><td>${fx(v,2)}</td><td>${Math.abs(d)<.05?'fast genau':d<0?'zu klein':'zu groß'}</td></tr>`; }).join('')
+    :`<tr><td colspan="3" class="leer">Noch keine Versuche gespeichert.</td></tr>`;
+}
+function setX2(v){ const s=S['2'], lo=loVon(s); s.x=Math.round(Math.max(lo,Math.min(lo+1,v))*100)/100; vis2();
+  const a=T['2'][s.t]; if(a&&a.ready) renderTasks('2'); }
+
+/* =========================================================
+   Station 3 – Papier bis zum Mond
+   ========================================================= */
+T['3']=[
+  {title:'Welche Gleichung beschreibt das Falten?',
+   body:()=>`<p>Ein Blatt Papier ist 0,1 mm dick. Bei jedem Falten verdoppelt sich die Dicke des Stapels. Wie oft müsste man falten, damit der Stapel bis zum Mond reicht (384 000 km)? ${M('<i>x</i>')} ist die Anzahl der Faltungen.</p>`,
+   q:'Welche Gleichung passt?',
+   opts:[['a',M('0,1 · 2<sup><i>x</i></sup> = 384 000')],['b',M('0,1 · 2<sup><i>x</i></sup> = 384 000 000 000')],['c',M('0,1 · <i>x</i><sup>2</sup> = 384 000 000 000')],['d',M('0,1 + 2 · <i>x</i> = 384 000 000 000')]],
+   check:(s,v)=>v==='b'?[true,'',`Alles in mm: 384 000 km = 384 000 000 000 mm. Gleichung: ${M('0,1 · 2<sup><i>x</i></sup> = 384 000 000 000')}.`]
+     :v==='a'?[false,'Achtet auf die Einheiten: 0,1 <b>mm</b>, aber 384 000 <b>km</b>. Rechnet alles in mm um (1 km = 1 000 000 mm).']
+     :v==='c'?[false,`Hier steht ${M('<i>x</i>')} in der Basis. Beim Falten wird aber ${M('<i>x</i>')}-mal mit 2 multipliziert – ${M('<i>x</i>')} gehört in den Exponenten.`]
+     :[false,'Das wäre lineares Wachstum: Bei jedem Falten kämen 2 mm dazu. Tatsächlich verdoppelt sich die Dicke.']},
+  {title:'Der erste Umformungsschritt',
+   body:()=>`<p>${M('0,1 · 2<sup><i>x</i></sup> = 384 000 000 000')}</p>`,
+   q:'Was macht ihr zuerst?',
+   opts:[['teilen','Beide Seiten durch 0,1 teilen'],['zus',`0,1 · 2 zu 0,2 zusammenfassen: ${M('0,2<sup><i>x</i></sup> = 384 000 000 000')}`],['log','Sofort den Logarithmus zur Basis 2 nehmen'],['minus','Auf beiden Seiten 0,1 abziehen']],
+   check:(s,v)=>v==='teilen'?[true,'',`${P(2,'<i>x</i>')} = 3 840 000 000 000. Erst muss die Potenz allein stehen – dann kann der Logarithmus fragen: „2 hoch wie viel ergibt …?“`]
+     :v==='zus'?[false,`Setzt zur Kontrolle ${M('<i>x</i> = 3')} ein: ${M('0,1 · 2<sup>3</sup> = 0,8')}, aber ${M('0,2<sup>3</sup> = 0,008')}. Potenz vor Punkt: Die 0,1 gehört nicht zur Basis.`]
+     :v==='log'?[false,`Der Logarithmus zur Basis 2 beantwortet „2 hoch wie viel ergibt …?“. Dafür muss ${P(2,'<i>x</i>')} allein auf einer Seite stehen.`]
+     :[false,'0,1 ist hier ein Faktor, kein Summand. Was ist die Umkehrung von „· 0,1“?']},
+  {title:'Ohne Taschenrechner schätzen',
+   body:()=>`<p>${P(2,'<i>x</i>')} = 3 840 000 000 000. Ungefähr wie groß ist ${M('<i>x</i>')}? Nutzt: ${P(2,10)} = 1024 ≈ 1000.</p>`,
+   fields:[[M('<i>x</i> ≈')]],
+   hilfe:[`3 840 000 000 000 ≈ 4 · 1 000 000 000 000 = 4 · 1000 · 1000 · 1000 · 1000.`,
+          `Jedes „· 1000“ sind ungefähr 10 Stufen auf der Leiter (${P(2,10)} ≈ 1000), die 4 sind noch 2 Stufen (${P(2,2)} = 4).`],
+   check:(s,[v])=>(v>=40&&v<=43)?[true,'',`Viermal · 1000 ≈ 40 Stufen, dazu · 4 = 2 Stufen: ${M('<i>x</i>')} liegt bei etwa 42.`]
+     :[false,`Probe: ${P(2,sg(v))} ≈ ${Math.abs(v)<=60?de(2**v,0):'?'}. Das ist ${2**v<3.84e12?'zu klein':'zu groß'}. Nehmt die Hilfen dazu.`]},
+  {title:'Mit dem Taschenrechner',
+   body:()=>`<p>Berechnet ${LOG(2,'3 840 000 000 000')} mit zwei Nachkommastellen. Vergleicht mit eurer Schätzung.</p>`,
+   fields:[[M('<i>x</i> ≈')]],
+   check:(s,[v])=>Math.abs(v-Math.log2(3.84e12))<.011?[true,'',`${M('<i>x</i> ≈ 41,80')} – passt zur Schätzung 42.`]
+     :v<1?[false,'Das Ergebnis ist viel zu klein im Vergleich zu eurer Schätzung. Basis und Numerus vertauscht?']
+     :[false,`Das passt nicht zu eurer Schätzung. Prüft die Eingabe: log, Basis 2, dann die große Zahl. Tipp: 3 840 000 000 000 = 3,84 · 10<sup>12</sup>, auf dem Taschenrechner 3,84 [×10<sup>x</sup>] 12.`]},
+  {title:'Antwort im Sachzusammenhang',
+   body:()=>`<p>Wie oft muss man mindestens falten, damit der Stapel bis zum Mond reicht?</p>`,
+   fields:[['Anzahl der Faltungen:']],
+   check:(s,[v])=>v===42?[true,'',`42-mal. Probe: ${M('0,1 · 2<sup>42</sup>')} mm ≈ 439 805 km ≥ 384 000 km, aber ${M('0,1 · 2<sup>41</sup>')} mm ≈ 219 902 km reicht nicht.`]
+     :v===41?[false,`Probe: ${M('0,1 · 2<sup>41</sup>')} mm ≈ 219 902 km. Reicht das bis zum Mond?`]
+     :Math.abs(v-41.8)<.1?[false,'Man kann nur ganz falten. Rundet so, dass der Stapel sicher reicht.']
+     :[false,`Vergleicht mit ${M('<i>x</i> ≈ 41,80')} aus Auftrag 4.`]}
+];
+ERGEBNIS['3']=()=>`<div class="ergebnis"><h3>Exponentialgleichungen lösen</h3><ol>
+  <li><b>Potenz allein stellen:</b> Umkehroperationen anwenden (hier ${M(': 0,1')}). Nie Faktor und Basis zusammenfassen.</li>
+  <li><b>Logarithmieren:</b> ${P('<i>b</i>','<i>x</i>')} = <i>c</i> ⇒ ${M('<i>x</i> = '+LOG('<i>b</i>','<i>c</i>'))}.</li>
+  <li><b>Plausibel?</b> Grob eingrenzen (Stufen zählen, ${P(2,10)} ≈ 1000).</li>
+  <li><b>Probe und Antwort</b> im Sachzusammenhang, sinnvoll runden.</li></ol>
+  <div class="actions"><button type="button" class="btn" data-go="4">Fertig? Station 4 für Schnelle</button></div></div>`;
+function render3(){
+  $('#st-3').innerHTML=shell('3','Station 3 · Anwenden','Papier bis zum Mond',
+    `Jetzt steht die Potenz nicht mehr allein. Löst die Gleichung Schritt für Schritt.`,`<div id="auf-3"></div>`);
+  renderTasks('3');
+}
+
+/* =========================================================
+   Station 4 – Malnehmen auf der Leiter (für Schnelle)
+   ========================================================= */
+T['4']=[
+  {title:'Auf welcher Stufe stehen 4, 32 und 4 · 32?',
+   body:()=>`<p>Sucht die Zahlen unten auf der Leiter (Basis 2). 4 · 32 = 128.</p>`,
+   fields:[['4 auf Stufe'],['32 auf Stufe'],['128 auf Stufe']],
+   check:(s,[a,b,c])=>(a===2&&b===5&&c===7)?[true,'',`${M('4 · 32 = 128')} und oben ${M('2 + 5 = 7')}.`]
+     :[false,'Stellt die Leiter jeweils auf die Stufe und lest unten ab. Mindestens eine Zahl stimmt noch nicht.']},
+  {title:'Was passiert oben, wenn man unten multipliziert?',
+   body:()=>`<p>Probiert weitere Beispiele, z. B. ${M('8 · 16')} oder ${M('2 · 64')}.</p>`,
+   q:'Was stimmt?',
+   opts:[['add','Die Stufen werden addiert.'],['mul','Die Stufen werden multipliziert.'],['nix','Das hängt von den Zahlen ab.']],
+   check:(s,v)=>v==='add'?[true,'',`Malnehmen unten heißt Stufen addieren oben: ${LOG(2,'4 · 32')} = ${LOG(2,4)} + ${LOG(2,32)}. Ein Schritt „mal 4“ sind 2 Stufen, „mal 32“ sind 5 Stufen – nacheinander also 7.`]
+     :[false,'Prüft an 4 · 32 = 128: Stufe 2 und Stufe 5 ergeben welche Stufe?']},
+  {title:`Ohne Taschenrechner: ${LOG(2,24)} − ${LOG(2,12)}`,
+   body:()=>`<p>In Station 2 war ${LOG(2,12)} ≈ 3,585 und ${LOG(2,24)} ≈ 4,585. Begründet den Unterschied mit der Leiter: Wie kommt man unten von 12 nach 24?</p>`,
+   fields:[[M(LOG(2,24)+' − '+LOG(2,12)+' =')]],
+   check:(s,[v])=>v===1?[true,'',`24 = 12 · 2: genau ein Schritt „mal 2“, also eine Stufe mehr.`]
+     :[false,'Wie oft muss man 12 mit 2 multiplizieren, um 24 zu erhalten?']}
+];
+ERGEBNIS['4']=()=>`<div class="ergebnis"><h3>Multiplizieren wird zu Addieren</h3>
+  <p>Unten multiplizieren heißt oben die Stufen addieren. Genau diese Idee nutzten Logarithmentafeln (Napier, Bürgi, um 1600) und Rechenschieber: Statt schwierig zu multiplizieren, schlug man die Stufen nach, addierte sie und las das Ergebnis wieder ab.</p></div>`;
+function render4(){
+  const s=S['4'];
+  $('#st-4').innerHTML=shell('4','Station 4 · für Schnelle','Malnehmen auf der Leiter',
+    `Die Leiter mit Basis 2 von Station 1. Stellt die Stufen mit dem Regler ein.`,
+    `<div class="panel"><div id="vis4"></div>
+      <div class="sl-row"><button type="button" class="step" data-n4="-1" aria-label="eine Stufe nach links">−</button>
+        <input type="range" id="r4" min="0" max="10" step="1" value="${s.n}" aria-label="Stufe x">
+        <button type="button" class="step" data-n4="1" aria-label="eine Stufe nach rechts">+</button></div>
+      <div class="readout" id="ro4" aria-live="polite"></div></div>
+    <div id="auf-4"></div>`);
+  vis4(); renderTasks('4');
+}
+function vis4(){ const s=S['4'];
+  $('#vis4').innerHTML=ladder(2,0,10,s.n);
+  $('#ro4').innerHTML=`<span>Stufe ${M('<i>x</i> = '+s.n)}</span><span>${P(2,s.n)} = <b>${de(2**s.n,0)}</b></span>`;
+  const r=$('#r4'); if(r) r.value=s.n; }
+
+/* =========================================================
+   Zustand, Navigation und Ereignisse
+   ========================================================= */
+const INIT={
+  '1':()=>({t:0,val:{},merk:{},fb:null,done:false,b:2,n:0}),
+  '2':()=>({t:0,val:{},merk:{},fb:null,done:false,x:3,tries:[],last:null}),
+  '3':()=>({t:0,val:{},merk:{},fb:null,done:false}),
+  '4':()=>({t:0,val:{},merk:{},fb:null,done:false,n:0})
+};
+const RENDER={'1':render1,'2':render2,'3':render3,'4':render4};
+const TABS=[['0','Start'],['1','1 Faktoren zählen'],['2','2 Zwischen den Stufen'],['3','3 Papier bis zum Mond'],['4','4 Für Schnelle']];
+$('#tabs').innerHTML=TABS.map(([id,l])=>`<button type="button" data-go="${id}">${l}</button>`).join('');
+function go(id){
+  document.querySelectorAll('.station').forEach(e=>e.classList.toggle('show',e.id==='st-'+id));
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===id?'true':'false'));
+}
+function updTabs(){ document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('done',!!(S[b.dataset.go]&&S[b.dataset.go].done))); }
+
+document.addEventListener('click',e=>{
+  const t=e.target;
+  const g=t.closest('[data-go]'); if(g){ go(g.dataset.go); $('#tabs').scrollIntoView({block:'start',behavior:reduced?'auto':'smooth'}); return; }
+  const r=t.closest('[data-reset]'); if(r){ const id=r.dataset.reset; if(confirm('Diese Station zurücksetzen? Alle Eingaben dieser Station werden gelöscht.')){ S[id]=INIT[id](); RENDER[id](); updTabs(); } return; }
+  const c=t.closest('[data-ch]'); if(c){ const [st,i]=c.dataset.ch.split(':'); answer(st,+i,c.dataset.val); return; }
+  const k=t.closest('[data-chk]'); if(k){ const [st,i]=k.dataset.chk.split(':');
+    answer(st,+i,T[st][+i].fields.map((_,j)=>$(`#f-${st}-${i}-${j}`).value)); return; }
+  const n1=t.closest('[data-n1]'); if(n1){ const s=S['1'], [lo,hi]=BEREICH[s.b]; s.n=Math.max(lo,Math.min(hi,s.n+(+n1.dataset.n1))); vis1(); return; }
+  const n4=t.closest('[data-n4]'); if(n4){ const s=S['4']; s.n=Math.max(0,Math.min(10,s.n+(+n4.dataset.n4))); vis4(); return; }
+  const x2=t.closest('[data-x2]'); if(x2){ setX2(S['2'].x+(+x2.dataset.x2)); return; }
+  if(t.closest('#save2')){ const s=S['2'];
+    if(s.tries.some(v=>Math.abs(v-s.x)<.001)){ $('#savemsg2').textContent='Diesen Versuch habt ihr schon gespeichert.'; return; }
+    s.tries.push(s.x); s.last=s.x; vis2(); $('#savemsg2').textContent='Gespeichert.';
+    const a=T['2'][s.t]; if(a&&a.ready) renderTasks('2'); return; }
+});
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.id==='r1'){ S['1'].n=+t.value; vis1(); return; }
+  if(t.id==='r4'){ S['4'].n=+t.value; vis4(); return; }
+  if(t.id==='r2'){ setX2(+t.value); return; }
+  const m=/^f-(\d)-(\d+)-(\d+)$/.exec(t.id); if(m){ const s=S[m[1]]; (s.val[m[2]]=Array.isArray(s.val[m[2]])?s.val[m[2]]:[])[+m[3]]=t.value; }
+});
+document.addEventListener('keydown',e=>{ if(e.key!=='Enter') return;
+  const m=/^f-(\d)-(\d+)-\d+$/.exec(e.target.id); if(!m) return; e.preventDefault();
+  answer(m[1],+m[2],T[m[1]][+m[2]].fields.map((_,j)=>$(`#f-${m[1]}-${m[2]}-${j}`).value)); });
+
+Object.keys(INIT).forEach(k=>S[k]=INIT[k]());
+renderStart(); Object.values(RENDER).forEach(f=>f()); updTabs(); go('0');
+</script>
+</body>
+</html>
