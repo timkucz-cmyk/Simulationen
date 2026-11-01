@@ -469,7 +469,7 @@ function renderStart(){
   $('#st-0').innerHTML=`<div class="intro">
     <h2 id="h-0">Heute arbeitest du selbstständig</h2>
     <p>Diese Seite führt dich durch die ganze Doppelstunde. Du liest Infotexte, löst Aufgaben <b>allein</b>, suchst dir auf Anweisung einen <b>Austauschpartner</b> und stellst am Ende Ergebnisse vor. Deine Lehrkraft beobachtet heute nur. Wenn du nicht weiterkommst: erst Lösungsplan, dann Hilfen, dann deinen Partner fragen.</p>
-    <p>Du brauchst: Heft, Taschenrechner, dieses iPad. Alles, was du rechnest, schreibst du ins Heft – du brauchst es zum Austauschen und Präsentieren.</p>
+    <p>Du brauchst: Taschenrechner und dieses iPad.</p>
     <h3>Welche Karte liegt auf deinem Platz?</h3>
     <div class="kartenwahl">
       <button type="button" class="kw" data-karte="1" aria-pressed="${KARTE==='1'}"><span class="vn">Karte 1</span></button>
@@ -489,8 +489,8 @@ function renderStart(){
 function lehrkraft(){
   return `<details class="lehrkraft"><summary>Für Lehrkräfte</summary><div class="in"><dl>
     <dt>Zweck</dt><dd>Selbstgesteuerter Lernpfad für eine Doppelstunde E-Phase („Sachaufgaben Extrempunkte“ mit eigener Zielfunktion). Die Lehrkraft beobachtet; die Seite gibt Infotexte, Einzelaufträge, Partnerwechsel und Präsentationsaufträge vor. Lernziele: sicherer Umgang mit Textaufgaben (Signalwörter, Lösungsplan), Vertiefung von notwendigem und hinreichendem Kriterium, Modellieren (K4). Tiefe statt Umfang: Jede Karte enthält genau eine Stelle, an der mechanisches Rechnen zu einem <b>anderen</b> Ergebnis führt; im Austausch trifft immer Karte 1 auf Karte 2.</dd>
-    <dt>Vorbereitung</dt><dd>Karten „1“ und „2“ im Schachbrettmuster auf die Plätze legen (Nachbar links/rechts und vorne/hinten haben jeweils die andere Karte) – so finden sich in Schritt 3 und 5 schnell zwei verschiedene Partner. iPads im Querformat, Dokumentenkamera für Schritt 7.</dd>
-    <dt>Ablauf (90 min)</dt><dd><table class="eh"><tr><th>Zeit</th><th>Schritt</th><th>Sozialform</th><th>Produkt im Heft</th></tr>
+    <dt>Vorbereitung</dt><dd>Karten „1“ und „2“ im Schachbrettmuster auf die Plätze legen (Nachbar links/rechts und vorne/hinten haben jeweils die andere Karte) – so finden sich in Schritt 3 und 5 schnell zwei verschiedene Partner. iPads im Querformat; für Schritt 7 iPad-Bildschirm auf den Beamer übertragen.</dd>
+    <dt>Ablauf (90 min)</dt><dd><table class="eh"><tr><th>Zeit</th><th>Schritt</th><th>Sozialform</th><th>Produkt in den Notizen</th></tr>
       <tr><td>0–3</td><td>Start: Karte wählen, Ablauf lesen</td><td>EA</td><td>–</td></tr>
       <tr><td>3–15</td><td>1 Lösungsbeispiel Schachtel: Infotext, Beispiel Schritt für Schritt aufdecken, jeden Schritt erklären (Selbsterklärung), „Ziel“ markieren</td><td>EA</td><td>Lösungsplan</td></tr>
       <tr><td>15–33</td><td>2 Hühnergehege (Karte 1: Mauer 25 m, Karte 2: Mauer 12 m)</td><td>EA</td><td>vollständige Lösung</td></tr>
@@ -514,7 +514,7 @@ function lehrkraft(){
       <tr><td>Firma, Karte 1 (6 €)</td><td>${M('<i>G</i>(<i>x</i>) = −0,01<i>x</i><sup>3</sup> + 0,9<i>x</i><sup>2</sup> − 27<i>x</i> − 100')}, ${M('0 ≤ <i>x</i> ≤ 60')}</td><td>${M('<i>G</i> ′(<i>x</i>) = −0,03(<i>x</i> − 30)<sup>2</sup>')}; ${M('<i>G</i> ″(30) = 0')}; ${M('<i>G</i> ′(20) = <i>G</i> ′(40) = −3')} → Sattelpunkt; ${M('<i>G</i>(30) = −370')}, ${M('<i>G</i>(60) = −640')}</td><td>Nicht produzieren, ${M('<i>G</i>(0) = −100')}</td></tr>
       <tr><td>Firma, Karte 2 (18 €)</td><td>${M('<i>G</i>(<i>x</i>) = −0,01<i>x</i><sup>3</sup> + 0,9<i>x</i><sup>2</sup> − 15<i>x</i> − 100')}, ${M('0 ≤ <i>x</i> ≤ 60')}</td><td>10 (TP, ${M('<i>G</i> ″ = 1,2')}) und 50 (HP, ${M('<i>G</i> ″ = −1,2')}); ${M('<i>G</i>(0) = −100')}, ${M('<i>G</i>(60) = 80')}</td><td>50 Shirts, 150 €</td></tr>
       <tr><td>Für Schnelle</td><td colspan="3">Gehege: Mauer mindestens 20 m. Firma Karte 2: Sattelpunkt bei ${M('<i>p</i> = 6')} € (Diskriminante 0). Firma Karte 1: ${M('<i>K</i>(50) = 750')}, also mindestens 15 € pro Shirt.</td></tr>
-      <tr><td>Warteaufgaben</td><td colspan="3">Regenrinne: ${M('<i>A</i>(<i>x</i>) = <i>x</i>(30 − 2<i>x</i>)')}, ${M('<i>D</i> = ]0; 6]')}, ${M('<i>x</i> = 7,5 ∉ <i>D</i>')}, Randmaximum ${M('<i>A</i>(6) = 108')} cm². Wahr/Falsch: beide Aussagen falsch (Randmaximum; ${M('(<i>x</i> − 2)<sup>4</sup>')} hat bei 2 einen Tiefpunkt).</td></tr></table></dd>
+      <tr><td>Warteaufgaben</td><td colspan="3">Regenrinne: ${M('<i>A</i>(<i>x</i>) = <i>x</i>(30 − 2<i>x</i>)')}, ${M('<i>D</i> = ]0; 6]')}, ${M('<i>x</i> = 7,5 ∉ <i>D</i>')}, Randmaximum ${M('<i>A</i>(6) = 108')} cm². Wahr/Falsch: falsch (Randmaximum), wahr (VZW von + nach −), falsch (${M('(<i>x</i> − 2)<sup>4</sup>')} hat bei 2 einen Tiefpunkt).</td></tr></table></dd>
     <dt>Hinweise</dt><dd>Signalwörter werden im Aufgabentext markiert (Ziel/Einschränkung, überflüssige Angaben wie Zaunhöhe und Mitgliederzahl werden zurückgemeldet) und in Schritt 6/7 als Sammlung angezeigt. Infotexte zu Randextremum und Sattelpunkt erscheinen erst nach dem Austausch – erst selbst erklären, dann lesen. Zahlen mit sympy geprüft. Es werden keine Daten gespeichert oder übertragen; Neuladen löscht alles.</dd>
   </dl></div></details>`;
 }
@@ -535,19 +535,19 @@ T['1']=[
   {title:'Warum steht in der Zielfunktion 21 − 2x?',
    body:()=>BSP(2,`<b>Zielfunktion:</b> ${M('<i>V</i>(<i>x</i>) = <i>x</i> · (21 − 2<i>x</i>) · (29,7 − 2<i>x</i>) = 4<i>x</i><sup>3</sup> − 101,4<i>x</i><sup>2</sup> + 623,7<i>x</i>')}`)+`<p>Schau auf das Netz und bewege den Regler.</p>`,
    q:'Erkläre: Warum wird die Breite 21 − 2x und nicht 21 − x?',
-   opts:[['a','An beiden Enden jeder Seite wird ein Quadrat ausgeschnitten.'],['b','Weil die Schachtel doppelt so viel Volumen haben soll.'],['c','Weil die Höhe der Schachtel 2x ist.']],
+   opts:[['c','Weil die Höhe der Schachtel 2x beträgt und von der Breite abgeht.'],['a','Weil an beiden Enden der 21-cm-Seite ein Quadrat abgeschnitten wird.'],['b','Weil beim Hochklappen zwei Seitenwände entstehen, die je x hoch sind.']],
    check:(s,v)=>v==='a'?[true,'',`Länge ${M('29,7 − 2<i>x</i>')}, Breite ${M('21 − 2<i>x</i>')}, Höhe ${M(X)}: Volumen = Länge · Breite · Höhe.`]
-     :v==='b'?[false,'Das Volumen steht gar nicht im Faktor 21 − 2x. Schau auf das Netz: Wie viel geht von der 21-cm-Seite verloren?']
+     :v==='b'?[false,'Die Wände sind die Höhe, nicht die Breite. Schau auf das Netz: Wie viel geht von der 21-cm-Seite für den Boden verloren?']
      :[false,`Die Höhe ist die Seitenlänge der Quadrate, also ${M(X)}. Schau, wo im Netz ${M(X)} zweimal abgeschnitten wird.`]},
   {title:'Woher kommt die Definitionsmenge?',
    body:()=>BSP(3,`<b>Definitionsmenge:</b> ${M('<i>D</i> = ]0; 10,5[')}`)+`<p>Schiebe den Regler ganz nach rechts.</p>`,
    q:'Erkläre: Woher kommt die Grenze 10,5?',
-   opts:[['a',`Bei ${M('<i>x</i> = 10,5')} ist die Breite ${M('21 − 2 · 10,5 = 0')}.`],['b','29,7 : 2 ≈ 14,85, und dann abgerundet.'],['c','Das ist ein guter Schätzwert für die höchste Schachtel.']],
+   opts:[['b',`Bei ${M('<i>x</i> = 10,5')} ist die Länge ${M('29,7 − 2<i>x</i>')} am kürzesten.`],['c',`Bei ${M('<i>x</i> = 10,5')} hat ${M('<i>V</i> ′(<i>x</i>)')} eine Nullstelle.`],['a',`Bei ${M('<i>x</i> = 10,5')} ist die Breite ${M('21 − 2<i>x</i>')} gleich 0.`]],
    check:(s,v)=>v==='a'?[true,'',`Für ${M('<i>x</i> ≥ 10,5')} gibt es keine Breite mehr. Die Definitionsmenge kommt aus der <b>Situation</b>, nicht aus der Funktion.`]
-     :v==='b'?[false,`Setze ${M('<i>x</i> = 12')} ein: Die Breite wäre ${M('21 − 24 = −3')} cm. Welche Seite wird zuerst zu kurz?`]
-     :[false,'Die Grenze ist kein Schätzwert. Was passiert mit der Breite der Schachtel bei x = 10,5?']},
+     :v==='b'?[false,`Bei ${M('<i>x</i> = 10,5')} ist die Länge noch 8,7 cm. Welche Seite wird zuerst 0?`]
+     :[false,`Die Definitionsmenge kommt aus der Situation, nicht aus der Ableitung. Rechne nach: ${M('<i>V</i> ′(10,5) ≈ −182,7 ≠ 0')}. Was passiert mit der Breite?`]},
   {title:'Rechne das notwendige Kriterium nach',
-   body:()=>BSP(4,`<b>Notwendiges Kriterium:</b> ${M('<i>V</i> ′(<i>x</i>) = 0')} liefert die Kandidaten ${M('<i>x</i><sub>1</sub>')} und ${M('<i>x</i><sub>2</sub>')}.`)+`<p>Leite ${M('<i>V</i>(<i>x</i>) = 4<i>x</i><sup>3</sup> − 101,4<i>x</i><sup>2</sup> + 623,7<i>x</i>')} im Heft ab und löse ${M('<i>V</i> ′(<i>x</i>) = 0')} mit dem Taschenrechner (zwei Nachkommastellen).</p>`,
+   body:()=>BSP(4,`<b>Notwendiges Kriterium:</b> ${M('<i>V</i> ′(<i>x</i>) = 0')} liefert die Kandidaten ${M('<i>x</i><sub>1</sub>')} und ${M('<i>x</i><sub>2</sub>')}.`)+`<p>Leite ${M('<i>V</i>(<i>x</i>) = 4<i>x</i><sup>3</sup> − 101,4<i>x</i><sup>2</sup> + 623,7<i>x</i>')} in deinen Notizen ab und löse ${M('<i>V</i> ′(<i>x</i>) = 0')} mit dem Taschenrechner (zwei Nachkommastellen).</p>`,
    fields:[[M('<i>x</i><sub>1</sub> ≈')],[M('<i>x</i><sub>2</sub> ≈')]],
    hilfe:[`${M('<i>V</i> ′(<i>x</i>) = 12<i>x</i><sup>2</sup> − 202,8<i>x</i> + 623,7')}. Taschenrechner: MENU → Gleichung → Polynom, Grad 2.`],
    check:(s,[a,b])=>pair(a,b,4.04,12.86,.011)?[true,'',`${M('<i>V</i> ′(<i>x</i>) = 12<i>x</i><sup>2</sup> − 202,8<i>x</i> + 623,7 = 0')} ⇒ ${M('<i>x</i><sub>1</sub> ≈ 4,04')}, ${M('<i>x</i><sub>2</sub> ≈ 12,86')}.`]
@@ -555,25 +555,25 @@ T['1']=[
   {title:'Warum fällt ein Kandidat weg?',
    body:()=>BSP(4,`Nur ${M('<i>x</i><sub>1</sub> ≈ 4,04')} ist ein Kandidat. ${M('<i>x</i><sub>2</sub> ≈ 12,86')} fällt weg.`),
    q:'Erkläre: Warum fällt 12,86 weg?',
-   opts:[['a','12,86 liegt nicht in D: Die Schachtel hätte eine negative Breite.'],['b','Man nimmt immer die kleinere Lösung.'],['c','V(12,86) ist kleiner als V(4,04).']],
+   opts:[['a','12,86 liegt nicht in D, dort gäbe es gar keine Schachtel.'],['c','V(12,86) ist negativ, also kleiner als V(4,04).'],['b','V″(12,86) ist positiv, also liegt dort ein Tiefpunkt.']],
    check:(s,v)=>v==='a'?[true,'',`${M('12,86 ∉ <i>D</i>')}. Kandidaten außerhalb von ${M('<i>D</i>')} gehören nicht zur Situation – auch wenn die Rechnung sie liefert.`]
-     :v==='b'?[false,'Die Reihenfolge entscheidet gar nichts. Prüfe mit der Definitionsmenge.']
+     :v==='b'?[false,`Das stimmt zwar (${M('<i>V</i> ″(12,86) ≈ 105,8')}), aber selbst ein Hochpunkt bei 12,86 würde nicht zählen. Warum?`]
      :[false,`Das stimmt zwar (${M('<i>V</i>(12,86) ≈ −242')}), ist aber nicht der eigentliche Grund. Gibt es bei ${M('<i>x</i> = 12,86')} überhaupt eine Schachtel?`]},
   {title:'Wozu die Randwerte?',
    body:()=>BSP(5,`<b>Hinreichendes Kriterium:</b> ${M('<i>V</i> ″(4,04) = 24 · 4,04 − 202,8 ≈ −105,8 < 0')} ⇒ Hochpunkt.<br><b>Ränder:</b> ${M('<i>V</i>(0) = <i>V</i>(10,5) = 0')} ⇒ globales Maximum.`),
    q:'Erkläre: Warum werden noch die Randwerte berechnet?',
-   opts:[['a','Ein Hochpunkt ist nur lokal am größten. Erst der Vergleich mit den Rändern zeigt, dass er in ganz D am größten ist.'],['b','Damit man weiß, wo der Graph die x-Achse schneidet.'],['c','Die braucht man nur, wenn V″ = 0 ist.']],
+   opts:[['c','Um zu prüfen, ob V″ auch an den Rändern negativ ist.'],['a','Ein Hochpunkt ist lokal; erst der Vergleich zeigt das globale Maximum.'],['b','Um die Nullstellen von V für die Skizze des Graphen zu erhalten.']],
    check:(s,v)=>v==='a'?[true,'','Lokal heißt: größer als die Nachbarn. Global heißt: größer als alle Werte in D – auch als die am Rand.']
      :v==='b'?[false,'Hier sind die Randwerte zufällig 0. Worum geht es aber beim Vergleich mit dem Hochpunkt?']
-     :[false,'Auch mit V″ < 0 weißt du nur: lokales Maximum. Lies im Lösungsplan Schritt 5.']},
+     :[false,'An den Rändern wird V selbst berechnet, nicht V″. Auch mit V″ < 0 weißt du nur: lokales Maximum. Lies im Lösungsplan Schritt 5.']},
   {title:'Antwortsatz',
-   body:()=>BSP(6,`<b>Antwort:</b> Schneidet man Quadrate mit etwa 4 cm Seitenlänge aus, hat die Schachtel das größte Volumen.`)+`<p>Berechne das größte Volumen und ergänze den Antwortsatz im Heft.</p>`,
+   body:()=>BSP(6,`<b>Antwort:</b> Schneidet man Quadrate mit etwa 4 cm Seitenlänge aus, hat die Schachtel das größte Volumen.`)+`<p>Berechne das größte Volumen und ergänze den Antwortsatz in deinen Notizen.</p>`,
    fields:[[M('<i>V</i><sub>max</sub> ≈'),'cm³']],
    check:(s,[v])=>near(v,1128.5,4)?[true,'',`${M('<i>V</i>(4,04) ≈ 1128')} cm³ ≈ 1,13 Liter.`]
      :[false,`Setze ${M('<i>x</i> ≈ 4,04')} in ${M('<i>V</i>(<i>x</i>)')} ein, nicht in ${M('<i>V</i> ′')} oder ${M('<i>V</i> ″')}.`]}
 ];
-ERGEBNIS['1']=()=>`<div class="ergebnis"><h3>Geschafft – übertrage den Lösungsplan ins Heft</h3>
-  <p>Schreibe die sechs Schritte des Lösungsplans (oben aufklappbar) in Kurzform ins Heft. Daran hältst du dich bei den nächsten Aufgaben.</p>
+ERGEBNIS['1']=()=>`<div class="ergebnis"><h3>Geschafft – übertrage den Lösungsplan in deine Notizen</h3>
+  <p>Schreibe die sechs Schritte des Lösungsplans (oben aufklappbar) in Kurzform in deine Notizen. Daran hältst du dich bei den nächsten Aufgaben.</p>
   <div class="panel">${plot({f:V,x0:0,x1:15,y0:-400,y1:1300,xt:1,yt:200,D:[0,10.5],xl:'<tspan font-style="italic">x</tspan> in cm',yl:'<tspan font-style="italic">V</tspan> in cm³',
      pts:[{x:4.042,y:1128.5,t:'H(4,04 | 1128,5)'},{x:12.858,y:-241.6,cls:'out',t:'12,86 ∉ D',dx:-10,anchor:'end',dy:24}],aria:'Graph von V mit Hochpunkt bei 4,04; zweiter Kandidat 12,86 außerhalb von D'})}</div>
   ${weiter('2','Weiter zu Schritt 2: Jetzt löst du selbst')}</div>`;
@@ -616,9 +616,9 @@ T['2']=s=>{ const w=WALL[KARTE||'1'], innen=w>=20, lo=(40-w)/2;
     miss:{g1:'Wie viel Zaun gibt es?',g2:'Wo genau muss das Gehege liegen?',g3:'Lies den letzten Satz vor der Frage. Probiere mit dem Regler: Passt jedes Gehege an die Mauer?'},
     ok:'Zaunlänge, Lage an der Mauer und Mauerlänge schränken ein. Die Zaunhöhe ist überflüssig.'}),
   {title:'Zielfunktion aufstellen',
-   body:()=>`<p>${M(X)}: Länge der beiden Zaunseiten, die von der Mauer weg zeigen. ${M(Y)}: Seite parallel zur Mauer. Stelle im Heft die Nebenbedingung auf und setze sie in ${M('<i>A</i> = <i>x</i> · <i>y</i>')} ein.</p>`,
+   body:()=>`<p>${M(X)}: Länge der beiden Zaunseiten, die von der Mauer weg zeigen. ${M(Y)}: Seite parallel zur Mauer. Stelle in deinen Notizen die Nebenbedingung auf und setze sie in ${M('<i>A</i> = <i>x</i> · <i>y</i>')} ein.</p>`,
    q:'Welche Zielfunktion hast du?',
-   opts:[['a',M('<i>A</i>(<i>x</i>) = <i>x</i> · (40 − 2<i>x</i>)')],['b',M('<i>A</i>(<i>x</i>) = <i>x</i> · (20 − <i>x</i>)')],['c',M('<i>A</i>(<i>x</i>) = <i>x</i> · (40 − <i>x</i>)')],['d',M('<i>A</i>(<i>x</i>) = 2<i>x</i> + <i>y</i>')]],
+   opts:[['b',M('<i>A</i>(<i>x</i>) = <i>x</i> · (20 − <i>x</i>)')],['c',M('<i>A</i>(<i>x</i>) = <i>x</i> · (40 − <i>x</i>)')],['a',M('<i>A</i>(<i>x</i>) = <i>x</i> · (40 − 2<i>x</i>)')],['d',M('<i>A</i>(<i>x</i>) = 2<i>x</i> + <i>y</i>')]],
    hilfe:['Lösungsplan, Schritt 2. Zeichne eine Skizze und markiere, wo Zaun ist.',`Zaun: ${M('<i>x</i> + <i>y</i> + <i>x</i> = 40')}. Nach ${M(Y)} auflösen und in ${M('<i>A</i> = <i>x</i> · <i>y</i>')} einsetzen.`],
    check:(s,c)=>c==='a'?[true,'',`Nebenbedingung ${M('2<i>x</i> + <i>y</i> = 40')}, also ${M('<i>y</i> = 40 − 2<i>x</i>')} und ${M('<i>A</i>(<i>x</i>) = 40<i>x</i> − 2<i>x</i><sup>2</sup>')}.`]
      :c==='b'?[false,`Das gilt, wenn alle vier Seiten Zaun haben (${M('2<i>x</i> + 2<i>y</i> = 40')}). An der Mauer brauchst du keinen Zaun.`]
@@ -652,13 +652,13 @@ T['2']=s=>{ const w=WALL[KARTE||'1'], innen=w>=20, lo=(40-w)/2;
        :[false,`Bewege den Regler durch ${M('<i>D</i> = [14; 20]')} und beobachte ${M('<i>A</i> ′(<i>x</i>)')}: Wird die Fläche größer oder kleiner?`]; }},
   {title:'Begründen',
    q:'Warum ist das das globale Maximum?',
-   opts:[['innen',`${M('<i>x</i> = 10')} liegt in ${M('<i>D</i>')}, ${M('<i>A</i> ″(10) = −4 < 0')}, und ${M('<i>A</i>(10)')} ist größer als beide Randwerte.`],
-         ['rand',`${M('<i>A</i> ′(<i>x</i>) < 0')} für alle ${M(X)} in ${M('<i>D</i>')}: ${M('<i>A</i>')} fällt auf ganz ${M('<i>D</i>')}, also ist der linke Rand das Maximum.`],
-         ['nur',`Weil ${M('<i>A</i> ′(<i>x</i>) = 0')} genau eine Lösung hat.`]],
+   opts:[['innen',`${M('<i>x</i> = 10')} liegt in ${M('<i>D</i>')}, ${M('<i>A</i> ″(10) < 0')}, und ${M('<i>A</i>(10)')} ist größer als die Randwerte.`],
+         ['nur',`${M('<i>A</i> ″(<i>x</i>) = −4 < 0')}, also ist die Lösung von ${M('<i>A</i> ′(<i>x</i>) = 0')} das globale Maximum.`],
+         ['rand',`${M('<i>A</i> ′(<i>x</i>) < 0')} auf ganz ${M('<i>D</i>')}: ${M('<i>A</i>')} fällt, der linke Rand ist das Maximum.`]],
    check:(s,c)=>{ const ok=innen?'innen':'rand';
      if(c===ok) return [true,'',innen?'Kandidat im Inneren, hinreichendes Kriterium erfüllt, Ränder kleiner.'
        :`Das Maximum liegt am Rand, obwohl dort ${M('<i>A</i> ′ ≠ 0')} ist.`];
-     if(c==='nur') return [false,'Die Lösung von A′(x) = 0 ist nur ein Kandidat. Was sagen das hinreichende Kriterium und die Ränder?'];
+     if(c==='nur') return [false,innen?'A″ < 0 zeigt nur: lokales Maximum. Was fehlt noch für „global“?':'Liegt die Lösung von A′(x) = 0 überhaupt in D?'];
      return [false,innen?`Stelle ${M('<i>x</i> = 8')} und ${M('<i>x</i> = 12')} ein und vergleiche das Vorzeichen von ${M('<i>A</i> ′')}. Fällt ${M('<i>A</i>')} wirklich überall?`
        :`Liegt ${M('<i>x</i> = 10')} in ${M('<i>D</i> = [14; 20]')}?`]; }},
   {extra:true, title:'Wie lang müsste die Mauer sein?',
@@ -671,12 +671,12 @@ ERGEBNIS['2']=()=>{ const w=WALL[KARTE];
   return `<div class="ergebnis"><h3>Deine Lösung</h3>
   <p>${w>=20?'Das Gehege wird 10 m tief und 20 m lang (entlang der Mauer). Es ist dann 200 m² groß.'
     :'Das Gehege wird 14 m tief und 12 m lang, also genau so lang wie die Mauer. Es ist dann 168 m² groß.'}</p>
-  <p><b>Prüfe dein Heft:</b> Stehen alle sechs Schritte des Lösungsplans da, mit Antwortsatz? Gleich erklärst du deine Lösung einer anderen Person.</p>
+  <p><b>Prüfe deine Notizen:</b> Stehen alle sechs Schritte des Lösungsplans da, mit Antwortsatz? Gleich erklärst du deine Lösung einer anderen Person.</p>
   ${weiter('3','Weiter zu Schritt 3: Austausch')}</div>`; };
 function render2(){
   const s=S['2'];
   if(!KARTE){ $('#st-2').innerHTML=shell('2','Schritt 2','Das Hühnergehege',['ea'],'ca. 18 min','',brauchtKarte(),false); return; }
-  $('#st-2').innerHTML=shell('2','Schritt 2','Das Hühnergehege',['ea'],'ca. 18 min','Jetzt löst du eine Aufgabe allein. Rechne im Heft, die Seite prüft deine Ergebnisse.',
+  $('#st-2').innerHTML=shell('2','Schritt 2','Das Hühnergehege',['ea'],'ca. 18 min','Jetzt löst du eine Aufgabe allein. Rechne in deinen Notizen, die Seite prüft deine Ergebnisse.',
     `${markText('2',ctx2(WALL[KARTE]))}
     ${planBox()}
     <div class="panel"><div id="vis2"></div>
@@ -709,9 +709,11 @@ function gespraech(punkte){
 T['3']=[
   {anr:'Gemeinsame Frage', title:'Warum habt ihr verschiedene Ergebnisse?',
    q:'Einigt euch – jede Person tippt die Antwort auf dem eigenen iPad.',
-   opts:[['d','Die Mauerlänge ändert die Definitionsmenge. Bei 12 m liegt x = 10 nicht in D, das Maximum liegt am Rand x = 14.'],['r','Eine Person hat sich verrechnet.'],['z','Die Zielfunktionen sind verschieden.']],
-   check:(s,v)=>v==='d'?[true,'','Gleiche Zielfunktion, andere Definitionsmenge – anderes Ergebnis.']
+   opts:[['r','Eine Person hat A(14) statt A(10) berechnet – ein Rechenfehler.'],['z','Die Mauerlänge steckt in A(x), deshalb sind die Zielfunktionen verschieden.'],
+         ['l','Bei 12 m Mauer hat A′(x) = 0 eine andere Lösung als bei 25 m.'],['d','Die Mauerlänge ändert nur D: Bei 12 m liegt x = 10 nicht in D.']],
+   check:(s,v)=>v==='d'?[true,'','Gleiche Zielfunktion, andere Definitionsmenge – anderes Ergebnis. Das Maximum liegt bei 12 m am Rand x = 14.']
      :v==='r'?[false,'Rechnet A(10) und A(14) gemeinsam nach. Sind beide Rechnungen richtig?']
+     :v==='l'?[false,'Vergleicht eure Ableitungen: A′(x) = 40 − 4x hat bei beiden dieselbe Lösung.']
      :[false,'Vergleicht eure Zielfunktionen. Kommt die Mauerlänge in A(x) überhaupt vor?']}
 ];
 ERGEBNIS['3']=()=>`<div class="info"><h3>Infotext: Extremum am Rand</h3>
@@ -719,14 +721,14 @@ ERGEBNIS['3']=()=>`<div class="info"><h3>Infotext: Extremum am Rand</h3>
     <p>Das <b>notwendige Kriterium</b> sagt: Liegt eine Extremstelle <b>im Inneren</b> von ${M('<i>D</i>')}, dann ist dort ${M('<i>f</i> ′(<i>x</i>) = 0')}. Am <b>Rand</b> von ${M('<i>D</i>')} gilt das nicht: Bei 12 m Mauer liegt das Maximum bei ${M('<i>x</i> = 14')}, obwohl ${M('<i>A</i> ′(14) = −16')} ist.</p>
     <p>Aufgabe 21 d („Jede Extremstelle ist Nullstelle von ${M('<i>f</i> ′')}“) stimmt für ganzrationale Funktionen auf ganz ℝ. In Sachaufgaben ist ${M('<i>D</i>')} aber meistens eingeschränkt.</p>
     <div class="merk"><h3>Merke</h3><p>Das globale Extremum kann im Inneren von ${M('<i>D</i>')} liegen (dann ${M('<i>f</i> ′(<i>x</i>) = 0')}) <b>oder am Rand</b> (dann muss ${M('<i>f</i> ′(<i>x</i>)')} nicht 0 sein). Deshalb immer die Randwerte vergleichen.</p></div>
-    <p><b>Schreibt den Merksatz ins Heft.</b> Danach arbeitet jede Person wieder allein.</p>
+    <p><b>Schreibt den Merksatz in eure Notizen.</b> Danach arbeitet jede Person wieder allein.</p>
     ${weiter('4','Weiter zu Schritt 4 (allein)')}</div>`;
 /* Warteaufgabe Schritt 3: Regenrinne (Randmaximum) */
 T['w3']=[
   {title:'Regenrinne: Zielfunktion',
    body:()=>`<p>Aus einem 30 cm breiten Blechstreifen wird eine Rinne mit rechteckigem Querschnitt gebogen: Links und rechts werden je ${M(X)} cm hochgebogen. Wegen der Halterung darf die Rinne <b>höchstens 6 cm hoch</b> sein. Der Querschnitt soll möglichst groß sein.</p>`,
    q:'Welche Zielfunktion beschreibt den Querschnitt?',
-   opts:[['a',M('<i>A</i>(<i>x</i>) = <i>x</i> · (30 − 2<i>x</i>)')],['b',M('<i>A</i>(<i>x</i>) = <i>x</i> · (30 − <i>x</i>)')],['c',M('<i>A</i>(<i>x</i>) = 2<i>x</i> + 30')]],
+   opts:[['b',M('<i>A</i>(<i>x</i>) = <i>x</i> · (30 − <i>x</i>)')],['a',M('<i>A</i>(<i>x</i>) = <i>x</i> · (30 − 2<i>x</i>)')],['c',M('<i>A</i>(<i>x</i>) = 2<i>x</i> · (30 − <i>x</i>)')]],
    check:(s,v)=>v==='a'?[true,'',`Boden ${M('30 − 2<i>x</i>')}, Höhe ${M(X)}.`]:[false,'Zeichne den Querschnitt: Wie breit bleibt der Boden, wenn links und rechts je x hochgebogen werden?']},
   {title:'Regenrinne: größter Querschnitt',
    body:()=>`<p>Gib ${M('<i>D</i>')} an, prüfe den Kandidaten und vergleiche mit den Rändern.</p>`,
@@ -739,7 +741,7 @@ function render3(){
   const s=S['3'];
   if(!KARTE){ $('#st-3').innerHTML=shell('3','Schritt 3','Austausch',['pa'],'ca. 8 min','',brauchtKarte(),false); return; }
   $('#st-3').innerHTML=shell('3','Schritt 3','Austausch: Gehege mit verschiedenen Mauern',['pa'],'ca. 8 min','',
-    s.found?gespraech([`Erklärt euch gegenseitig eure Lösung, jede Person höchstens 2 Minuten, mit dem Heft. Wer zuhört, prüft mit dem Lösungsplan: Fehlt ein Schritt? Ist jeder Schritt begründet?`,
+    s.found?gespraech([`Erklärt euch gegenseitig eure Lösung, jede Person höchstens 2 Minuten, mit euren Notizen. Wer zuhört, prüft mit dem Lösungsplan: Fehlt ein Schritt? Ist jeder Schritt begründet?`,
         `Ihr hattet <b>dieselbe Zielfunktion</b> – und trotzdem verschiedene Ergebnisse. Woran liegt das?`,
         `Beantwortet die gemeinsame Frage unten. Danach lest ihr den Infotext.`])+`<div id="auf-3"></div>`
       :partnerBox('3',`Such dir eine Person mit <b>Karte ${andere()}</b>, die auch mit Schritt 2 fertig ist. Setzt euch zusammen an einen Platz.`)+
@@ -767,15 +769,15 @@ T['4']=s=>{ const p=PREIS[KARTE||'1'], c=33-p, sattel=p===6;
     ok:'„höchstens“ ist ein typisches Signalwort für eine Grenze der Definitionsmenge.'}),
   {title:'Eine Annahme treffen',
    q:'Welche Annahme musst du treffen, damit du den Gewinn berechnen kannst?',
-   opts:[['alle','Alle hergestellten Shirts werden auch verkauft.'],['mitgl','Jedes der 8 Mitglieder druckt gleich viele Shirts.'],['fest','Die Kosten pro Shirt sind immer gleich.']],
-   check:(s,v)=>v==='alle'?[true,'',`Nur dann ist der Erlös ${M(p+' · <i>x</i>')}. Schreibe die Annahme ins Heft.`]
+   opts:[['mitgl','Jedes der 8 Mitglieder druckt gleich viele Shirts.'],['alle','Alle hergestellten Shirts werden auch verkauft.'],['fest','Die Kosten pro Shirt bleiben bei jeder Stückzahl gleich.']],
+   check:(s,v)=>v==='alle'?[true,'',`Nur dann ist der Erlös ${M(p+' · <i>x</i>')}. Schreibe die Annahme in deine Notizen.`]
      :v==='mitgl'?[false,'Kommt die Zahl der Mitglieder in der Rechnung überhaupt vor?']
      :[false,`Die Kosten sind durch ${M('<i>K</i>(<i>x</i>)')} gegeben – pro Shirt sind sie nicht gleich. Was musst du über den <b>Verkauf</b> annehmen?`]},
   {title:'Zielfunktion aufstellen',
-   body:()=>`<p>Gewinn = Erlös − Kosten. Stelle ${M('<i>G</i>(<i>x</i>)')} im Heft auf.</p>`,
+   body:()=>`<p>Gewinn = Erlös − Kosten. Stelle ${M('<i>G</i>(<i>x</i>)')} in deinen Notizen auf.</p>`,
    q:'Welche Zielfunktion hast du?',
-   opts:[['a',M('<i>G</i>(<i>x</i>) = '+Gterm)],['b',M(`<i>G</i>(<i>x</i>) = −0,01<i>x</i><sup>3</sup> − 0,9<i>x</i><sup>2</sup> + ${p+33}<i>x</i> + 100`)],
-         ['c',M('<i>G</i>(<i>x</i>) = <i>K</i>(<i>x</i>) − '+p+'<i>x</i>')],['d',M('<i>G</i>(<i>x</i>) = '+p+' − <i>K</i>(<i>x</i>)')]],
+   opts:[['c',M('<i>G</i>(<i>x</i>) = <i>K</i>(<i>x</i>) − '+p+'<i>x</i>')],['d',M('<i>G</i>(<i>x</i>) = '+p+' − <i>K</i>(<i>x</i>)')],
+         ['b',M(`<i>G</i>(<i>x</i>) = −0,01<i>x</i><sup>3</sup> − 0,9<i>x</i><sup>2</sup> + ${p+33}<i>x</i> + 100`)],['a',M('<i>G</i>(<i>x</i>) = '+Gterm)]],
    hilfe:['Lösungsplan, Schritt 2. Schreibe zuerst in Worten: Gewinn = …',`${M('<i>G</i>(<i>x</i>) = '+p+'<i>x</i> − (0,01<i>x</i><sup>3</sup> − 0,9<i>x</i><sup>2</sup> + 33<i>x</i> + 100)')}. Achtung beim Auflösen der Klammer.`],
    check:(s,v)=>v==='a'?[true,'',`${M('<i>G</i>(<i>x</i>) = '+p+'<i>x</i> − <i>K</i>(<i>x</i>) = '+Gterm)}.`]
      :v==='b'?[false,`Minus vor der Klammer: <b>alle</b> Vorzeichen von ${M('<i>K</i>(<i>x</i>)')} drehen sich um, nicht nur das erste.`]
@@ -798,17 +800,18 @@ T['4']=s=>{ const p=PREIS[KARTE||'1'], c=33-p, sattel=p===6;
   {title:'Hinreichendes Kriterium',
    body:()=>`<p>${M('<i>G</i> ″(<i>x</i>) = −0,06<i>x</i> + 1,8')}</p>`,
    q:'Was liegt bei den Kandidaten vor?',
-   opts:[['a',`${M('<i>G</i> ″(10) = 1,2 > 0')}: Tiefpunkt; ${M('<i>G</i> ″(50) = −1,2 < 0')}: Hochpunkt`],['b','Bei 10 ein Hochpunkt, bei 50 ein Tiefpunkt'],['c',`Beides Hochpunkte, weil ${M('<i>G</i> ′ = 0')}`]],
+   opts:[['a',`${M('<i>G</i> ″(10) = 1,2 > 0')}: Tiefpunkt; ${M('<i>G</i> ″(50) = −1,2 < 0')}: Hochpunkt`],['b',`${M('<i>G</i> ″(10) = 1,2 > 0')}: Hochpunkt; ${M('<i>G</i> ″(50) = −1,2 < 0')}: Tiefpunkt`],['c',`${M('<i>G</i> ″(10) = −1,2 < 0')}: Hochpunkt; ${M('<i>G</i> ″(50) = 1,2 > 0')}: Tiefpunkt`]],
    check:(s,v)=>v==='a'?[true,'','Bei 10 Shirts ist der Verlust lokal am größten, bei 50 Shirts der Gewinn lokal am größten.']
-     :v==='b'?[false,`Setze ein: ${M('<i>G</i> ″(10) = −0,6 + 1,8')}. Positiv heißt Linkskurve, also …?`]
-     :[false,`${M('<i>G</i> ′ = 0')} ist nur das notwendige Kriterium. Setze die Kandidaten in ${M('<i>G</i> ″')} ein.`]}
+     :v==='b'?[false,`Die Werte stimmen, die Deutung nicht: ${M('<i>G</i> ″ > 0')} heißt Linkskurve – liegt da ein Hoch- oder ein Tiefpunkt?`]
+     :[false,`Rechne nach: ${M('<i>G</i> ″(10) = −0,06 · 10 + 1,8')}.`]}
   :
   {title:'Hinreichendes Kriterium',
    body:()=>`<p>${M('<i>G</i> ″(<i>x</i>) = −0,06<i>x</i> + 1,8')}</p>`,
    q:`Was folgt bei ${M('<i>x</i> = 30')}?`,
-   opts:[['hp','Hochpunkt bei 30'],['tp','Tiefpunkt bei 30'],['vzw',`${M('<i>G</i> ″(30) = 0')}: Damit lässt sich nicht entscheiden – das VZW-Kriterium muss helfen.`]],
-   check:(s,v)=>v==='vzw'?[true,'',`${M('<i>G</i> ″(30) = −1,8 + 1,8 = 0')}. Das Kriterium mit ${M('<i>G</i> ″')} versagt hier.`]
-     :[false,`Rechne ${M('<i>G</i> ″(30)')} aus. Was sagt das Kriterium, wenn das Ergebnis 0 ist?`]},
+   opts:[['hp',`${M('<i>G</i> ″(30) < 0')}, also liegt bei 30 ein Hochpunkt.`],['kein',`${M('<i>G</i> ″(30) = 0')}, also liegt bei 30 kein Extremum.`],['vzw',`${M('<i>G</i> ″(30) = 0')}, also ist noch nichts entschieden.`]],
+   check:(s,v)=>v==='vzw'?[true,'',`${M('<i>G</i> ″(30) = −1,8 + 1,8 = 0')}. Das Kriterium mit ${M('<i>G</i> ″')} versagt hier – das VZW-Kriterium muss entscheiden.`]
+     :v==='kein'?[false,`Vorsicht: ${M('<i>f</i>(<i>x</i>) = <i>x</i><sup>4</sup>')} hat bei 0 einen Tiefpunkt, obwohl ${M('<i>f</i> ″(0) = 0')} ist. Was folgt also aus ${M('<i>G</i> ″(30) = 0')}?`]
+     :[false,`Rechne ${M('<i>G</i> ″(30) = −0,06 · 30 + 1,8')} aus.`]},
  ];
  if(!sattel) L.push(
   {title:'Randwerte vergleichen',
@@ -818,8 +821,8 @@ T['4']=s=>{ const p=PREIS[KARTE||'1'], c=33-p, sattel=p===6;
      :[false,`Setze in ${M('<i>G</i>(<i>x</i>)')} ein, nicht in ${M('<i>G</i> ′')}. Kontrolle mit dem Regler: Die Anzeige zeigt ${M('<i>G</i>(<i>x</i>)')}.`]},
   {title:'Antwort',
    q:'Was empfiehlst du der Firma?',
-   opts:[['50','50 Shirts pro Monat: 150 € Gewinn'],['10','10 Shirts pro Monat'],['60','60 Shirts – die Presse voll ausnutzen']],
-   check:(s,v)=>v==='50'?[true,'','Bei 50 Shirts pro Monat ist der Gewinn mit 150 € am größten. Schreibe den Antwortsatz ins Heft.']
+   opts:[['60','60 Shirts: Die Presse ist ausgelastet, G(60) = 80 €.'],['50','50 Shirts: Der Gewinn ist mit G(50) = 150 € am größten.'],['10','10 Shirts: Dort ist G′(10) = 0, also ein Extremum.']],
+   check:(s,v)=>v==='50'?[true,'','Bei 50 Shirts pro Monat ist der Gewinn mit 150 € am größten. Schreibe den Antwortsatz in deine Notizen.']
      :v==='10'?[false,'Bei 10 Shirts liegt ein Tiefpunkt: Dort ist der Verlust lokal am größten.']
      :[false,`${M('<i>G</i>(60) = 80')} € – weniger als bei 50 Shirts.`]},
   {extra:true, title:'Bei welchem Preis gäbe es nur noch einen Sattelpunkt?',
@@ -837,8 +840,8 @@ T['4']=s=>{ const p=PREIS[KARTE||'1'], c=33-p, sattel=p===6;
   {title:'Randwerte und Empfehlung',
    body:()=>`<p>Berechne zur Kontrolle: ${M('<i>G</i>(0) = −100')} €, ${M('<i>G</i>(30) = −370')} €, ${M('<i>G</i>(60) = −640')} €.</p>`,
    q:'Was empfiehlst du der Firma?',
-   opts:[['null','Bei 6 € gar nicht für den Großhändler produzieren: Dann bleibt es bei 100 € Verlust (Miete).'],['30',`30 Shirts – dort ist ${M('<i>G</i> ′ = 0')}.`],['60','60 Shirts – dann ist der Erlös am größten.']],
-   check:(s,v)=>v==='null'?[true,'',`${M('<i>G</i>(0) = −100')} ist der größte Wert in ${M('<i>D</i>')}: Maximum am Rand. Jedes Shirt vergrößert den Verlust. Schreibe den Antwortsatz ins Heft.`]
+   opts:[['null','Nicht produzieren: G(0) = −100 € ist der größte Wert in D.'],['30','30 Shirts: Dort ist G′(30) = 0, also ein Extremum.'],['60','60 Shirts: Der Erlös ist dann mit 360 € am größten.']],
+   check:(s,v)=>v==='null'?[true,'',`${M('<i>G</i>(0) = −100')} ist der größte Wert in ${M('<i>D</i>')}: Maximum am Rand. Jedes Shirt vergrößert den Verlust. Schreibe den Antwortsatz in deine Notizen.`]
      :v==='30'?[false,`Bei 30 liegt ein Sattelpunkt, ${M('<i>G</i>(30) = −370')} €. Vergleiche mit den Randwerten.`]
      :[false,`Der Erlös schon – aber ${M('<i>G</i>(60) = −640')} €.`]},
   {extra:true, title:'Welcher Preis wäre nötig?',
@@ -851,12 +854,12 @@ ERGEBNIS['4']=()=>{ const p=PREIS[KARTE];
   return `<div class="ergebnis"><h3>Deine Lösung</h3>
   <p>${p===18?'Die Firma sollte 50 Shirts pro Monat herstellen. Der Gewinn beträgt dann 150 €.'
     :'Bei 6 € pro Shirt lohnt sich der Auftrag nicht. Am besten produziert die Firma dafür gar nicht – der Verlust bleibt dann bei den 100 € Miete.'}</p>
-  <p><b>Prüfe dein Heft:</b> Annahme, Zielfunktion, ${M('<i>D</i>')}, Kriterien, Randwerte, Antwortsatz?</p>
+  <p><b>Prüfe deine Notizen:</b> Annahme, Zielfunktion, ${M('<i>D</i>')}, Kriterien, Randwerte, Antwortsatz?</p>
   ${weiter('5','Weiter zu Schritt 5: Austausch mit einer neuen Person')}</div>`; };
 function render4(){
   const s=S['4'];
   if(!KARTE){ $('#st-4').innerHTML=shell('4','Schritt 4','Die Schülerfirma',['ea'],'ca. 18 min','',brauchtKarte(),false); return; }
-  $('#st-4').innerHTML=shell('4','Schritt 4','Die Schülerfirma',['ea'],'ca. 18 min','Wieder allein. Rechne im Heft, die Seite prüft deine Ergebnisse.',
+  $('#st-4').innerHTML=shell('4','Schritt 4','Die Schülerfirma',['ea'],'ca. 18 min','Wieder allein. Rechne in deinen Notizen, die Seite prüft deine Ergebnisse.',
     `${markText('4',ctx4(PREIS[KARTE]))}
     ${planBox()}
     <div class="panel"><div id="vis4"></div>
@@ -876,10 +879,10 @@ function vis4(){ const s=S['4'], p=PREIS[KARTE], G=Gf(p)(s.x), d=-.03*s.x**2+1.8
 T['5']=[
   {anr:'Gemeinsame Frage', title:'Warum gibt es bei 6 € kein Maximum bei x = 30?',
    q:'Einigt euch – jede Person tippt die Antwort auf dem eigenen iPad.',
-   opts:[['s','G′(30) = 0, aber G′ wechselt das Vorzeichen nicht: Sattelpunkt. G fällt überall, der größte Wert liegt am Rand x = 0.'],
-         ['n','Weil G(30) negativ ist.'],
-         ['f','Weil G″(30) = 0 ist, gibt es bei 30 sicher kein Extremum.']],
-   check:(s,v)=>v==='s'?[true,'','Das notwendige Kriterium allein reicht nicht – das hinreichende entscheidet.']
+   opts:[['n','Weil G(30) negativ ist – ein Maximum müsste Gewinn bringen.'],
+         ['f','Weil G″(30) = 0 ist – das schließt ein Extremum bei 30 aus.'],
+         ['s','Weil G′ bei 30 das Vorzeichen nicht wechselt – ein Sattelpunkt.']],
+   check:(s,v)=>v==='s'?[true,'','Das notwendige Kriterium allein reicht nicht – das hinreichende entscheidet. G fällt überall, der größte Wert liegt am Rand x = 0.']
      :v==='n'?[false,'Auch bei 18 € ist G(10) negativ – und trotzdem liegt dort ein Tiefpunkt. Worauf kommt es beim hinreichenden Kriterium an?']
      :[false,`Vorsicht: ${M('<i>f</i> ″ = 0')} heißt nur „keine Entscheidung“. ${M('<i>f</i>(<i>x</i>) = <i>x</i><sup>4</sup>')} hat bei 0 einen Tiefpunkt, obwohl ${M('<i>f</i> ″(0) = 0')} ist. Was hat bei 30 wirklich entschieden?`]}
 ];
@@ -888,13 +891,16 @@ ERGEBNIS['5']=()=>`<div class="info"><h3>Infotext: Sattelpunkt und VZW-Kriterium
     <p>Das notwendige Kriterium ${M('<i>f</i> ′(<i>x</i>) = 0')} liefert nur <b>Kandidaten</b>. Bei 6 € ist ${M('<i>G</i> ′(30) = 0')}, aber ${M('<i>G</i> ′')} ist links und rechts von 30 negativ: kein Vorzeichenwechsel, also ein <b>Sattelpunkt</b>.</p>
     <p>Ist ${M('<i>f</i> ″(<i>x</i>) = 0')}, sagt das hinreichende Kriterium mit ${M('<i>f</i> ″')} <b>nichts</b> – weder „Extremum“ noch „kein Extremum“. Dann entscheidet das <b>VZW-Kriterium</b>.</p>
     <div class="merk"><h3>Merke</h3><p>${M('<i>f</i> ′(<i>x</i>) = 0')} ist notwendig, aber nicht hinreichend. Ist ${M('<i>f</i> ″(<i>x</i>) = 0')}, prüfe den Vorzeichenwechsel von ${M('<i>f</i> ′')}. Ohne Extremum im Inneren liegt das globale Extremum am Rand.</p></div>
-    <p><b>Schreibt den Merksatz ins Heft. Bleibt zusammen sitzen</b> – in Schritt 6 vergleicht ihr eure Regelhefteinträge.</p>
+    <p><b>Schreibt den Merksatz in eure Notizen. Bleibt zusammen sitzen</b> – in Schritt 6 vergleicht ihr eure Regelhefteinträge.</p>
     ${weiter('6','Weiter zu Schritt 6')}</div>`;
 /* Warteaufgabe Schritt 5: Wahr oder falsch */
 T['w5']=[
   {title:'Wahr oder falsch?', body:()=>`<p>„Hat ${M('<i>f</i> ′(<i>x</i>) = 0')} in der Definitionsmenge keine Lösung, dann hat ${M('<i>f</i>')} dort kein Maximum.“</p>`,
    q:'Was stimmt?', opts:[['w','wahr'],['f','falsch']],
    check:(s,v)=>v==='f'?[true,'','Falsch: Das Maximum kann am Rand liegen (Gehege mit 12 m Mauer).']:[false,'Denk an das Gehege mit der 12-m-Mauer.']},
+  {title:'Wahr oder falsch?', body:()=>`<p>„Es gilt ${M('<i>f</i> ′(3) = 0')}, und ${M('<i>f</i> ′')} wechselt bei 3 das Vorzeichen von + nach −. Also hat ${M('<i>f</i>')} bei ${M('<i>x</i> = 3')} ein lokales Maximum.“</p>`,
+   q:'Was stimmt?', opts:[['w','wahr'],['f','falsch']],
+   check:(s,v)=>v==='w'?[true,'','Wahr: Das ist das VZW-Kriterium. Erst steigt f, dann fällt f.']:[false,`Skizziere: Links von 3 ist ${M('<i>f</i> ′ > 0')}, rechts ${M('<i>f</i> ′ < 0')}. Steigt oder fällt ${M('<i>f</i>')} jeweils?`]},
   {title:'Wahr oder falsch?', body:()=>`<p>„Es gilt ${M('<i>f</i> ′(2) = 0')} und ${M('<i>f</i> ″(2) = 0')}. Also hat ${M('<i>f</i>')} bei ${M('<i>x</i> = 2')} keine Extremstelle.“</p>`,
    q:'Was stimmt?', opts:[['w','wahr'],['f','falsch']],
    check:(s,v)=>v==='f'?[true,'',`Falsch: ${M('<i>f</i>(<i>x</i>) = (<i>x</i> − 2)<sup>4</sup>')} hat bei 2 einen Tiefpunkt, ${M('(<i>x</i> − 2)<sup>3</sup>')} einen Sattelpunkt. Das VZW-Kriterium entscheidet.`]
@@ -917,7 +923,7 @@ function render5(){
    ========================================================= */
 function render6(){
   const s=S['6'];
-  $('#st-6').innerHTML=shell('6','Schritt 6','Regelhefteintrag',['ea','pa'],'ca. 8 min','Schreibe zuerst <b>allein</b> einen Regelhefteintrag „Extremwerte in Sachaufgaben“ in dein Heft (ca. 5 min).',
+  $('#st-6').innerHTML=shell('6','Schritt 6','Regelhefteintrag',['ea','pa'],'ca. 8 min','Schreibe zuerst <b>allein</b> einen Regelhefteintrag „Extremwerte in Sachaufgaben“ in deine Notizen (ca. 5 min).',
     `<div class="panel"><h3>Das gehört hinein</h3><ul class="check">
       <li><label><input type="checkbox">Der Lösungsplan in Kurzform</label></li>
       <li><label><input type="checkbox">Wo das globale Maximum liegen kann – mit einer kleinen Skizze</label></li>
@@ -941,8 +947,8 @@ function render6(){
 function render7(){
   $('#st-7').innerHTML=shell('7','Schritt 7','Kurzpräsentationen',['pl'],'ca. 15 min','Gleich stellt ihr eure Ergebnisse kurz vor. Deine Lehrkraft ruft auf – jede Präsentation dauert <b>höchstens 2 Minuten</b>. Bereite dich auf alle Punkte vor, solange du wartest.',
     `<ol class="praes">
-      <li><p><b>Lösungsweg mit Randmaximum.</b> Das Gehege an der 12-m-Mauer, mit dem Heft unter der Dokumentenkamera. Zeige besonders: Definitionsmenge und warum ${M('<i>x</i> = 10')} nicht zählt.</p></li>
-      <li><p><b>Lösungsweg mit Sattelpunkt.</b> Die Schülerfirma bei 6 € pro Shirt. Zeige besonders: Was passiert bei ${M('<i>G</i> ″(30) = 0')}?</p></li>
+      <li><p><b>Lösungsweg mit Randmaximum.</b> Das Gehege an der 12-m-Mauer – zeige deine Notizen am Beamer. Zeige besonders: Definitionsmenge und warum ${M('<i>x</i> = 10')} nicht zählt.</p></li>
+      <li><p><b>Lösungsweg mit Sattelpunkt.</b> Die Schülerfirma bei 6 € pro Shirt, mit deinen Notizen am Beamer. Zeige besonders: Was passiert bei ${M('<i>G</i> ″(30) = 0')}?</p></li>
       <li><p><b>Regelhefteintrag.</b> Lies deinen Eintrag vor. Die anderen ergänzen, was fehlt.</p></li>
       <li><p><b>Signalwörter.</b> Nenne deine gesammelten Signalwörter, getrennt nach Ziel und Einschränkung. Kennst du weitere aus anderen Aufgaben?</p>${sammlung()}</li>
       <li><p><b>Stolperstelle.</b> Ein Fehler, den du heute gemacht hast – und woran du ihn bemerkt hast.</p></li></ol>
