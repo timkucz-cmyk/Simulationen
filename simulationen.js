@@ -50,10 +50,10 @@ window.SIMULATIONEN = [
     fach: "mathe",
     stufen: ["E"],
     thema: "Differenzialrechnung",
-    beschreibung: "Zielfunktion selbst aufstellen, Definitionsmenge aus der Situation begründen, Kandidaten mit notwendigem und hinreichendem Kriterium prüfen und mit den Randwerten vergleichen: größte Schachtel aus DIN A4, Hühnergehege an einer Mauer, Gewinn einer Schülerfirma. Je zwei Varianten mit gleicher Zielfunktion und unterschiedlichem Ergebnis werden am Ende verglichen und präsentiert.",
+    beschreibung: "Selbstgesteuerter Lernpfad: Lösungsbeispiel lesen und erklären, dann allein ein Hühnergehege und eine Schülerfirma optimieren – Zielfunktion aufstellen, Signalwörter markieren, Definitionsmenge begründen, Kriterien und Randwerte prüfen. Austausch mit wechselnden Partnern (Karte 1 trifft Karte 2: gleiche Zielfunktion, anderes Ergebnis), Regelhefteintrag und Kurzpräsentationen.",
     pfad: "sims/mathe/extremwerte/",
     vorschau: "sims/mathe/extremwerte/vorschau.png",
-    sozialform: "Plenum, Partnerarbeit, Vierergruppe",
+    sozialform: "Einzel- und Partnerarbeit, Präsentation",
     dauer: "Doppelstunde",
     datum: "2026-11-01"
   },
