@@ -1,6 +1,6 @@
 # CLAUDE.md – Simulationen
 
-Statische Website (GitHub Pages, Repo `timkucz-cmyk/simulationen`) für Simulationen im
+Statische Website (GitHub Pages, Repo `timkucz-cmyk/Simulationen`) für Simulationen im
 Mathe-/Physikunterricht am LMG Uetersen. Kein Build, keine Frameworks.
 
 - Neue Simulation: Ablauf in `README.md` („Neue Simulation veröffentlichen“). Nur

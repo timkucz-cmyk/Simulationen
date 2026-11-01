@@ -16,7 +16,7 @@ bedienen sich gleich.
 | `simulationen.js` | Konfiguration (`PLATTFORM`) und Inhalte (`SIMULATIONEN`) |
 
 - Lokal: `C:\Users\Anwender\OneDrive\Schule\Vorlagen\KI_Tools\Simulationen\`
-- Online: https://github.com/timkucz-cmyk/simulationen (Seite: https://timkucz-cmyk.github.io/simulationen/)
+- Online: https://github.com/timkucz-cmyk/Simulationen (Seite: https://timkucz-cmyk.github.io/Simulationen/)
 
 ---
 

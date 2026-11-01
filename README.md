@@ -3,7 +3,7 @@
 Sammlung interaktiver Simulationen und digitaler Lernzirkel für den Mathematik- und
 Physikunterricht am Ludwig-Meyn-Gymnasium Uetersen.
 
-**Für Schüler:innen:** https://timkucz-cmyk.github.io/simulationen/
+**Für Schüler:innen:** https://timkucz-cmyk.github.io/Simulationen/
 
 ## Neue Simulation veröffentlichen
 
