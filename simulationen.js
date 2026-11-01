@@ -50,7 +50,7 @@ window.SIMULATIONEN = [
     fach: "physik",
     stufen: ["E"],
     thema: "Mechanik · Energie",
-    beschreibung: "Eine Person zieht ihren Schlitten auf den Berg: Energiebalken zeigen, wie die Hubarbeit W die Lageenergie erhöht. Ein langsamer und ein schneller Aufstieg im Vergleich veranschaulichen die Leistung P = W / t; bei der Abfahrt wird Lageenergie zu Bewegungsenergie, mit Reibung auch zu innerer Energie. Ohne Arbeitsaufträge.",
+    beschreibung: "Eine Person zieht ein Kind auf dem Schlitten auf den Berg: Die Arbeit W fließt als Pfeil über die Systemgrenze, der Energie-Rucksack des Kindes füllt sich mit Lageenergie. Ein langsamer und ein schneller Aufstieg im Vergleich veranschaulichen die Leistung P = W / t; bei der Abfahrt wird Lageenergie zu Bewegungsenergie, mit Reibung verlässt Energie das System. Ohne Arbeitsaufträge.",
     pfad: "sims/physik/schlittenberg/",
     vorschau: "sims/physik/schlittenberg/vorschau.png",
     sozialform: "Unterrichtsgespräch am Beamer",
