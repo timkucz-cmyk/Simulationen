@@ -45,6 +45,19 @@ window.PLATTFORM = {
    --------------------------------------------------------- */
 window.SIMULATIONEN = [
   {
+    id: "schlittenberg",
+    titel: "Schlittenberg: Energie, Arbeit und Leistung",
+    fach: "physik",
+    stufen: ["E"],
+    thema: "Mechanik · Energie",
+    beschreibung: "Eine Person zieht ihren Schlitten auf den Berg: Energiebalken zeigen, wie die Hubarbeit W die Lageenergie erhöht. Ein langsamer und ein schneller Aufstieg im Vergleich veranschaulichen die Leistung P = W / t; bei der Abfahrt wird Lageenergie zu Bewegungsenergie, mit Reibung auch zu innerer Energie. Ohne Arbeitsaufträge.",
+    pfad: "sims/physik/schlittenberg/",
+    vorschau: "sims/physik/schlittenberg/vorschau.png",
+    sozialform: "Unterrichtsgespräch am Beamer",
+    dauer: "ca. 10 min",
+    datum: "2026-11-01"
+  },
+  {
     id: "reihe-parallel",
     titel: "Lernzirkel: Reihen- und Parallelschaltung",
     fach: "physik",
