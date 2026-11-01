@@ -45,6 +45,19 @@ window.PLATTFORM = {
    --------------------------------------------------------- */
 window.SIMULATIONEN = [
   {
+    id: "extremwerte",
+    titel: "Extremwerte in Sachaufgaben",
+    fach: "mathe",
+    stufen: ["E"],
+    thema: "Differenzialrechnung",
+    beschreibung: "Zielfunktion selbst aufstellen, Definitionsmenge aus der Situation begründen, Kandidaten mit notwendigem und hinreichendem Kriterium prüfen und mit den Randwerten vergleichen: größte Schachtel aus DIN A4, Hühnergehege an einer Mauer, Gewinn einer Schülerfirma. Je zwei Varianten mit gleicher Zielfunktion und unterschiedlichem Ergebnis werden am Ende verglichen und präsentiert.",
+    pfad: "sims/mathe/extremwerte/",
+    vorschau: "sims/mathe/extremwerte/vorschau.png",
+    sozialform: "Plenum, Partnerarbeit, Vierergruppe",
+    dauer: "Doppelstunde",
+    datum: "2026-11-01"
+  },
+  {
     id: "schlittenberg",
     titel: "Schlittenberg: Energie, Arbeit und Leistung",
     fach: "physik",
