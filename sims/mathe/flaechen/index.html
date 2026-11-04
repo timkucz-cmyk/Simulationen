@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Eindeutig? Gleich groß? – Dreiecke und Vierecke</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Tokens aus dem LMG-Designsystem (Werte wie in assets/lmg.css, hier eigenständig) */
+:root{
+  --surface-page:#ffffff; --surface-soft:#f6f6f4; --surface-sunken:#ecece8;
+  --fg-1:#17181a; --fg-2:#3d4147; --fg-3:#646a72; --fg-4:#9097a0; --fg-5:#c2c7cd;
+  --line-1:#e4e5e3; --line-2:#cfd1cf; --line-3:#a8acaa;
+  --mathe:#B61E33; --mathe-soft:#f5e1e3; --mathe-line:#e8b8be; --mathe-ink:#6f0f1c;
+  --physik:#2C5282; --physik-soft:#e8eef5; --physik-line:#b9c8da; --physik-ink:#1d3a5c;
+  --ok:#3f6e3a; --ok-soft:#e7eee5; --warn:#8a6a1e; --warn-soft:#f3ecd9;
+  --radius-sm:4px; --radius-md:6px; --radius-lg:10px; --radius-pill:999px;
+  --shadow-1:0 1px 2px rgba(20,22,25,.04),0 1px 1px rgba(20,22,25,.03);
+  --font-math:"Cambria Math","STIX Two Math","STIX Two Text",Cambria,"Times New Roman",Georgia,serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}
+body{margin:0;background:var(--surface-soft);color:var(--fg-1);
+  font-family:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+a{color:var(--mathe)}
+:focus-visible{outline:2px solid var(--mathe);outline-offset:3px;border-radius:var(--radius-sm)}
+.m{font-family:var(--font-math);white-space:nowrap}
+.m i,i.v{font-family:var(--font-math);font-style:italic}
+
+.brandline{height:4px;background:linear-gradient(90deg,var(--mathe) 0 50%,var(--physik) 50% 100%)}
+.wrap{max-width:1240px;margin:0 auto;padding:0 16px}
+@media (min-width:700px){.wrap{padding:0 24px}}
+header.top{padding:12px 0 0}
+.backlink{display:inline-block;margin:0 0 4px;font-size:.92rem;color:var(--fg-3);text-decoration:none;padding:6px 0}
+.backlink:hover{color:var(--fg-1);text-decoration:underline}
+h1{font-size:clamp(26px,4vw,34px);line-height:1.15;margin:0;letter-spacing:-.01em}
+.sub{margin:2px 0 0;color:var(--fg-2)}
+
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 12px}
+nav.tabs button{border:1px solid var(--line-2);background:var(--surface-page);border-radius:var(--radius-pill);padding:6px 16px;cursor:pointer;font-size:1rem;min-height:44px}
+nav.tabs button[aria-current="true"]{background:var(--fg-1);color:var(--surface-page);border-color:var(--fg-1)}
+
+.btn{border:1px solid var(--mathe);background:var(--mathe);color:#fff;border-radius:var(--radius-md);padding:8px 16px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;font-size:1rem;font-weight:600;min-height:48px}
+.btn:active{background:var(--mathe-ink);border-color:var(--mathe-ink)}
+.btn.ghost{background:var(--surface-page);color:var(--mathe)}
+.btn.ghost:active{background:var(--mathe-soft)}
+.btn.small{padding:6px 12px;font-size:.92rem;min-height:44px}
+.btn[disabled]{opacity:.45;cursor:default}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+
+.station{display:none;background:var(--surface-page);border:1px solid var(--line-2);border-top:6px solid var(--mathe);border-radius:var(--radius-lg);padding:14px 18px 18px;margin-bottom:20px;box-shadow:var(--shadow-1)}
+.station.show{display:block}
+.sthead{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.chip{font-size:.85rem;border-radius:var(--radius-sm);padding:2px 9px;font-weight:700;display:inline-block;background:var(--mathe-soft);color:var(--mathe-ink)}
+h2{font-size:1.45rem;margin:4px 0 0;line-height:1.2}
+h3{font-size:1.1rem;margin:0 0 8px}
+.lead{margin:0 0 12px;max-width:80ch}
+
+.layout{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}
+@media (min-width:980px){.layout{grid-template-columns:minmax(0,1.45fr) minmax(330px,1fr)}}
+.side{display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel{border:1px solid var(--line-1);border-radius:var(--radius-lg);padding:12px 14px;background:var(--surface-page)}
+.figcard{border:1px solid var(--line-1);border-radius:var(--radius-lg);padding:6px;background:var(--surface-page)}
+.hinweis{color:var(--fg-3);font-size:.95rem;margin:6px 4px 0}
+
+/* Schieberegler mit großen Touch-Flächen */
+.sl{margin:0 0 8px}
+.sl-l{display:block;font-size:1.15rem;margin-bottom:2px}
+.sl-l output{font-weight:700;font-variant-numeric:tabular-nums}
+.sl-row{display:flex;align-items:center;gap:10px}
+.step{flex:none;width:48px;height:48px;border:2px solid var(--line-3);border-radius:var(--radius-md);background:var(--surface-page);font-size:1.5rem;font-weight:700;cursor:pointer;line-height:1}
+.step:active{background:var(--mathe-soft)}
+.step[disabled]{opacity:.4;cursor:default}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;min-width:0;height:48px;background:transparent;margin:0;touch-action:pan-y}
+input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:5px;background:var(--line-2)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:40px;height:40px;border-radius:50%;background:var(--mathe);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);margin-top:-15px}
+input[type=range]::-moz-range-track{height:10px;border-radius:5px;background:var(--line-2)}
+input[type=range]::-moz-range-thumb{width:32px;height:32px;border-radius:50%;background:var(--mathe);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+input[type=range][disabled]{opacity:.4}
+
+/* Aufträge */
+.auftraege{margin:0 0 12px}
+.auftrag{margin:0 0 10px;border:2px solid var(--mathe);border-radius:var(--radius-lg);padding:10px 14px}
+.auftrag p{margin:4px 0}
+.auftrag.erledigt{border:1px solid var(--line-2);background:var(--surface-soft);padding:6px 14px;margin-bottom:8px}
+.auftrag.erledigt h3{margin:0;color:var(--ok)}
+.auftrag.erledigt h3::before{content:"✓ "}
+.auftrag.erledigt p{color:var(--fg-2)}
+.anr{font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mathe-ink);display:block}
+.auftrag.erledigt .anr{color:var(--fg-3)}
+.prog{color:var(--fg-3);margin:6px 0 0}
+ol.beob{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+ol.beob li{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start;font-size:1.1rem;line-height:1.35}
+ol.beob .nr{width:30px;height:30px;border-radius:50%;border:2px solid var(--mathe);color:var(--mathe-ink);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.95rem}
+ol.beob li.ok .nr{background:var(--ok);border-color:var(--ok);color:#fff}
+ol.beob li.ok .nr::before{content:"✓"}
+ol.beob li.ok .nr span{display:none}
+ol.beob .extra{color:var(--fg-3);font-size:.95rem}
+
+.choices{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 6px}
+.choice{min-height:48px;padding:8px 14px;border:2px solid var(--line-3);background:var(--surface-page);border-radius:var(--radius-md);cursor:pointer;font-size:1rem;text-align:left}
+.choice[aria-pressed="true"]{border-color:var(--mathe);background:var(--mathe);color:#fff;font-weight:600}
+.grgrid{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;margin:6px 0}
+.grgrid .gl{font-size:1.05rem}
+.grgrid .choices{margin:0}
+.grgrid .choice{min-width:118px}
+.grgrid .fbz{grid-column:1 / -1;margin:-2px 0 4px}
+
+.fb{margin-top:8px;padding:8px 12px;border-radius:var(--radius-md);display:none}
+.fb.ok{display:block;background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
+.fb.bad{display:block;background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.fb.info{display:block;background:var(--surface-soft);border:1px solid var(--line-2)}
+.fb p{margin:2px 0}
+
+/* Anzeigen */
+.werte{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:baseline;background:var(--surface-soft);border-radius:var(--radius-md);padding:10px 14px;font-size:1.15rem}
+.werte b{font-size:1.3rem;font-variant-numeric:tabular-nums}
+.werte .hl{color:var(--mathe-ink)}
+.werte .sep{grid-column:1 / -1;border-top:1px solid var(--line-2);margin:2px 0}
+.status{border-radius:var(--radius-lg);padding:10px 14px;border:2px solid var(--line-2);background:var(--surface-soft)}
+.status .gross{font-size:1.7rem;font-weight:700;line-height:1.2}
+.status.n0 .gross{color:var(--fg-2)}
+.status.n1 .gross{color:var(--ok)}
+.status.n2 .gross{color:var(--mathe)}
+.status p{margin:6px 0 0}
+.vgl{font-family:var(--font-math);font-size:1.2rem}
+.eind{margin-top:8px;padding:8px 12px;border-radius:var(--radius-md);background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
+.merk{border:2px solid var(--ok);background:var(--ok-soft);border-radius:var(--radius-lg);padding:10px 14px;margin-top:8px}
+.merk h3{color:var(--ok);margin-bottom:4px}
+.merk p{margin:4px 0}
+.formel{font-family:var(--font-math);font-size:1.35rem;background:var(--surface-page);border-radius:var(--radius-md);padding:6px 12px;margin:6px 0;display:inline-block}
+
+.toggle{display:flex;align-items:center;gap:12px;min-height:52px;width:100%;padding:8px 14px;border:2px solid var(--line-3);border-radius:var(--radius-md);background:var(--surface-page);cursor:pointer;font-size:1.05rem;font-weight:600;text-align:left}
+.toggle .knopf{flex:none;width:46px;height:26px;border-radius:13px;background:var(--line-2);position:relative;transition:background .18s}
+.toggle .knopf::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:left .18s}
+.toggle[aria-pressed="true"]{border-color:var(--mathe);background:var(--mathe-soft)}
+.toggle[aria-pressed="true"] .knopf{background:var(--mathe)}
+.toggle[aria-pressed="true"] .knopf::after{left:23px}
+.seg{display:inline-flex;border:2px solid var(--mathe);border-radius:var(--radius-md);overflow:hidden}
+.seg button{border:0;background:var(--surface-page);color:var(--mathe);padding:8px 16px;min-height:44px;font-weight:600;cursor:pointer;font-size:1rem}
+.seg button[aria-pressed="true"]{background:var(--mathe);color:#fff}
+.msg{min-height:1.5em;color:var(--warn);font-size:.98rem;margin:4px 4px 0}
+
+table.wt{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:.98rem}
+table.wt th,table.wt td{border:1px solid var(--line-2);padding:4px 6px;text-align:center}
+table.wt th{background:var(--surface-soft);font-weight:600}
+table.wt td.leer{color:var(--fg-3);font-style:italic}
+table.wt tr.neu td{background:var(--mathe-soft)}
+table.wt .fig{font-family:var(--font-math);font-size:1.1rem}
+.tabwrap{overflow-x:auto}
+
+/* Zeichnungen */
+svg.fig{width:100%;height:auto;display:block;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+svg.fig text{font-family:var(--font-math);fill:var(--fg-1)}
+svg.fig .pt{font-size:28px;font-style:italic;font-weight:700}
+svg.fig .lb{font-size:24px}
+svg.fig .lbs{font-size:19px;fill:var(--fg-3)}
+svg.fig .vi{font-style:italic}
+svg.fig .base{stroke:var(--fg-1);stroke-width:5;stroke-linecap:round}
+svg.fig .leg{stroke:var(--fg-2);stroke-width:3}
+svg.fig .zirkel{fill:none;stroke:var(--mathe);stroke-width:2.5;stroke-dasharray:9 7}
+svg.fig .radius{stroke:var(--mathe);stroke-width:1.5;stroke-dasharray:4 5}
+svg.fig .t1{fill:var(--mathe-soft);fill-opacity:.8;stroke:var(--mathe);stroke-width:3;stroke-linejoin:round}
+svg.fig .t2{fill:var(--physik-soft);fill-opacity:.8;stroke:var(--physik);stroke-width:3;stroke-linejoin:round}
+svg.fig line.t1,svg.fig line.t2{stroke-width:4}
+svg.fig .arc{fill:var(--mathe-soft);stroke:var(--mathe-ink);stroke-width:2}
+svg.fig .abst{stroke:var(--fg-2);stroke-width:2;stroke-dasharray:6 5}
+svg.fig .rw{fill:none;stroke:var(--fg-2);stroke-width:2}
+svg.fig .dot{fill:var(--fg-1)}
+svg.fig .gelenk{fill:var(--surface-page);stroke:var(--fg-1);stroke-width:3}
+svg.fig .handle{fill:var(--mathe);stroke:#fff;stroke-width:4;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+svg.fig .hit{fill:transparent;cursor:grab}
+svg.fig .hitline{stroke:transparent;stroke-width:44;cursor:grab}
+svg.fig.dragging .hit,svg.fig.dragging .hitline{cursor:grabbing}
+svg.fig [data-drag]:focus{outline:none}
+svg.fig [data-drag]:focus-visible .handle{stroke:var(--fg-1)}
+svg.fig .vier{fill:var(--mathe-soft);stroke:var(--fg-1);stroke-width:3.5;stroke-linejoin:round}
+svg.fig .diag{stroke:var(--fg-3);stroke-width:2.5;stroke-dasharray:8 7}
+svg.fig .diag.fest{stroke:var(--mathe-ink);stroke-width:7;stroke-dasharray:none;stroke-linecap:round}
+svg.fig .par{stroke:var(--fg-4);stroke-width:1.5;stroke-dasharray:3 6}
+svg.fig .ext{stroke:var(--fg-2);stroke-width:2.5;stroke-dasharray:8 6}
+svg.fig .hoehe{stroke:var(--fg-1);stroke-width:2.5;stroke-dasharray:8 6}
+svg.fig .figur{fill:var(--mathe-soft);stroke:var(--fg-1);stroke-width:3.5;stroke-linejoin:round}
+svg.fig .stueck{fill:var(--mathe-line);stroke:var(--mathe-ink);stroke-width:3;stroke-linejoin:round}
+svg.fig .kopie{fill:var(--physik-soft);stroke:var(--physik);stroke-width:3;stroke-linejoin:round}
+svg.fig .rahmen{fill:none;stroke:var(--ok);stroke-width:4;stroke-dasharray:12 6}
+
+/* Start */
+.intro p{max-width:78ch}
+.karten{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;margin:14px 0}
+.karte{display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:center;text-align:left;border:1px solid var(--line-2);border-radius:var(--radius-lg);background:var(--surface-page);padding:12px;cursor:pointer;min-height:110px}
+.karte:active{border-color:var(--mathe)}
+.karte .ic{width:84px;height:84px;display:flex;align-items:center;justify-content:center;background:var(--surface-soft);border-radius:var(--radius-md)}
+.karte b{display:block;font-size:1.1rem}
+.karte span.k{color:var(--fg-3);font-size:.92rem}
+details.lehrkraft{margin-top:18px;border:1px solid var(--line-2);border-radius:var(--radius-lg);background:var(--surface-soft)}
+details.lehrkraft summary{cursor:pointer;padding:12px 14px;font-weight:600;color:var(--fg-2);min-height:44px}
+details.lehrkraft .in{padding:0 16px 12px}
+details.lehrkraft dl{margin:0}
+details.lehrkraft dt{font-weight:700;margin-top:10px}
+details.lehrkraft dd{margin:0}
+details.lehrkraft ul{margin:2px 0;padding-left:20px}
+footer{color:var(--fg-3);font-size:.88rem;padding:0 0 28px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="brandline"></div>
+<div class="wrap">
+  <header class="top">
+    <a class="backlink noprint" href="../../../katalog.html?stufe=8&amp;fach=mathe">← Alle Simulationen</a>
+    <h1>Eindeutig? Gleich groß? – Dreiecke und Vierecke</h1>
+    <p class="sub">Dreiecke aus drei Angaben, ein bewegliches Viereck und schiefe Parallelogramme</p>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="Stationen"></nav>
+  <main>
+    <section class="station" id="st-0" aria-labelledby="h-0"></section>
+    <section class="station" id="st-1" aria-label="Station 1"></section>
+    <section class="station" id="st-2" aria-label="Station 2"></section>
+    <section class="station" id="st-3" aria-label="Station 3"></section>
+  </main>
+  <footer>Diese Seite speichert und überträgt nichts. Beim Neuladen sind alle Einstellungen und Messwerte weg.</footer>
+</div>
+
+<script>
+/* =========================================================
+   Hilfen
+   ========================================================= */
+const $=s=>document.querySelector(s);
+const DEG=Math.PI/180;
+const reduced=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+const rnd=(v,st)=>Math.round(v/st)*st;
+/* Zahl mit Komma, höchstens d Nachkommastellen, echtes Minuszeichen */
+const fmt=(n,d=1)=>{ const f=Math.pow(10,d); let r=Math.round(n*f)/f; if(Object.is(r,-0)||Math.abs(r)<1e-12) r=0;
+  return r.toFixed(d).replace(/\.?0+$/,'').replace('.',',').replace('-','−'); };
+/* „=“ wenn der gerundete Wert exakt ist, sonst „≈“ */
+const eq=(n,d=1)=>Math.abs(n-Math.round(n*Math.pow(10,d))/Math.pow(10,d))<1e-9?'=':'≈';
+const V=s=>`<i class="v">${s}</i>`;                // Variable im HTML
+const TV=s=>`<tspan class="vi">${s}</tspan>`;     // Variable im SVG
+function svgPt(svg,e){ return new DOMPoint(e.clientX,e.clientY).matrixTransform(svg.getScreenCTM().inverse()); }
+function animate(st,dur,step,done){
+  if(reduced){ step(1); done&&done(); return; }
+  const t0=performance.now(), tok=st.anim={};
+  (function f(t){ if(st.anim!==tok) return;
+    const k=clamp((t-t0)/dur,0,1), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2; step(e);
+    // setTimeout statt requestAnimationFrame: läuft auch, wenn rAF gedrosselt ist
+    if(k<1) setTimeout(()=>f(performance.now()),16); else { st.anim=null; done&&done(); } })(t0);
+}
+
+/* Ziehen mit Pointer Events (Finger, Stift, Maus); Pfeiltasten auf fokussierten Ziehpunkten */
+function dragSvg(svg,o){
+  let d=null;
+  svg.addEventListener('pointerdown',e=>{
+    const h=e.target.closest('[data-drag]'); if(!h) return;
+    const p=svgPt(svg,e);
+    if(o.start&&o.start(h.dataset.drag,p)===false){ e.preventDefault(); return; }
+    e.preventDefault();
+    d={id:e.pointerId,key:h.dataset.drag,p0:p};
+    try{ svg.setPointerCapture(e.pointerId); }catch(_){}
+    svg.classList.add('dragging');
+  });
+  svg.addEventListener('pointermove',e=>{ if(!d||e.pointerId!==d.id) return; e.preventDefault(); o.move(d.key,svgPt(svg,e),d); });
+  const fin=e=>{ if(!d||e.pointerId!==d.id) return; const k=d.key; d=null; svg.classList.remove('dragging'); o.end&&o.end(k); };
+  svg.addEventListener('pointerup',fin); svg.addEventListener('pointercancel',fin);
+  svg.addEventListener('keydown',e=>{
+    const h=e.target.closest('[data-drag]'); if(!h||!o.key) return;
+    const dir={ArrowRight:1,ArrowUp:1,ArrowLeft:-1,ArrowDown:-1}[e.key]; if(!dir) return;
+    e.preventDefault(); o.key(h.dataset.drag,dir);
+  });
+}
+/* nach dem Neuzeichnen den Fokus auf denselben Ziehpunkt zurücksetzen */
+function keepFocus(svg,fn){
+  const a=document.activeElement, k=a&&svg.contains(a)&&a.dataset?a.dataset.drag:null;
+  fn(); if(k){ const n=svg.querySelector(`[data-drag="${k}"]`); if(n) n.focus({preventScroll:true}); }
+}
+
+/* Schieberegler */
+const SL={
+  '1:a':    {min:.5,max:8,  step:.1,unit:' cm',lab:V('a'),name:'Seite a'},
+  '1:alpha':{min:15,max:150,step:5, unit:'°',  lab:'α',name:'Winkel α'},
+  '2:a':{min:2,max:7,step:.5,unit:' cm',lab:V('a'),name:'Seite a'},
+  '2:b':{min:2,max:7,step:.5,unit:' cm',lab:V('b'),name:'Seite b'},
+  '2:c':{min:2,max:7,step:.5,unit:' cm',lab:V('c'),name:'Seite c'},
+  '2:d':{min:2,max:7,step:.5,unit:' cm',lab:V('d'),name:'Seite d'},
+  '3:g':{min:2,max:8,step:.5,unit:' cm',lab:V('g'),name:'Grundseite g'},
+  '3:h':{min:1,max:6,step:.5,unit:' cm',lab:V('h'),name:'Höhe h'}
+};
+function slider(st,k){
+  const c=SL[st+':'+k], v=S[st][k];
+  return `<div class="sl"><label class="sl-l" for="r-${st}-${k}">${c.lab} = <output id="o-${st}-${k}">${fmt(v,1)}${c.unit}</output></label>
+    <div class="sl-row"><button type="button" class="step" data-step="${st}:${k}:-1" aria-label="${c.name} verkleinern">−</button>
+    <input type="range" id="r-${st}-${k}" data-st="${st}" data-k="${k}" min="${c.min}" max="${c.max}" step="${c.step}" value="${v}">
+    <button type="button" class="step" data-step="${st}:${k}:1" aria-label="${c.name} vergrößern">+</button></div></div>`;
+}
+function syncSl(st,dis){
+  Object.keys(SL).filter(x=>x.startsWith(st+':')).forEach(x=>{
+    const k=x.split(':')[1], r=$(`#r-${st}-${k}`); if(!r) return;
+    r.value=S[st][k]; $(`#o-${st}-${k}`).textContent=fmt(S[st][k],1)+SL[x].unit;
+    r.disabled=!!dis; document.querySelectorAll(`[data-step^="${st}:${k}:"]`).forEach(b=>b.disabled=!!dis);
+  });
+}
+function setSl(st,k,v){
+  const c=SL[st+':'+k]; v=clamp(rnd(v,c.step),c.min,c.max); v=Math.round(v*10)/10;
+  S[st][k]=v; SET[st](k);
+}
+function shell(id,chip,title,lead,body){
+  return `<div class="sthead"><div><span class="chip">${chip}</span><h2>${title}</h2></div>
+      <button type="button" class="btn ghost small" data-reset="${id}">Station zurücksetzen</button></div>
+    <p class="lead">${lead}</p>${body}`;
+}
+function choices(grp,opts,cur){
+  return `<div class="choices" role="group" data-grp="${grp}">`+opts.map(([v,l])=>
+    `<button type="button" class="choice" data-val="${v}" aria-pressed="${cur===v}">${l}</button>`).join('')+`</div>`;
+}
+
+/* =========================================================
+   Zustand (nur im Speicher der Seite)
+   ========================================================= */
+const S={};
+const INIT={
+  1:()=>({a:6,alpha:30,seen:{0:false,2:false,tan:false},dist:false,merk:false}),
+  2:()=>({a:4,b:4,c:4,d:4,alpha:90,lock:false,msg:''}),
+  3:()=>({fig:'p',g:5,h:3,s:1.5,cut:null,anim:null,rows:[],last:null,t:0,ref:null,ans:{},why:null,cutSeen:false,
+          triA:null,triSeen:false,triK:null,done:false,msg:''})
+};
+
+/* =========================================================
+   Start
+   ========================================================= */
+function renderStart(){
+  $('#st-0').innerHTML=`<div class="intro">
+    <h2 id="h-0">Drei Stationen</h2>
+    <p>Wann legen ein paar Angaben eine Figur <b>eindeutig</b> fest? Und wann sind zwei Figuren <b>gleich groß</b>, obwohl sie ganz verschieden aussehen? Stellt mit den Reglern ein, zieht an den <b>roten Punkten</b> und beobachtet die Anzeigen.</p>
+    <div class="karten">
+      <button type="button" class="karte" data-go="1"><span class="ic"><svg width="74" height="74" viewBox="0 0 80 80" aria-hidden="true">
+          <circle cx="44" cy="66" r="30" fill="none" stroke="var(--mathe)" stroke-width="2" stroke-dasharray="5 4"/>
+          <line x1="6" y1="66" x2="78" y2="18" stroke="var(--fg-2)" stroke-width="2.5"/>
+          <line x1="6" y1="66" x2="44" y2="66" stroke="var(--fg-1)" stroke-width="3.5"/>
+          <circle cx="68" cy="34" r="3.5" fill="var(--mathe)"/><circle cx="25" cy="53" r="3.5" fill="var(--physik)"/></svg></span>
+        <span><span class="k">Station 1</span><b>Dreieck aus drei Angaben</b><span class="k">Kein, ein oder zwei Dreiecke? (Kongruenzsatz SsW)</span></span></button>
+      <button type="button" class="karte" data-go="2"><span class="ic"><svg width="74" height="74" viewBox="0 0 80 80" aria-hidden="true">
+          <polygon points="10,66 50,66 70,30 30,30" fill="var(--mathe-soft)" stroke="var(--fg-1)" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle cx="10" cy="66" r="3.5" fill="#fff" stroke="var(--fg-1)" stroke-width="2"/><circle cx="50" cy="66" r="3.5" fill="#fff" stroke="var(--fg-1)" stroke-width="2"/>
+          <circle cx="70" cy="30" r="3.5" fill="#fff" stroke="var(--fg-1)" stroke-width="2"/><circle cx="30" cy="30" r="6" fill="var(--mathe)"/></svg></span>
+        <span><span class="k">Station 2</span><b>Gelenkviereck</b><span class="k">Reichen vier Seiten für ein Viereck?</span></span></button>
+      <button type="button" class="karte" data-go="3"><span class="ic"><svg width="74" height="74" viewBox="0 0 80 80" aria-hidden="true">
+          <line x1="2" y1="26" x2="78" y2="26" stroke="var(--fg-4)" stroke-width="1.5" stroke-dasharray="2 4"/>
+          <polygon points="8,64 46,64 70,26 32,26" fill="var(--mathe-soft)" stroke="var(--fg-1)" stroke-width="2.5" stroke-linejoin="round"/>
+          <line x1="32" y1="26" x2="32" y2="64" stroke="var(--fg-1)" stroke-width="1.5" stroke-dasharray="4 3"/><circle cx="32" cy="26" r="6" fill="var(--mathe)"/></svg></span>
+        <span><span class="k">Station 3</span><b>Scheren</b><span class="k">Was bleibt gleich, wenn das Parallelogramm schief wird?</span></span></button>
+    </div>
+    <details class="lehrkraft"><summary>Für Lehrkräfte</summary><div class="in"><dl>
+      <dt>Ziel je Station</dt><dd><ul>
+        <li><b>Station 1 – L2.2 Kongruenz:</b> Aus ${V('c')}, α und ${V('a')} entsteht kein, genau ein oder es entstehen zwei Dreiecke. Die Lernenden sehen am Zirkelkreis, warum SsW nur dann eindeutig ist, wenn der Winkel der <b>längeren</b> Seite gegenüberliegt (${V('a')} ≥ ${V('c')}).</li>
+        <li><b>Station 2 – L3.2 Eindeutigkeit Viereck:</b> Vier Seitenlängen legen ein Viereck nicht fest (Gelenkviereck). Ein fünftes Stück (hier die Diagonale ${V('e')}, alternativ ein Winkel) zerlegt es in zwei eindeutige Dreiecke und macht es starr.</li>
+        <li><b>Station 3 – L5.2 Parallelogrammformel / Scherungsinvarianz:</b> Beim Scheren bleiben ${V('g')}, ${V('h')} und ${V('A')} gleich, ${V('b')} und ${V('u')} ändern sich. Zerlegen (Dreieck abschneiden, rechts ansetzen) begründet ${V('A')} = ${V('g')} · ${V('h')}; Ergänzen zum Parallelogramm begründet ${V('A')} = ½ · ${V('g')} · ${V('h')} für das Dreieck.</li></ul></dd>
+      <dt>Einsatz und Ablauf</dt><dd><ul>
+        <li>Station 1 am Beamer im Unterrichtsgespräch (DS2), ca. 10–15 min: eine Person bedient, die Klasse gibt Anweisungen („größer“, „kleiner“).</li>
+        <li>Station 2 am Beamer als Hook (DS3), ca. 5–10 min: vier gleiche Seiten, Quadrat zur Raute ziehen, dann den Schalter „Diagonale festlegen“.</li>
+        <li>Station 3 auf iPads in Partnerarbeit (DS5), ca. 20–25 min: Aufträge der Reihe nach, Beobachtungstabelle ins Heft abschreiben.</li>
+        <li>Direktlinks (für QR-Codes): <code>…/sims/mathe/flaechen/#station1</code>, <code>#station2</code>, <code>#station3</code>.</li></ul></dd>
+      <dt>Erwartete Beobachtungen</dt><dd><ul>
+        <li>Station 1 (${V('c')} = 5 cm): ${V('a')} zu kurz → der Kreis erreicht den freien Schenkel nicht (kein Dreieck). Zwischen dem Abstand von B zum Schenkel und ${V('c')} → zwei Schnittpunkte ${V('C')}₁, ${V('C')}₂, zwei verschiedene Dreiecke mit denselben drei Angaben. Ab ${V('a')} ≥ ${V('c')} liegt der zweite Schnittpunkt hinter A (oder auf A) → genau ein Dreieck. Sonderfall Berührung (z. B. α = 30°, ${V('a')} = 2,5 cm): genau ein, rechtwinkliges Dreieck. Für stumpfes α gibt es nur für ${V('a')} > ${V('c')} ein Dreieck.</li>
+        <li>Station 2: Umfang und Seiten bleiben, α, ${V('e')} und der Flächeninhalt ändern sich (Quadrat 16 cm² → flache Raute fast 0 cm²). Mit festgelegter Diagonale lässt sich nichts mehr ziehen.</li>
+        <li>Station 3: In der Tabelle sind ${V('A')} in allen Zeilen gleich, ${V('u')} verschieden. Zerlegen gelingt mit einem Schnitt, solange der Höhenfußpunkt auf der Grundseite liegt.</li></ul></dd>
+      <dt>Typische Fehlvorstellungen</dt><dd><ul>
+        <li>„Gleicher Umfang ⇒ gleiche Fläche“: Station 2 (Umfang fest, Fläche wechselt) und Station 3 (Fläche fest, Umfang wechselt) widerlegen das von beiden Seiten.</li>
+        <li>„Scheren verändert die Fläche“ (die schiefe Figur wirkt größer, weil ${V('b')} länger wird): Tabelle und Zerlegen in Station 3.</li>
+        <li>„Vier Seiten legen ein Viereck fest“ (Übertragung von SSS): Station 2.</li>
+        <li>„WWW und SsW sind auch Kongruenzsätze“: Station 1 zeigt zwei verschiedene Dreiecke zu denselben SsW-Angaben. Impuls für WWW: Drei Winkel legen nur die Form fest, nicht die Größe (vergrößerte Kopie).</li></ul></dd>
+      <dt>Hinweise</dt><dd>Kein Freitext, keine Pflicht-Vorhersagen: Station 1 und 2 haben Beobachtungsaufträge (Häkchen erscheinen automatisch), Station 3 Auswahlfragen mit Rückmeldung aus der eigenen Tabelle. Es werden keine Daten gespeichert oder übertragen; Neuladen löscht alles.</dd>
+    </dl></div></details></div>`;
+}
+
+/* =========================================================
+   Station 1 – Dreieck aus c, α, a (SsW)
+   ========================================================= */
+const C1=5, U1=50, AX1=220, AY1=430, BX1=AX1+C1*U1, VW1=900, VH1=480;
+/* Schnittpunkte des Kreises um B (Radius a) mit dem freien Schenkel von α:
+   P(t) = A + t·(cos α, sin α), t > 0  ⇒  t² − 2tc·cos α + c² − a² = 0 */
+function solve1(a,alpha){
+  const c=C1, al=alpha*DEG, p=c*Math.cos(al), D=a*a-c*c*Math.sin(al)**2;
+  if(D<-1e-9) return {n:0,ts:[],tan:false};
+  if(Math.abs(D)<=1e-9) return p>1e-9?{n:1,ts:[p],tan:true}:{n:0,ts:[],tan:false};
+  const r=Math.sqrt(D), ts=[p+r,p-r].filter(t=>t>1e-9);
+  return {n:ts.length,ts,tan:false};
+}
+function render1(){
+  const s=S[1];
+  const body=`<div class="layout">
+    <div><div class="figcard"><svg class="fig" id="svg1" viewBox="0 0 ${VW1} ${VH1}" role="img" aria-label="Seite c von A nach B, Winkel alpha in A, Kreis um B mit Radius a"></svg></div>
+      <p class="hinweis">Roten Punkt auf dem Kreis ziehen: Zirkel weiter oder enger stellen · oder die Regler benutzen</p></div>
+    <div class="side">
+      <div class="panel"><h3>Beobachtungsaufträge</h3><ol class="beob" id="beob1"></ol></div>
+      <div class="panel">${slider(1,'a')}${slider(1,'alpha')}
+        <p class="hinweis" style="margin:0">Fest: ${V('c')} = AB = ${C1} cm</p></div>
+      <div class="status" id="stat1" aria-live="polite"></div>
+      <button type="button" class="toggle" id="dist1" aria-pressed="${s.dist}"><span class="knopf"></span>Abstand von B zum Schenkel zeigen</button>
+    </div></div>`;
+  $('#st-1').innerHTML=shell(1,'Station 1 · Kongruenz','Dreieck aus drei Angaben',
+    `Gegeben sind die Seite ${V('c')} = AB, der Winkel α in A und die Seite ${V('a')} = BC. Der Zirkel um B mit Radius ${V('a')} zeigt, wo C liegen kann: auf dem freien Schenkel von α.`,body);
+  dragSvg($('#svg1'),{
+    move:(k,p)=>{ setSl(1,'a',Math.hypot(p.x-BX1,p.y-AY1)/U1); },
+    key:(k,dir)=>setSl(1,'a',S[1].a+dir*.1)
+  });
+  upd1();
+}
+function upd1(){
+  const s=S[1], sol=solve1(s.a,s.alpha);
+  if(sol.n===0) s.seen[0]=true; if(sol.n===2) s.seen[2]=true; if(sol.tan) s.seen.tan=true;
+  syncSl(1); draw1(sol); stat1(sol); beob1();
+  const t=$('#dist1'); if(t) t.setAttribute('aria-pressed',s.dist);
+}
+function draw1(sol){
+  const s=S[1], svg=$('#svg1'); if(!svg) return;
+  const al=s.alpha*DEG, dx=Math.cos(al), dy=-Math.sin(al);
+  const ts=sol.ts.slice().sort((p,q)=>q-p);
+  const Cs=ts.map(t=>({x:AX1+t*U1*dx,y:AY1+t*U1*dy}));
+  const cls=Cs.length===2?['t1','t2']:['t1'];
+  const name=Cs.length===2?['C₁','C₂']:['C'];
+  let h='';
+  Cs.forEach((C,i)=>{ h+=`<polygon class="${cls[i]}" points="${AX1},${AY1} ${BX1},${AY1} ${C.x},${C.y}"/>`; });
+  h+=`<line class="leg" x1="${AX1}" y1="${AY1}" x2="${AX1+1500*dx}" y2="${AY1+1500*dy}"/>`;
+  h+=`<text class="lbs" x="${AX1+(dx>0?560:250)*dx+(dx<0?-10:10)}" y="${AY1+(dx>0?560:250)*dy-8}" text-anchor="${dx<0?'end':'start'}">freier Schenkel</text>`;
+  const r=s.a*U1;
+  h+=`<circle class="zirkel" cx="${BX1}" cy="${AY1}" r="${r}"/>`;
+  // Abstand von B zum Schenkel (Lot)
+  if(s.dist){
+    if(s.alpha<90){
+      const t=C1*Math.cos(al), F={x:AX1+t*U1*dx,y:AY1+t*U1*dy}, d=C1*Math.sin(al);
+      const ux=dx, uy=dy, nx=(BX1-F.x)/(d*U1), ny=(AY1-F.y)/(d*U1), q=14;
+      h+=`<line class="abst" x1="${BX1}" y1="${AY1}" x2="${F.x}" y2="${F.y}"/>
+        <path class="rw" d="M${F.x+q*ux},${F.y+q*uy} L${F.x+q*ux+q*nx},${F.y+q*uy+q*ny} L${F.x+q*nx},${F.y+q*ny}"/>
+        <text class="lb" x="${(BX1+F.x)/2+12}" y="${(AY1+F.y)/2-4}">Abstand ${eq(d,1)} ${fmt(d,1)} cm</text>`;
+    } else {
+      h+=`<text class="lbs" x="${AX1-14}" y="${AY1-60}" text-anchor="end">α ≥ 90°: A ist der nächste Punkt</text>`;
+    }
+  }
+  // Seiten BC
+  Cs.forEach((C,i)=>{
+    h+=`<line class="${cls[i]}" x1="${BX1}" y1="${AY1}" x2="${C.x}" y2="${C.y}"/>`;
+    const mx=(BX1+C.x)/2, my=(AY1+C.y)/2, gx=(AX1+BX1+C.x)/3, gy=(AY1+AY1+C.y)/3;
+    let vx=mx-gx, vy=my-gy; const L=Math.hypot(vx,vy)||1; vx/=L; vy/=L;
+    h+=`<text class="lb" x="${mx+vx*22}" y="${my+vy*22+7}" text-anchor="${vx<-.3?'end':vx>.3?'start':'middle'}">${TV('a')}</text>`;
+  });
+  // Grundseite c
+  h+=`<line class="base" x1="${AX1}" y1="${AY1}" x2="${BX1}" y2="${AY1}"/>`;
+  h+=`<text class="lb" x="${(AX1+BX1)/2}" y="${AY1+32}" text-anchor="middle">${TV('c')} = ${C1} cm</text>`;
+  // Winkel α
+  const ra=48;
+  h+=`<path class="arc" d="M${AX1},${AY1} L${AX1+ra},${AY1} A${ra},${ra} 0 0 0 ${AX1+ra*dx},${AY1+ra*dy} Z"/>`;
+  const la=al/2;
+  h+=`<text class="lb" x="${AX1+76*Math.cos(la)}" y="${AY1-76*Math.sin(la)+8}" text-anchor="middle">α = ${s.alpha}°</text>`;
+  // Punkte
+  h+=`<circle class="dot" cx="${AX1}" cy="${AY1}" r="6"/><text class="pt" x="${AX1-14}" y="${AY1+30}" text-anchor="end">A</text>`;
+  h+=`<circle class="dot" cx="${BX1}" cy="${AY1}" r="6"/><text class="pt" x="${BX1+6}" y="${AY1+34}">B</text>`;
+  Cs.forEach((C,i)=>{ const fill=i===1?'var(--physik)':'var(--mathe)';
+    h+=`<circle cx="${C.x}" cy="${C.y}" r="8" fill="${fill}"/><text class="pt" x="${C.x-14}" y="${C.y-14}" text-anchor="end" style="fill:${fill}">${name[i]}</text>`; });
+  // Ziehpunkt auf dem Kreis (rechts von B)
+  const hx=BX1+r, hy=AY1;
+  h+=`<line class="radius" x1="${BX1}" y1="${AY1}" x2="${hx}" y2="${hy}"/>`;
+  h+=`<g data-drag="a" tabindex="0" role="slider" aria-label="Zirkelradius a" aria-valuenow="${s.a}"><circle class="hit" cx="${hx}" cy="${hy}" r="40"/><circle class="handle" cx="${hx}" cy="${hy}" r="18"/></g>`;
+  keepFocus(svg,()=>{ svg.innerHTML=h; });
+}
+function stat1(sol){
+  const s=S[1], el=$('#stat1'); if(!el) return;
+  const txt=['kein Dreieck','genau ein Dreieck','zwei Dreiecke'][sol.n];
+  let p;
+  if(sol.n===0) p=s.alpha<90&&s.a<C1?'Der Kreis um B erreicht den freien Schenkel nicht.':'Der Kreis schneidet den Schenkel nur hinter A (oder in A) – dort entsteht kein Dreieck.';
+  else if(sol.tan) p='Der Kreis berührt den Schenkel genau in einem Punkt: ein rechtwinkliges Dreieck.';
+  else if(sol.n===2) p=`Der Kreis schneidet den Schenkel zweimal. Beide Dreiecke haben dieselben Angaben ${V('c')}, α und ${V('a')} – sie sind aber nicht deckungsgleich.`;
+  else p=s.a>=C1-1e-9?'Der zweite Schnittpunkt liegt hinter A (oder genau in A) und zählt nicht.':'Es gibt genau einen Schnittpunkt.';
+  const rel=Math.abs(s.a-C1)<1e-9?'=':s.a<C1?'<':'>';
+  let v=rel==='='?`<p class="vgl">${V('a')} = ${V('c')} = ${C1} cm</p>`:`<p class="vgl">${V('a')} = ${fmt(s.a,1)} cm ${rel} ${V('c')} = ${C1} cm</p>`;
+  if(s.a>=C1-1e-9&&sol.n===1) v+=`<div class="eind"><b>${V('a')} ≥ ${V('c')}:</b> Der Winkel α liegt der längeren Seite gegenüber → das Dreieck ist eindeutig.</div>`;
+  el.className='status n'+sol.n;
+  el.innerHTML=`<div class="gross">${txt}</div><p>${p}</p>${v}`;
+}
+function beob1(){
+  const s=S[1], el=$('#beob1'); if(!el) return;
+  const li=(ok,n,html)=>`<li class="${ok?'ok':''}"><span class="nr"><span>${n}</span></span><span>${html}</span></li>`;
+  el.innerHTML=li(s.seen[0],1,`Stellt ${V('a')} so ein, dass es <b>kein</b> Dreieck gibt.`)+
+    li(s.seen[2],2,`Stellt ${V('a')} so ein, dass es <b>genau zwei</b> Dreiecke gibt.`)+
+    li(s.merk,3,`Ab welcher Länge von ${V('a')} gibt es <b>sicher nur eins</b>? Vergleicht mit ${V('c')}.
+      <div class="actions" style="margin-top:6px"><button type="button" class="btn small ghost" id="merk1">${s.merk?'Merksatz ausblenden':'Merksatz zeigen'}</button></div>
+      ${s.merk?`<div class="merk"><h3>Kongruenzsatz SsW</h3><p>Zwei Seiten und der Winkel, der der <b>längeren</b> der beiden Seiten gegenüberliegt, legen ein Dreieck eindeutig fest.</p><p>Hier: Ist ${V('a')} ≥ ${V('c')}, gibt es genau ein Dreieck. Ist ${V('a')} < ${V('c')}, kann es keins, eins oder zwei geben.</p></div>`:''}`)+
+    li(s.seen.tan,4,`<span class="extra">Für Schnelle:</span> Findet ein ${V('a')} < ${V('c')} mit <b>genau einem</b> Dreieck. Tipp: Abstand von B zum Schenkel zeigen.`);
+}
+
+/* =========================================================
+   Station 2 – Gelenkviereck
+   ========================================================= */
+const VW2=820, VH2=470, AX2=250, AY2=400;
+/* zulässige Winkel α, damit es mit den vier Seiten ein Viereck gibt */
+function range2(){
+  const {a,b,c,d}=S[2];
+  const emin=Math.abs(b-c)+.02, emax=Math.min(b+c-.02,a+d);
+  const ang=e=>Math.acos(clamp((a*a+d*d-e*e)/(2*a*d),-1,1))/DEG;
+  const lo=Math.max(5,ang(Math.max(emin,Math.abs(a-d)))), hi=Math.min(175,ang(emax));
+  return lo<=hi?[lo,hi]:null;
+}
+function geo2(){
+  const {a,b,c,d,alpha}=S[2], al=alpha*DEG;
+  const A={x:0,y:0}, B={x:a,y:0}, D={x:d*Math.cos(al),y:d*Math.sin(al)};
+  const ex=D.x-B.x, ey=D.y-B.y, f=Math.hypot(ex,ey), ux=ex/f, uy=ey/f;
+  const x=(b*b-c*c+f*f)/(2*f), hh=Math.sqrt(Math.max(0,b*b-x*x));
+  const C={x:B.x+x*ux+hh*uy,y:B.y+x*uy-hh*ux};          // C auf der anderen Seite von BD als A
+  const P=[A,B,C,D]; let ar=0; for(let i=0;i<4;i++){ const p=P[i],q=P[(i+1)%4]; ar+=p.x*q.y-q.x*p.y; }
+  return {A,B,C,D,e:Math.hypot(C.x,C.y),area:Math.abs(ar)/2,u:a+b+c+d};
+}
+function name2(){
+  const {a,b,c,d,alpha}=S[2], r=Math.abs(alpha-90)<.5;
+  if(a===b&&b===c&&c===d) return r?'Quadrat':'Raute';
+  if(a===c&&b===d) return r?'Rechteck':'Parallelogramm';
+  if(a===d&&b===c) return 'Drachenviereck';
+  return 'Viereck';
+}
+function render2(){
+  const s=S[2];
+  const body=`<div class="layout">
+    <div><div class="figcard"><svg class="fig" id="svg2" viewBox="0 0 ${VW2} ${VH2}" role="img" aria-label="Viereck ABCD mit Gelenken in den Ecken"></svg></div>
+      <p class="hinweis">Roten Punkt D ziehen: Das Viereck klappt in den Gelenken, die Seiten bleiben gleich lang.</p>
+      <p class="msg" id="msg2" role="status"></p></div>
+    <div class="side">
+      <div class="panel"><h3>Zum Nachdenken</h3><ol class="beob">
+        <li><span class="nr"><span>1</span></span><span>Zieht an D. Was bleibt gleich, was ändert sich?</span></li>
+        <li><span class="nr"><span>2</span></span><span>Warum reichen vier Seiten nicht, um ein Viereck festzulegen?</span></li>
+        <li><span class="nr"><span>3</span></span><span>Welches <b>fünfte Stück</b> macht das Viereck eindeutig? Probiert den Schalter aus.</span></li></ol></div>
+      <div class="werte" id="w2" aria-live="polite"></div>
+      <button type="button" class="toggle" id="lock2" aria-pressed="${s.lock}"><span class="knopf"></span>Diagonale ${V('e')} festlegen</button>
+      <div class="panel">${slider(2,'a')}${slider(2,'b')}${slider(2,'c')}${slider(2,'d')}</div>
+    </div></div>`;
+  $('#st-2').innerHTML=shell(2,'Station 2 · Eindeutigkeit','Gelenkviereck',
+    `Vier Stäbe mit festen Längen ${V('a')}, ${V('b')}, ${V('c')}, ${V('d')} sind in den Ecken mit Gelenken verbunden. Ist das Viereck damit festgelegt?`,body);
+  dragSvg($('#svg2'),{
+    start:()=>{ if(S[2].lock){ msg2('Die Diagonale e ist festgelegt: Das Viereck ist starr und lässt sich nicht mehr verformen.'); return false; } },
+    move:(k,p)=>{ let w=Math.atan2(AY2-p.y,p.x-AX2)/DEG; if(w<-90) w=180; else if(w<0) w=0; setAlpha2(w); },
+    key:(k,dir)=>{ if(S[2].lock){ msg2('Die Diagonale e ist festgelegt: Das Viereck ist starr.'); return; } setAlpha2(S[2].alpha+dir); }
+  });
+  upd2();
+}
+function setAlpha2(w){ const r=range2(); if(!r) return; S[2].alpha=Math.round(clamp(w,r[0],r[1])); msg2(''); upd2(); }
+function msg2(t){ const m=$('#msg2'); if(m) m.textContent=t; }
+function upd2(){
+  const s=S[2], r=range2();
+  syncSl(2,s.lock);
+  const t=$('#lock2'); if(t){ t.setAttribute('aria-pressed',s.lock); t.disabled=!r; }
+  if(!r){ draw2(null); $('#w2').innerHTML=`<span style="grid-column:1/-1">Mit diesen Seitenlängen lässt sich kein Viereck bauen: Die längste Seite ist zu lang. Verkleinert sie.</span>`; return; }
+  s.alpha=Math.round(clamp(s.alpha,r[0],r[1]));
+  const G=geo2(); draw2(G);
+  $('#w2').innerHTML=`<span>Winkel α</span><b class="hl">${s.alpha}°</b>
+    <span>Diagonale ${V('e')} = AC</span><b class="hl">${eq(G.e)} ${fmt(G.e,1)} cm</b>
+    <span>Flächeninhalt ${V('A')}</span><b class="hl">${eq(G.area)} ${fmt(G.area,1)} cm²</b>
+    <span class="sep"></span>
+    <span>Umfang ${V('u')}</span><b>${fmt(G.u,1)} cm</b>
+    <span>Form</span><b style="font-size:1.1rem">${name2()}${s.lock?' · starr':''}</b>`;
+}
+function draw2(G){
+  const s=S[2], svg=$('#svg2'); if(!svg) return;
+  if(!G){ svg.innerHTML=`<text class="lb" x="${VW2/2}" y="${VH2/2}" text-anchor="middle">Kein Viereck möglich</text>`; return; }
+  const sc=Math.min(56,220/Math.max(s.a,s.b,s.c,s.d));
+  const P=p=>({x:AX2+p.x*sc,y:AY2-p.y*sc});
+  const A=P(G.A),B=P(G.B),C=P(G.C),D=P(G.D), gx=(A.x+B.x+C.x+D.x)/4, gy=(A.y+B.y+C.y+D.y)/4;
+  let h=`<polygon class="vier" points="${A.x},${A.y} ${B.x},${A.y} ${C.x},${C.y} ${D.x},${D.y}"/>`;
+  h+=`<line class="diag${s.lock?' fest':''}" x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}"/>`;
+  const em={x:(A.x+C.x)/2,y:(A.y+C.y)/2};
+  h+=`<text class="lb" x="${em.x+10}" y="${em.y-10}" style="${s.lock?'fill:var(--mathe-ink);font-weight:700':''}">${TV('e')}${s.lock?' (fest)':''}</text>`;
+  // Winkel α
+  const al=s.alpha*DEG, ra=42;
+  h+=`<path class="arc" d="M${A.x},${A.y} L${A.x+ra},${A.y} A${ra},${ra} 0 0 0 ${A.x+ra*Math.cos(al)},${A.y-ra*Math.sin(al)} Z"/>`;
+  h+=`<text class="lb" x="${A.x+66*Math.cos(al/2)}" y="${A.y-66*Math.sin(al/2)+8}" text-anchor="middle">α</text>`;
+  // Seitenbeschriftung außen
+  [[A,B,'a'],[B,C,'b'],[C,D,'c'],[D,A,'d']].forEach(([p,q,k])=>{
+    const mx=(p.x+q.x)/2, my=(p.y+q.y)/2; let vx=mx-gx, vy=my-gy; const L=Math.hypot(vx,vy)||1; vx/=L; vy/=L;
+    h+=`<text class="lb" x="${mx+vx*26}" y="${my+vy*26+7}" text-anchor="${vx<-.35?'end':vx>.35?'start':'middle'}">${TV(k)} = ${fmt(s[k],1)} cm</text>`;
+  });
+  // Ecken
+  [[A,'A'],[B,'B'],[C,'C'],[D,'D']].forEach(([p,n])=>{
+    let vx=p.x-gx, vy=p.y-gy; const L=Math.hypot(vx,vy)||1; vx/=L; vy/=L;
+    h+=`<text class="pt" x="${p.x+vx*30}" y="${p.y+vy*30+9}" text-anchor="middle">${n}</text>`;
+  });
+  [A,B,C].forEach(p=>h+=`<circle class="gelenk" cx="${p.x}" cy="${p.y}" r="8"/>`);
+  h+=`<g data-drag="D" tabindex="0" role="slider" aria-label="Ecke D, Winkel alpha" aria-valuenow="${s.alpha}"><circle class="hit" cx="${D.x}" cy="${D.y}" r="40"/><circle class="handle" cx="${D.x}" cy="${D.y}" r="${s.lock?12:18}" style="${s.lock?'fill:var(--fg-3)':''}"/></g>`;
+  keepFocus(svg,()=>{ svg.innerHTML=h; });
+}
+
+/* =========================================================
+   Station 3 – Scheren
+   ========================================================= */
+const U3=46, X3=226, Y3=330, VW3=920, VH3=384;
+const sRange3=()=>{ const {fig,g}=S[3]; return fig==='p'?[-4,Math.min(6,14-g)]:[-4,Math.min(g+3,14-g)]; };
+function val3(){
+  const {fig,g,h,s}=S[3];
+  if(fig==='p'){ const b=Math.hypot(s,h); return {b,A:g*h,u:2*(g+b)}; }
+  const sb=Math.hypot(s,h), sa=Math.hypot(s-g,h);
+  return {a:sa,b:sb,A:g*h/2,u:g+sa+sb};
+}
+function render3(){
+  const s=S[3];
+  const body=`<div class="auftraege" id="auf3"></div>
+    <div class="layout">
+    <div>
+      <div class="actions" style="margin:0 0 8px"><div class="seg" role="group" aria-label="Figur">
+        <button type="button" data-fig="p" aria-pressed="${s.fig==='p'}">Parallelogramm</button><button type="button" data-fig="d" aria-pressed="${s.fig==='d'}">Dreieck</button></div></div>
+      <div class="figcard"><svg class="fig" id="svg3" viewBox="0 0 ${VW3} ${VH3}" role="img" aria-label="Figur über der Grundseite g, obere Ecke auf einer Parallelen verschiebbar"></svg></div>
+      <p class="hinweis" id="hint3"></p>
+      <div class="actions"><button type="button" class="btn ghost" id="cut3"></button></div>
+      <p class="msg" id="msg3" role="status"></p>
+      <div class="panel" style="margin-top:8px">${slider(3,'g')}${slider(3,'h')}</div>
+    </div>
+    <div class="side">
+      <div class="werte" id="w3" aria-live="polite"></div>
+      <div class="actions" style="margin:0"><button type="button" class="btn" id="save3">Messwert merken</button>
+        <button type="button" class="btn ghost small" id="clear3">Tabelle leeren</button></div>
+      <div class="panel"><h3>Beobachtungstabelle <span style="font-weight:400;color:var(--fg-3);font-size:.9rem">(zum Abschreiben)</span></h3>
+        <div class="tabwrap"><table class="wt"><thead><tr><th>Nr.</th><th>Figur</th><th>Lage der Spitze*</th><th>${V('g')}</th><th>${V('h')}</th><th>${V('A')}</th><th>${V('u')}</th></tr></thead><tbody id="tb3"></tbody></table></div>
+        <p class="hinweis">* wie weit D (beim Dreieck: C) rechts von A liegt, in cm; negativ: links von A. ${V('g')}, ${V('h')}, ${V('u')} in cm, ${V('A')} in cm².</p></div>
+    </div></div>
+    <div id="res3"></div>`;
+  $('#st-3').innerHTML=shell(3,'Station 3 · Flächeninhalt','Scheren',
+    `Die Grundseite ${V('g')} und die Höhe ${V('h')} stellt ihr mit den Reglern ein. Die obere Seite (beim Dreieck die Spitze) zieht ihr am roten Punkt auf der Parallelen hin und her – das Parallelogramm wird „geschert“.`,body);
+  let s0=0;
+  dragSvg($('#svg3'),{
+    start:()=>{ s0=S[3].s; stopCut3(); },
+    move:(k,p,d)=>{ const r=sRange3(); S[3].s=Math.round(clamp(s0+(p.x-d.p0.x)/U3,r[0],r[1])*10)/10; upd3(); },
+    key:(k,dir)=>{ stopCut3(); const r=sRange3(); S[3].s=Math.round(clamp(S[3].s+dir*.1,r[0],r[1])*10)/10; upd3(); }
+  });
+  upd3(); table3(); auf3();
+}
+function stopCut3(){ const s=S[3]; s.anim=null; s.cut=null; res3(); }
+function upd3(){
+  const s=S[3], r=sRange3(); s.s=Math.round(clamp(s.s,r[0],r[1])*10)/10;
+  syncSl(3); draw3();
+  const v=val3(), T=s.fig==='p'?'D':'C';
+  $('#w3').innerHTML=`<span>Grundseite ${V('g')}</span><b>${fmt(s.g,1)} cm</b>
+    <span>Höhe ${V('h')}</span><b>${fmt(s.h,1)} cm</b>`+
+    (s.fig==='p'?`<span>schräge Seite ${V('b')}</span><b>${eq(v.b)} ${fmt(v.b,1)} cm</b>`
+      :`<span>schräge Seite ${V('a')} = BC</span><b>${eq(v.a)} ${fmt(v.a,1)} cm</b><span>schräge Seite ${V('b')} = AC</span><b>${eq(v.b)} ${fmt(v.b,1)} cm</b>`)+
+    `<span class="sep"></span>
+    <span>Flächeninhalt ${V('A')}</span><b class="hl">${eq(v.A,2)} ${fmt(v.A,2)} cm²</b>
+    <span>Umfang ${V('u')}</span><b class="hl">${eq(v.u)} ${fmt(v.u,1)} cm</b>
+    <span class="sep"></span><span>Lage von ${T}</span><b style="font-size:1.05rem">${s.s===0?`genau über A`:`${fmt(Math.abs(s.s),1)} cm ${s.s>0?'rechts':'links'} von A`}</b>`;
+  const ch=$('#cut3'); if(ch){ ch.textContent=s.fig==='p'?'Zerlegen':'Zum Parallelogramm ergänzen'; }
+  const hi=$('#hint3'); if(hi) hi.textContent=s.fig==='p'?'Roten Punkt D (oder die Seite CD) ziehen: Die Seite CD gleitet auf der Parallelen zur Grundseite.':'Roten Punkt C ziehen: Die Spitze gleitet auf der Parallelen zur Grundseite.';
+}
+function draw3(){
+  const s=S[3], svg=$('#svg3'); if(!svg) return;
+  const {g,h,fig}=s, sx=s.s;
+  const P=(x,y)=>[X3+x*U3,Y3-y*U3], pt=(x,y)=>P(x,y).join(',');
+  const yT=Y3-h*U3;
+  let o=`<line class="par" x1="0" y1="${yT}" x2="${VW3}" y2="${yT}"/><text class="lbs" x="${VW3-8}" y="${yT-8}" text-anchor="end">Parallele zu ${TV('g')}</text>`;
+  // Grundseite gestrichelt verlängern, wenn der Höhenfußpunkt außerhalb liegt
+  if(sx<0) o+=`<line class="ext" x1="${P(sx-.4,0)[0]}" y1="${Y3}" x2="${X3}" y2="${Y3}"/>`;
+  if(sx>g) o+=`<line class="ext" x1="${P(g,0)[0]}" y1="${Y3}" x2="${P(sx+.4,0)[0]}" y2="${Y3}"/>`;
+  // Figur
+  const cut=s.cut;
+  if(fig==='p'){
+    if(!cut) o+=`<polygon class="figur" points="${pt(0,0)} ${pt(g,0)} ${pt(g+sx,h)} ${pt(sx,h)}"/>`;
+    else if(cut.kind==='left'){
+      const dx=cut.t*g;
+      o+=`<polygon class="figur" points="${pt(sx,0)} ${pt(g,0)} ${pt(g+sx,h)} ${pt(sx,h)}"/>`;
+      o+=`<polygon class="stueck" points="${pt(dx,0)} ${pt(sx+dx,0)} ${pt(sx+dx,h)}"/>`;
+    } else {
+      const dx=-cut.t*g;
+      o+=`<polygon class="figur" points="${pt(0,0)} ${pt(g+sx,0)} ${pt(g+sx,h)} ${pt(sx,h)}"/>`;
+      o+=`<polygon class="stueck" points="${pt(g+sx+dx,0)} ${pt(g+dx,0)} ${pt(g+sx+dx,h)}"/>`;
+    }
+    if(cut&&cut.t>=1) o+=`<rect class="rahmen" x="${P(sx,h)[0]}" y="${yT}" width="${g*U3}" height="${h*U3}"/>`;
+  } else {
+    o+=`<polygon class="figur" points="${pt(0,0)} ${pt(g,0)} ${pt(sx,h)}"/>`;
+    if(cut){
+      const [mx,my]=P((g+sx)/2,h/2);
+      o+=`<polygon class="kopie" transform="rotate(${180*cut.t} ${mx} ${my})" points="${pt(0,0)} ${pt(g,0)} ${pt(sx,h)}"/>`;
+      if(cut.t>=1) o+=`<polygon class="rahmen" points="${pt(0,0)} ${pt(g,0)} ${pt(g+sx,h)} ${pt(sx,h)}"/>`;
+    }
+  }
+  // Höhe mit rechtem Winkel (vom Ziehpunkt aus)
+  const [fx]=P(sx,0), q=16, side=(sx<g/2)?1:-1;
+  o+=`<line class="hoehe" x1="${fx}" y1="${yT}" x2="${fx}" y2="${Y3}"/>`;
+  o+=`<path class="rw" d="M${fx+side*q},${Y3} L${fx+side*q},${Y3-q} L${fx},${Y3-q}"/>`;
+  o+=`<text class="lb" x="${fx-side*10}" y="${(yT+Y3)/2+8}" text-anchor="${side>0?'end':'start'}">${TV('h')}</text>`;
+  // Grundseite
+  o+=`<line class="base" x1="${X3}" y1="${Y3}" x2="${P(g,0)[0]}" y2="${Y3}"/>`;
+  o+=`<text class="lb" x="${P(g/2,0)[0]}" y="${Y3+34}" text-anchor="middle">${TV('g')}</text>`;
+  // schräge Seiten beschriften
+  const lab=(x1,y1,x2,y2,t,dir)=>{ const [a1,b1]=P(x1,y1),[a2,b2]=P(x2,y2); return `<text class="lb" x="${(a1+a2)/2+dir*16}" y="${(b1+b2)/2+6}" text-anchor="${dir<0?'end':'start'}">${TV(t)}</text>`; };
+  if(!cut){
+    if(fig==='p') o+=lab(0,0,sx,h,'b',-1);
+    else { o+=lab(0,0,sx,h,'b',-1); o+=lab(g,0,sx,h,'a',1); }
+  }
+  // Ecken
+  const L=(x,y,n,dx,dy,anc)=>{ const [a,b]=P(x,y); return `<text class="pt" x="${a+dx}" y="${b+dy}" text-anchor="${anc}">${n}</text>`; };
+  o+=L(0,0,'A',-10,30,'end')+L(g,0,'B',10,30,'start');
+  if(fig==='p'){ o+=L(g+sx,h,'C',12,-10,'start')+L(sx,h,'D',-14,-12,'end'); }
+  else o+=L(sx,h,'C',-14,-12,'end');
+  if(cut&&cut.t>=1){
+    const [cx,cy]=fig==='p'?P(sx+g/2,h/2):P((g+sx)/2+0,h/2);
+    o+=`<text class="lb" x="${cx}" y="${fig==='p'?cy+8:yT-14}" text-anchor="middle" style="fill:var(--ok);font-weight:700">${fig==='p'?'Rechteck '+TV('g')+' × '+TV('h'):''}</text>`;
+  }
+  // Ziehpunkt
+  const [tx,ty]=P(sx,h);
+  if(fig==='p'){ const [cx2]=P(g+sx,h); o+=`<line class="hitline" data-drag="top" x1="${tx}" y1="${ty}" x2="${cx2}" y2="${ty}"/>`; }
+  o+=`<g data-drag="top" tabindex="0" role="slider" aria-label="${fig==='p'?'Ecke D':'Spitze C'} verschieben" aria-valuenow="${sx}"><circle class="hit" cx="${tx}" cy="${ty}" r="42"/><circle class="handle" cx="${tx}" cy="${ty}" r="20"/></g>`;
+  keepFocus(svg,()=>{ svg.innerHTML=o; });
+}
+function doCut3(){
+  const s=S[3]; if(s.anim) return;
+  const m=$('#msg3'); m.textContent='';
+  if(s.cut&&s.cut.t>=1){ stopCut3(); draw3(); return; }
+  let kind;
+  if(s.fig==='d') kind='tri';
+  else if(s.s===0){ m.textContent='Das ist schon ein Rechteck – zieht D erst zur Seite.'; return; }
+  else if(s.s>0&&s.s<=s.g) kind='left';
+  else if(s.s<0&&s.s>=-s.g) kind='right';
+  else { m.textContent='Der Höhenfußpunkt liegt nicht auf der Grundseite – dann reicht ein Schnitt nicht. Zieht D so weit zurück, dass die gestrichelte Höhe die Grundseite trifft.'; return; }
+  s.cut={kind,t:0};
+  $('#cut3').disabled=true;
+  animate(s,1300,t=>{ if(s.cut){ s.cut.t=t; draw3(); } },()=>{
+    $('#cut3').disabled=false;
+    if(!s.cut) return;
+    s.cut.t=1; draw3();
+    if(s.fig==='p') s.cutSeen=true; else s.triSeen=true;
+    $('#cut3').textContent='Zurück zur Figur';
+    res3(); auf3();
+  });
+}
+function res3(){
+  const s=S[3], el=$('#res3'); if(!el) return;
+  if(!s.cut||s.cut.t<1){ el.innerHTML=''; const b=$('#cut3'); if(b&&!s.anim) b.textContent=s.fig==='p'?'Zerlegen':'Zum Parallelogramm ergänzen'; return; }
+  const {g,h}=s;
+  el.innerHTML=s.fig==='p'
+    ?`<div class="merk"><h3>Aus dem Parallelogramm wird ein Rechteck</h3><p>Das Dreieck links wurde abgeschnitten und rechts wieder angesetzt. Nichts ist weggekommen, nichts dazugekommen. Das Rechteck hat die Seiten ${V('g')} und ${V('h')}:</p>
+      <div class="formel">A = g · h = ${fmt(g,1)} · ${fmt(h,1)} = ${fmt(g*h,2)} cm²</div></div>`
+    :`<div class="merk"><h3>Zwei gleiche Dreiecke ergeben ein Parallelogramm</h3><p>Die blaue Kopie ist das um 180° gedrehte Dreieck. Zusammen bilden beide ein Parallelogramm mit ${V('A')} = ${V('g')} · ${V('h')}.</p></div>`;
+}
+function save3(){
+  const s=S[3], m=$('#msg3');
+  if(s.rows.some(r=>r.fig===s.fig&&r.g===s.g&&r.h===s.h&&r.s===s.s)){ m.textContent='Diesen Messwert habt ihr schon. Verschiebt die Figur.'; return; }
+  const v=val3(); s.last={fig:s.fig,g:s.g,h:s.h,s:s.s,A:v.A,u:v.u}; s.rows.push(s.last);
+  m.textContent=''; table3(); auf3();
+}
+function table3(){
+  const s=S[3], tb=$('#tb3'); if(!tb) return;
+  tb.innerHTML=s.rows.length?s.rows.map((r,i)=>`<tr${r===s.last?' class="neu"':''}><td>${i+1}</td><td class="fig" title="${r.fig==='p'?'Parallelogramm':'Dreieck'}">${r.fig==='p'?'▱':'△'}</td><td>${fmt(r.s,1)}</td><td>${fmt(r.g,1)}</td><td>${fmt(r.h,1)}</td><td><b>${fmt(r.A,2)}</b></td><td>${fmt(r.u,1)}</td></tr>`).join('')
+    :`<tr><td colspan="7" class="leer">Noch keine Messwerte. Drückt „Messwert merken“.</td></tr>`;
+}
+/* Datensatz für die Fragen: Zeilen einer Figur mit festem g und h */
+function data3(fig,g,h){ return S[3].rows.filter(r=>r.fig===fig&&r.g===g&&r.h===h); }
+const nPos=rows=>new Set(rows.map(r=>r.s)).size;
+const GR=[['g','Grundseite '+V('g'),'gleich'],['h','Höhe '+V('h'),'gleich'],['b','schräge Seite '+V('b'),'aendert'],['A','Flächeninhalt '+V('A'),'gleich'],['u','Umfang '+V('u'),'aendert']];
+function fbGr(k,v){
+  const s=S[3], rows=data3('p',s.ref.g,s.ref.h), ok=GR.find(x=>x[0]===k)[2]===v;
+  if(ok) return ['ok','Richtig.'];
+  const us=[...new Set(rows.map(r=>fmt(r.u,1)))].slice(0,3);
+  return ['bad',{
+    g:`Die Grundseite AB bleibt beim Ziehen, wie sie ist. In eurer Tabelle steht immer ${V('g')} = ${fmt(s.ref.g,1)} cm.`,
+    h:`D gleitet auf der Parallelen zur Grundseite. Der Abstand – die Höhe – bleibt immer ${fmt(s.ref.h,1)} cm.`,
+    b:`Beobachtet die Anzeige „schräge Seite ${V('b')}“, während ihr D zieht: Je weiter D zur Seite rückt, desto länger wird ${V('b')}.`,
+    A:`Schaut in die Spalte ${V('A')}: In allen ${rows.length} Zeilen steht ${fmt(rows[0].A,2)} cm².`,
+    u:`Schaut in die Spalte ${V('u')}: Dort stehen ${us.join(' cm, ')} cm – der Umfang ändert sich.`
+  }[k]];
+}
+function auf3(){
+  const s=S[3], el=$('#auf3'); if(!el) return;
+  const box=(i,title,body,fertig,sum)=>`<div class="auftrag${fertig?' erledigt':''}"><span class="anr">Auftrag ${i}</span><h3>${title}</h3>${fertig?(sum?`<p>${sum}</p>`:''):body}</div>`;
+  // Auftrag 1: messen
+  const cur=data3('p',s.g,s.h), n=nPos(cur);
+  if(s.t===0&&n>=4){ s.t=1; s.ref={g:s.g,h:s.h}; }
+  let h=box(1,'Verschieben und messen',
+    `<p>Stellt „Parallelogramm“ ein. Zieht D an verschiedene Stellen – auch weit nach links und rechts – und drückt jedes Mal „Messwert merken“. Lasst ${V('g')} und ${V('h')} dabei gleich.</p>
+     <p class="prog">Verschiedene Lagen mit ${V('g')} = ${fmt(s.g,1)} cm, ${V('h')} = ${fmt(s.h,1)} cm: ${Math.min(n,4)} von 4</p>`,
+    s.t>=1,`Ihr habt Messwerte für ${V('g')} = ${fmt(s.ref?s.ref.g:s.g,1)} cm und ${V('h')} = ${fmt(s.ref?s.ref.h:s.h,1)} cm gesammelt.`);
+  // Auftrag 2: gleich oder verschieden
+  if(s.t>=1){
+    const allOk=GR.every(([k,,c])=>s.ans[k]===c);
+    if(s.t===1&&allOk) s.t=2;
+    h+=box(2,'Was bleibt beim Verschieben gleich, was ändert sich?',
+      `<p>Entscheidet mit Blick auf eure Tabelle und die Anzeige.</p><div class="grgrid">`+GR.map(([k,l])=>{
+        const v=s.ans[k], f=v?fbGr(k,v):null;
+        return `<span class="gl">${l}</span>${choices('gr-'+k,[['gleich','bleibt gleich'],['aendert','ändert sich']],v)}
+          <div class="fb fbz ${f?f[0]:''}">${f&&f[0]==='bad'?`<p>${f[1]}</p>`:''}</div>`; }).join('')+`</div>`,
+      s.t>=2,`Gleich bleiben ${V('g')}, ${V('h')} und der Flächeninhalt ${V('A')}. Es ändern sich ${V('b')} und der Umfang ${V('u')}. Gleicher Flächeninhalt heißt also <b>nicht</b> gleicher Umfang.`);
+  }
+  // Auftrag 3: warum?
+  if(s.t>=2){
+    const W={u:'… weil der Umfang gleich bleibt.',gh:`… weil man es in ein Rechteck mit den Seiten ${V('g')} und ${V('h')} umlegen kann.`,b:`… weil die schräge Seite ${V('b')} gleich lang bleibt.`};
+    if(s.t===2&&s.why==='gh') s.t=3;
+    const f=s.why&&s.why!=='gh'?{u:`Der Umfang ändert sich doch – schaut in die Spalte ${V('u')}.`,b:`${V('b')} ändert sich beim Ziehen – schaut auf die Anzeige.`}[s.why]:'';
+    h+=box(3,'Warum bleibt der Flächeninhalt gleich?',
+      `<p>Drückt „Zerlegen“ und schaut genau zu. (Die gestrichelte Höhe muss dafür die Grundseite treffen.)</p>`+
+      (s.cutSeen?`<p class="q"><b>Der Flächeninhalt bleibt gleich, …</b></p>${choices('why',Object.entries(W),s.why)}<div class="fb ${f?'bad':''}">${f?`<p>${f}</p>`:''}</div>`
+        :`<p class="prog">Noch nicht zerlegt.</p>`),
+      s.t>=3,`Jedes Parallelogramm lässt sich in ein Rechteck mit den Seiten ${V('g')} und ${V('h')} umlegen: <span class="m">A = g · h</span> – egal, wie schief es ist.`);
+  }
+  // Auftrag 4: Dreieck
+  if(s.t>=3){
+    const dd=data3('d',s.g,s.h), nd=nPos(dd);
+    const fA=s.triA&&s.triA!=='gleich'&&nd>=1?`Schaut in die Spalte ${V('A')} bei den Dreiecken: Dort steht immer ${fmt(dd[0].A,2)} cm².`:'';
+    const fK=s.triK&&s.triK!=='halb'?`Das Parallelogramm besteht aus <b>zwei</b> gleichen Dreiecken. Wie viel davon ist eines?`:'';
+    if(s.triA==='gleich'&&s.triK==='halb') s.done=true;
+    h+=box(4,'Und beim Dreieck?',
+      `<p>Schaltet oben auf „Dreieck“. Zieht die Spitze C auf der Parallelen hin und her und merkt euch mindestens <b>3</b> Messwerte (${V('g')} und ${V('h')} gleich lassen).</p>`+
+      (nd<3?`<p class="prog">Dreiecke mit ${V('g')} = ${fmt(s.g,1)} cm, ${V('h')} = ${fmt(s.h,1)} cm: ${nd} von 3</p>`
+        :`<p class="q"><b>Beim Verschieben von C …</b></p>${choices('triA',[['aendert',`… ändert sich ${V('A')}.`],['gleich',`… bleibt ${V('A')} gleich.`]],s.triA)}<div class="fb ${fA?'bad':''}">${fA?`<p>${fA}</p>`:''}</div>`+
+          (s.triA==='gleich'?(s.triSeen?`<p class="q"><b>Drückt „Zum Parallelogramm ergänzen“. Das Dreieck ist im Vergleich zum Parallelogramm …</b></p>${choices('triK',[['gleich','… genauso groß.'],['doppelt','… doppelt so groß.'],['halb','… halb so groß.']],s.triK)}<div class="fb ${fK?'bad':''}">${fK?`<p>${fK}</p>`:''}</div>`
+            :`<p>Drückt jetzt „Zum Parallelogramm ergänzen“ und schaut zu.</p>`):'')),
+      s.done,'');
+    if(s.done) h+=`<div class="merk"><h3>Ergebnis</h3><p>Scheren verändert den Flächeninhalt nicht – solange ${V('g')} und ${V('h')} gleich bleiben. Der Umfang ändert sich dabei.</p>
+      <div class="formel">Parallelogramm: A = g · h</div> &nbsp; <div class="formel">Dreieck: A = ½ · g · h</div></div>`;
+  }
+  el.innerHTML=h;
+}
+function answer3(grp,v){
+  const s=S[3];
+  if(grp.startsWith('gr-')) s.ans[grp.slice(3)]=v;
+  else if(grp==='why') s.why=v;
+  else if(grp==='triA') s.triA=v;
+  else if(grp==='triK') s.triK=v;
+  auf3();
+}
+function setFig3(f){
+  const s=S[3]; if(s.fig===f) return;
+  stopCut3(); s.fig=f; $('#msg3').textContent='';
+  document.querySelectorAll('[data-fig]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.fig===f));
+  upd3();
+}
+
+/* =========================================================
+   Navigation und Ereignisse
+   ========================================================= */
+const SET={
+  1:()=>upd1(),
+  2:()=>{ msg2(''); upd2(); },
+  3:()=>{ stopCut3(); upd3(); auf3(); }
+};
+const RENDER={1:render1,2:render2,3:render3};
+const TABS=[['0','Start'],['1','1 Dreieck aus drei Angaben'],['2','2 Gelenkviereck'],['3','3 Scheren']];
+$('#tabs').innerHTML=TABS.map(([id,l])=>`<button type="button" data-go="${id}">${l}</button>`).join('');
+const HASH={'#station1':'1','#station2':'2','#station3':'3'};
+const fromHash=()=>HASH[location.hash]||'0';
+function go(id){
+  document.querySelectorAll('.station').forEach(e=>e.classList.toggle('show',e.id==='st-'+id));
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===id?'true':'false'));
+}
+function nav(id){
+  if(id==='0'){ if(location.hash) history.pushState(null,'',location.pathname+location.search); }
+  else if(location.hash!=='#station'+id) location.hash='#station'+id;
+  go(id);
+  $('#tabs').scrollIntoView({block:'start',behavior:reduced?'auto':'smooth'});
+}
+window.addEventListener('hashchange',()=>go(fromHash()));
+window.addEventListener('popstate',()=>go(fromHash()));
+
+document.addEventListener('click',e=>{
+  const t=e.target;
+  const g=t.closest('[data-go]'); if(g){ nav(g.dataset.go); return; }
+  const r=t.closest('[data-reset]'); if(r){ const id=r.dataset.reset;
+    if(confirm('Diese Station zurücksetzen? Alle Einstellungen'+(id==='3'?' und Messwerte':'')+' dieser Station werden gelöscht.')){ if(S[id].anim) S[id].anim=null; S[id]=INIT[id](); RENDER[id](); } return; }
+  const st=t.closest('[data-step]'); if(st){ const [sid,k,dv]=st.dataset.step.split(':'); setSl(sid,k,S[sid][k]+(+dv)*SL[sid+':'+k].step); return; }
+  const c=t.closest('.choice'); if(c){ answer3(c.closest('.choices').dataset.grp,c.dataset.val); return; }
+  const f=t.closest('[data-fig]'); if(f){ setFig3(f.dataset.fig); return; }
+  if(t.closest('#merk1')){ S[1].merk=!S[1].merk; beob1(); return; }
+  if(t.closest('#dist1')){ S[1].dist=!S[1].dist; upd1(); return; }
+  if(t.closest('#lock2')){ S[2].lock=!S[2].lock; msg2(S[2].lock?'Die Diagonale e ist jetzt ein fester Stab. Versucht, an D zu ziehen.':''); upd2(); return; }
+  if(t.closest('#cut3')){ doCut3(); return; }
+  if(t.closest('#save3')){ save3(); return; }
+  if(t.closest('#clear3')){ if(!S[3].rows.length||confirm('Alle Messwerte aus der Tabelle löschen?')){ S[3].rows=[]; S[3].last=null; table3(); auf3(); } return; }
+});
+document.addEventListener('input',e=>{
+  const t=e.target; if(t.type!=='range') return;
+  setSl(t.dataset.st,t.dataset.k,+t.value);
+});
+
+Object.keys(INIT).forEach(k=>S[k]=INIT[k]());
+renderStart(); render1(); render2(); render3();
+go(fromHash());
+</script>
+</body>
+</html>

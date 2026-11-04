@@ -160,5 +160,18 @@ window.SIMULATIONEN = [
     sozialform: "Unterrichtsgespräch am Beamer",
     dauer: "ca. 10 min",
     datum: "2026-10-23"
+  },
+  {
+    id: "flaechen",
+    titel: "Eindeutig? Gleich groß? – Dreiecke und Vierecke",
+    fach: "mathe",
+    stufen: ["8"],
+    thema: "Geometrie",
+    beschreibung: "Drei Stationen: Mit dem Zirkelkreis ein Dreieck aus c, α und a konstruieren – kein, ein oder zwei Dreiecke (Kongruenzsatz SsW). Ein Gelenkviereck mit vier festen Seiten verformen und mit der Diagonale starr machen. Parallelogramm und Dreieck scheren: Der Flächeninhalt bleibt, der Umfang nicht – Zerlegen zeigt A = g · h.",
+    pfad: "sims/mathe/flaechen/",
+    vorschau: "sims/mathe/flaechen/vorschau.png",
+    sozialform: "Unterrichtsgespräch am Beamer, Partnerarbeit",
+    dauer: "3 Teile, je 10–25 min",
+    datum: "2026-11-04"
   }
 ];
