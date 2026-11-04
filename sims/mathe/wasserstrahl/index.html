@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wasserstrahl – ein Glas füllt sich</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Tokens aus dem LMG-Designsystem (Werte wie in assets/lmg.css, hier eigenständig) */
+:root{
+  --surface-page:#ffffff; --surface-soft:#f6f6f4; --surface-sunken:#ecece8;
+  --fg-1:#17181a; --fg-2:#3d4147; --fg-3:#646a72; --fg-4:#9097a0; --fg-5:#c2c7cd;
+  --line-1:#e4e5e3; --line-2:#cfd1cf; --line-3:#a8acaa;
+  --mathe:#B61E33; --mathe-soft:#f5e1e3; --mathe-line:#e8b8be; --mathe-ink:#6f0f1c;
+  --physik:#2C5282; --physik-soft:#e8eef5; --physik-line:#b9c8da; --physik-ink:#1d3a5c;
+  --ok:#3f6e3a; --ok-soft:#e7eee5; --warn:#8a6a1e; --warn-soft:#f3ecd9;
+  --hl-soft:#ede5f2; --hl-ink:#6b4a8a;
+  --radius-sm:4px; --radius-md:6px; --radius-lg:10px; --radius-pill:999px;
+  --shadow-1:0 1px 2px rgba(20,22,25,.04),0 1px 1px rgba(20,22,25,.03);
+  --font-math:"Cambria Math","STIX Two Math","STIX Two Text",Cambria,"Times New Roman",Georgia,serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}
+body{margin:0;background:var(--surface-soft);color:var(--fg-1);
+  font-family:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  font-size:19px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+a{color:var(--mathe)}
+:focus-visible{outline:2px solid var(--mathe);outline-offset:3px;border-radius:var(--radius-sm)}
+.m{font-family:var(--font-math);white-space:nowrap}
+.m i{font-style:italic;padding-right:.12em}
+
+.brandline{height:4px;background:linear-gradient(90deg,var(--mathe) 0 50%,var(--physik) 50% 100%)}
+.wrap{max-width:1280px;margin:0 auto;padding:0 16px}
+@media (min-width:700px){.wrap{padding:0 24px}}
+header.top{padding:12px 0 8px}
+.backlink{display:inline-block;margin:0 0 4px;font-size:.9rem;color:var(--fg-3);text-decoration:none;padding:6px 0}
+.backlink:hover{color:var(--fg-1);text-decoration:underline}
+h1{font-size:clamp(26px,4vw,36px);line-height:1.15;margin:0;letter-spacing:-.01em}
+.sub{margin:2px 0 0;color:var(--fg-2);max-width:85ch}
+
+.station{background:var(--surface-page);border:1px solid var(--line-2);border-top:6px solid var(--mathe);border-radius:var(--radius-lg);padding:14px 18px 18px;margin:8px 0 20px;box-shadow:var(--shadow-1)}
+
+/* Aufträge */
+.auftrag{border:2px solid var(--mathe);border-radius:var(--radius-lg);padding:10px 14px 12px;margin:0 0 14px}
+.auftrag.schnell{border-color:var(--hl-ink)}
+.auftrag .kopfzeile{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;justify-content:space-between}
+.auftrag .anr{font-size:.85rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mathe)}
+.auftrag.schnell .anr{color:var(--hl-ink)}
+.auftrag h2{font-size:1.3rem;margin:2px 0 4px;line-height:1.25}
+.auftrag p{margin:4px 0;max-width:95ch}
+.auftrag ul{margin:4px 0;padding-left:1.3em}
+.auftrag .heft{color:var(--fg-3);font-size:.95rem;margin-top:6px}
+.nav{display:flex;align-items:center;gap:8px}
+.punkte{display:flex;gap:5px}
+.punkte button{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line-3);background:var(--surface-page);font-size:.85rem;font-weight:700;color:var(--fg-3);cursor:pointer;padding:0}
+.punkte button[aria-current="true"]{background:var(--mathe);border-color:var(--mathe);color:#fff}
+.punkte button.gesehen{border-color:var(--mathe);color:var(--mathe)}
+.punkte button.schnell[aria-current="true"]{background:var(--hl-ink);border-color:var(--hl-ink)}
+
+.btn{border:1px solid var(--mathe);background:var(--mathe);color:#fff;border-radius:var(--radius-md);padding:8px 16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:1rem;font-weight:600;min-height:44px}
+.btn.ghost{background:var(--surface-page);color:var(--mathe)}
+.btn[aria-pressed="true"]{background:var(--mathe-ink);border-color:var(--mathe-ink);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.gross{font-size:1.1rem;min-height:52px;padding:8px 22px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+.layout{display:grid;grid-template-columns:1fr;gap:16px}
+@media (min-width:900px){.layout{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}}
+.panel{border:1px solid var(--line-1);border-radius:var(--radius-lg);padding:12px 14px;background:var(--surface-page);min-width:0}
+.panel + .panel{margin-top:16px}
+.panel h3{font-size:.95rem;margin:0 0 6px;color:var(--fg-3);text-transform:uppercase;letter-spacing:.08em}
+.zeile{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 10px}
+.zeile > .lab{min-width:7.5em;font-weight:600;color:var(--fg-2)}
+
+.seg{display:inline-flex;flex-wrap:wrap}
+.seg button{min-width:48px;min-height:44px;border:1px solid var(--line-3);background:var(--surface-page);cursor:pointer;font-size:1.05rem;padding:4px 12px;margin-left:-1px}
+.seg button:first-child{border-radius:var(--radius-md) 0 0 var(--radius-md);margin-left:0}
+.seg button:last-child{border-radius:0 var(--radius-md) var(--radius-md) 0}
+.seg button[aria-pressed="true"]{background:var(--fg-1);color:#fff;border-color:var(--fg-1);position:relative}
+.seg button:disabled{opacity:.45;cursor:default}
+
+.uhr{display:flex;align-items:baseline;gap:10px;margin:0 0 6px}
+.uhr .wert{font-family:var(--font-math);font-size:2rem;font-weight:700;font-variant-numeric:tabular-nums}
+.uhr .info{color:var(--fg-3);font-size:.95rem}
+svg.szene{width:100%;height:auto;display:block;user-select:none;-webkit-user-select:none;max-height:62vh}
+@media (max-width:899px){svg.szene{max-height:44vh}}
+.hinweis{margin-top:8px;padding:8px 12px;border-radius:var(--radius-md);background:var(--surface-soft);border:1px solid var(--line-2);color:var(--fg-2);font-size:1rem;min-height:2.3em}
+.hinweis.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+
+/* Tabelle */
+.reihen{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.reihen button{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:4px 12px;border:1px solid var(--line-2);border-radius:var(--radius-pill);background:var(--surface-page);cursor:pointer;font-size:.95rem;font-weight:600;color:var(--fg-2)}
+.reihen button i{width:12px;height:12px;border-radius:50%;display:inline-block}
+.reihen button[aria-pressed="true"]{border:2px solid var(--fg-1);color:var(--fg-1)}
+.tabwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line-2);border-radius:var(--radius-md)}
+table.wt{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:1.05rem}
+table.wt th,table.wt td{border:1px solid var(--line-2);padding:5px 10px;text-align:center;white-space:nowrap;min-width:3.2em}
+table.wt th{background:var(--surface-soft);text-align:left;font-weight:600;position:sticky;left:0;z-index:1;min-width:8.5em}
+table.wt tr.quot td{color:var(--mathe-ink);background:var(--mathe-soft)}
+table.wt tr.quot th{background:var(--mathe-soft);color:var(--mathe-ink)}
+table.wt td.neu{animation:neu 1s ease-out}
+@keyframes neu{from{background:var(--warn-soft)}to{background:transparent}}
+.leer{color:var(--fg-4);font-style:italic;padding:10px 4px}
+svg.graph{width:100%;height:auto;display:block;user-select:none}
+svg.graph .gitter{stroke:var(--line-1);stroke-width:1}
+svg.graph .achse{stroke:var(--fg-1);stroke-width:2}
+svg.graph text{font-size:15px;fill:var(--fg-2);font-family:var(--font-math)}
+svg.graph text.alab{font-size:16px;fill:var(--fg-1)}
+.legende{display:flex;gap:14px;flex-wrap:wrap;color:var(--fg-3);font-size:.95rem;margin-top:4px}
+.legende i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+
+details.lehrkraft{margin-top:18px;border:1px solid var(--line-2);border-radius:var(--radius-lg);background:var(--surface-soft)}
+details.lehrkraft summary{cursor:pointer;padding:12px 14px;font-weight:600;color:var(--fg-2);min-height:44px}
+details.lehrkraft .in{padding:0 16px 12px}
+details.lehrkraft dl{margin:0}
+details.lehrkraft dt{font-weight:700;margin-top:8px}
+details.lehrkraft dd{margin:0}
+footer{color:var(--fg-4);font-size:.85rem;padding:8px 0 24px}
+[hidden]{display:none!important}
+@media print{.noprint{display:none}}
+</style>
+</head>
+<body>
+<div class="brandline"></div>
+<div class="wrap">
+  <header class="top">
+    <a class="backlink noprint" href="../../../katalog.html?stufe=7&amp;fach=mathe">← Alle Simulationen</a>
+    <h1>Wasserstrahl – ein Glas füllt sich</h1>
+    <p class="sub">Ein Messbecher steht unter einem dünnen, gleichmäßigen Wasserstrahl. Die Stoppuhr läuft, und in festen Abständen wird der Wasserstand am Glas markiert.</p>
+  </header>
+
+  <section class="station">
+    <div class="auftrag" id="auftrag"></div>
+
+    <div class="layout">
+      <!-- ============ links: Versuch ============ -->
+      <div>
+        <div class="panel">
+          <div class="uhr"><span class="wert" id="uhr">t = 0,0 s</span><span class="info" id="uhrInfo"></span></div>
+          <svg class="szene" id="szene" viewBox="0 0 600 560" aria-label="Waschbecken mit Wasserhahn und Glas"></svg>
+          <div class="hinweis" id="hinweis"></div>
+        </div>
+        <div class="panel">
+          <div class="zeile"><span class="lab">Wasserhahn</span>
+            <div class="seg" id="hahn" role="group" aria-label="Wasserhahn">
+              <button data-v="0" aria-pressed="true">zu</button><button data-v="1" aria-pressed="false">1</button><button data-v="2" aria-pressed="false">2</button><button data-v="3" aria-pressed="false">3</button><button data-v="4" aria-pressed="false">4</button><button data-v="5" aria-pressed="false">5</button>
+            </div>
+          </div>
+          <div class="zeile"><span class="lab">Markieren</span>
+            <div class="seg" id="takt" role="group" aria-label="Markieren">
+              <button data-v="5" aria-pressed="true">alle 5 s</button><button data-v="10" aria-pressed="false">alle 10 s</button><button data-v="0" aria-pressed="false">von Hand</button>
+            </div>
+          </div>
+          <div class="zeile"><span class="lab">Zeit</span>
+            <div class="seg" id="tempo" role="group" aria-label="Zeit">
+              <button data-v="1" aria-pressed="true">normal</button><button data-v="4" aria-pressed="false">Zeitraffer ×4</button>
+            </div>
+          </div>
+          <div class="zeile" id="gefaessZeile" hidden><span class="lab">Gefäß</span>
+            <div class="seg" id="gefaess" role="group" aria-label="Gefäß">
+              <button data-v="becher" aria-pressed="true">Messbecher</button><button data-v="kolben" aria-pressed="false">Erlenmeyerkolben</button>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn gross" id="start">Glas unterstellen und Stoppuhr starten</button>
+            <button class="btn gross ghost" id="markBtn" hidden>Jetzt markieren</button>
+            <button class="btn ghost" id="leeren">Glas ausleeren</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ rechts: Auswertung ============ -->
+      <div>
+        <div class="panel">
+          <h3>Wertetabelle</h3>
+          <div class="reihen" id="reihen"></div>
+          <div id="tabelle"></div>
+          <div class="actions" style="margin-top:10px">
+            <button class="btn ghost" id="quotBtn" aria-pressed="false" hidden>Quotient zeigen</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Graph</h3>
+          <svg class="graph" id="graph" viewBox="0 0 600 400" aria-label="Graph der Messwerte"></svg>
+          <div class="legende" id="legende"></div>
+          <div class="actions" style="margin-top:8px">
+            <button class="btn ghost" id="linealBtn" aria-pressed="false" hidden>Lineal anlegen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <details class="lehrkraft"><summary>Für Lehrkräfte</summary><div class="in"><dl>
+    <dt>Zweck</dt>
+    <dd>Ersatz für das Einstiegsexperiment am Waschbecken (Becherglas unter dünnem Wasserstrahl, Wasserstand in festen Zeitabständen markieren), das an modernen Wasserhähnen scheitert, weil sich kein dünner, gleichmäßiger Strahl einstellen lässt. Erste Erkundung proportionaler Zuordnungen: gleiche Abstände der Markierungen, Vervielfachen (doppelte Zeit → doppeltes Volumen), Quotientengleichheit, Ursprungsgerade, Formel <span class="m"><i>V</i> = <i>q</i> · <i>t</i></span>. Die Aufträge vermeiden bewusst die Fachbegriffe „proportional“ und „Proportionalitätsfaktor“; sie werden danach eingeführt (Skript 2, Folien 48 ff.).</dd>
+    <dt>Vorwissen</dt>
+    <dd>Zuordnung, Wertetabelle, Graph einer Zuordnung, Funktionsterm (Skript 2, vorherige Stunden).</dd>
+    <dt>Ablauf (30 min)</dt>
+    <dd>2er-/3er-Gruppen an einem iPad, Antworten ins Heft. Aufträge 1–6 sind der Kern, Auftrag 7 vergleicht zwei Strahlstärken, Auftrag 8 ist für Schnelle (Gegenbeispiel). Danach werden vier Gruppen per Zufall eingesammelt bzw. vorgestellt. Es lohnt sich, die Gruppen verschiedene Stufen wählen zu lassen: In der Besprechung haben alle Tabellen die gleichen Eigenschaften, aber verschiedene Quotienten.</dd>
+    <dt>Werte</dt>
+    <dd>Hahnstufe 1–5 entspricht 4, 6, 8, 10 bzw. 12 ml pro Sekunde (wird in der Simulation nicht angezeigt). Messbecher bis 1000 ml. Bei „alle 5 s“ ergeben sich glatte Werte; „von Hand“ liefert krumme Zeiten (eine Nachkommastelle) und ganzzahlig abgelesene Volumina, die Quotienten sind dann nur ungefähr gleich – gut für die Frage, ob kleine Abweichungen Messfehler sind.<br>
+    Erlenmeyerkolben (Auftrag 8): Kegelstumpf, unten 10 cm, oben 3,2 cm Durchmesser, 12 cm hoch, darüber ein Hals bis 16 cm. Die Füllhöhe wächst nicht gleichmäßig, die Quotienten <span class="m"><i>h</i> : <i>t</i></span> steigen, die Punkte liegen nicht auf einer Geraden. Das Volumen wäre weiterhin gleichmäßig – mögliche Anschlussfrage.</dd>
+    <dt>Hinweise</dt>
+    <dd>„Quotient zeigen“ erscheint ab Auftrag 4, „Lineal anlegen“ ab Auftrag 5, der Gefäßwechsel ab Auftrag 8. Während einer Messung lässt sich der Hahn nicht verstellen; für eine neue Stufe das Glas ausleeren. Alte Markierungen bleiben am Glas (wie beim echten Filzstift), die Messreihen lassen sich in der Tabelle umschalten. Nichts wird gespeichert; beim Neuladen ist alles leer.</dd>
+  </dl></div></details>
+  <footer>LMG Uetersen · Mathematik Klasse 7 · Funktionen · Proportionale Zuordnungen</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const M=s=>`<span class="m">${s}</span>`;
+const fmt=(v,d)=>{ const p=Math.pow(10,d==null?2:d); let s=(Math.round(v*p)/p).toString(); return s.replace(".",","); };
+
+/* ---------------- Gefäße ----------------
+   Längen in cm, Volumen in ml (= cm³). Zeichenmaßstab 20 px pro cm. */
+const PX=20, BODEN=500;
+const R0=5, R1=1.6, HK=12, HHALS=16;
+const KK=(R0-R1)/HK;
+const VK=h=>h<=HK ? Math.PI*(Math.pow(R0,3)-Math.pow(R0-KK*h,3))/(3*KK) : VK(HK)+Math.PI*R1*R1*(h-HK);
+const VK12=VK(HK);
+const GEF={
+  becher:{name:"Messbecher", sym:"V", groesse:"Volumen", einheit:"ml", dig:0, cap:1000, ymax:1000, ystep:100,
+          hoehe:vol=>vol/(Math.PI*R0*R0), wert:vol=>Math.round(vol), radius:()=>R0, rand:14},
+  kolben:{name:"Erlenmeyerkolben", sym:"h", groesse:"Füllhöhe", einheit:"cm", dig:1, cap:VK(HHALS), ymax:16, ystep:2,
+          hoehe:vol=> vol<=VK12 ? (R0-Math.cbrt(Math.pow(R0,3)-3*KK*vol/Math.PI))/KK : HK+(vol-VK12)/(Math.PI*R1*R1),
+          wert:vol=>Math.round(GEF.kolben.hoehe(vol)*10)/10, radius:h=>h<=HK?R0-KK*h:R1, rand:16.6}
+};
+const FLUSS=[0,4,6,8,10,12];                     // ml pro s je Hahnstufe
+const FARBEN=["var(--mathe)","var(--physik)","var(--hl-ink)","var(--ok)","var(--warn)"];
+
+/* ---------------- Zustand ---------------- */
+const S={stufe:0, takt:5, tempo:1, gef:"becher", laeuft:false, voll:false, t:0, reihen:[], akt:null, zeige:null,
+         quot:false, lineal:false, auf:0, aufMax:0, neuIdx:-1};
+
+/* ---------------- Aufträge ---------------- */
+const AUF=[
+ {titel:"Messen",
+  text:`<p>Dreht den Wasserhahn auf eine Stufe von 1 bis 5 und notiert die Stufe. Stellt das Glas unter und startet die Stoppuhr. Die Simulation markiert alle 5 Sekunden den Wasserstand.</p>
+        <p>Übertragt die Wertetabelle (Zeit ${M("<i>t</i>")} in s, Volumen ${M("<i>V</i>")} in ml) bis ${M("<i>t</i> = 40 s")} ins Heft.</p>`},
+ {titel:"Markierungen am Glas",
+  text:`<p>Schaut euch die Markierungen am Glas an. Was fällt euch an ihren Abständen auf? Woran liegt das?</p>`},
+ {titel:"Doppelt so lange",
+  text:`<p>Was passiert mit dem Volumen, wenn die Zeit verdoppelt, verdreifacht oder halbiert wird?</p>
+        <p>Zeigt es an mindestens drei Beispielen in eurer Tabelle. Markiert dazu mit Pfeilen über und unter der Tabelle, z. B. ${M("· 2")}.</p>`},
+ {titel:"Wie viel pro Sekunde?",
+  text:`<p>Berechnet für jedes Wertepaar ${M("<i>V</i> : <i>t</i>")}. Was stellt ihr fest? Was bedeutet die Zahl, die herauskommt, für das Wasser?</p>
+        <p>Vergleicht danach mit „Quotient zeigen“ unter der Tabelle.</p>`},
+ {titel:"Der Graph",
+  text:`<p>Zeichnet den Graphen ins Heft (${M("<i>t</i>")} nach rechts, ${M("<i>V</i>")} nach oben). Beschreibt: Wie liegen die Punkte? Wo beginnt der Graph, und warum gerade dort?</p>
+        <p>Prüft eure Beschreibung mit „Lineal anlegen“ unter dem Graphen.</p>`},
+ {titel:"Eine Formel",
+  text:`<p>Stellt eine Formel auf, mit der man ${M("<i>V</i>")} aus ${M("<i>t</i>")} berechnen kann. Berechnet damit:</p>
+        <ul><li>Wie viel Wasser ist nach 60 s im Glas?</li><li>Nach wie vielen Sekunden ist das Glas mit 1000 ml voll?</li></ul>
+        <p>Lasst die Messung weiterlaufen und prüft eure Rechnung.</p>`},
+ {titel:"Ein anderer Strahl",
+  text:`<p>Leert das Glas, wählt eine andere Stufe und messt noch einmal. Vergleicht beide Messreihen: Was ändert sich in der Tabelle, beim Quotienten und im Graphen? Was bleibt gleich?</p>`},
+ {titel:"Für Schnelle: ein anderes Gefäß", schnell:true,
+  text:`<p>Wechselt unten zum Erlenmeyerkolben. Jetzt wird die Füllhöhe ${M("<i>h</i>")} in cm am Lineal gemessen.</p>
+        <p>Wächst die Füllhöhe genauso gleichmäßig wie das Volumen im Messbecher? Begründet mit den Markierungen, der Tabelle, dem Quotienten ${M("<i>h</i> : <i>t</i>")} und dem Graphen.</p>`}
+];
+function zeigeAuftrag(){
+  const a=AUF[S.auf];
+  S.aufMax=Math.max(S.aufMax,S.auf);
+  const box=$("auftrag");
+  box.className="auftrag"+(a.schnell?" schnell":"");
+  let dots=AUF.map((x,i)=>`<button data-i="${i}" class="${i<=S.aufMax?'gesehen':''}${x.schnell?' schnell':''}" aria-current="${i===S.auf}" aria-label="Auftrag ${i+1}">${i+1}</button>`).join("");
+  box.innerHTML=`<div class="kopfzeile"><span class="anr">Auftrag ${S.auf+1} von ${AUF.length}</span>
+     <div class="nav noprint"><button class="btn ghost" id="zur" ${S.auf===0?"disabled":""} aria-label="Vorheriger Auftrag">←</button>
+     <div class="punkte">${dots}</div>
+     <button class="btn ghost" id="vor" ${S.auf===AUF.length-1?"disabled":""} aria-label="Nächster Auftrag">→</button></div></div>
+     <h2>${a.titel}</h2>${a.text}<p class="heft">Antworten ins Heft.</p>`;
+  $("zur").onclick=()=>{S.auf=Math.max(0,S.auf-1);zeigeAuftrag();};
+  $("vor").onclick=()=>{S.auf=Math.min(AUF.length-1,S.auf+1);zeigeAuftrag();};
+  box.querySelectorAll(".punkte button").forEach(b=>b.onclick=()=>{S.auf=+b.dataset.i;zeigeAuftrag();});
+  // Werkzeuge erst freischalten, wenn der passende Auftrag erreicht ist
+  $("quotBtn").hidden=S.aufMax<3;
+  $("linealBtn").hidden=S.aufMax<4;
+  $("gefaessZeile").hidden=S.aufMax<7;
+}
+
+/* ---------------- Bedienung ---------------- */
+function seg(id,key,parse,onchange){
+  document.querySelectorAll(`#${id} button`).forEach(b=>b.addEventListener("click",()=>{
+    if(b.disabled) return;
+    S[key]=parse(b.dataset.v);
+    document.querySelectorAll(`#${id} button`).forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
+    if(onchange) onchange();
+    aktualisiere();
+  }));
+}
+seg("hahn","stufe",Number);
+seg("takt","takt",Number);
+seg("tempo","tempo",Number);
+seg("gefaess","gef",String,()=>{ neueReihe(); });
+
+function neueReihe(){ S.akt=null; S.laeuft=false; S.voll=false; S.t=0; }
+
+$("start").addEventListener("click",()=>{
+  if(S.voll) return;
+  if(!S.akt){
+    if(S.stufe===0) return;
+    const r={nr:S.reihen.length+1, gef:S.gef, stufe:S.stufe, q:FLUSS[S.stufe], takt:S.takt,
+             farbe:FARBEN[S.reihen.length%FARBEN.length], marks:[]};
+    S.reihen.push(r); S.akt=r; S.zeige=r; S.t=0;
+    markiere(0);
+    S.laeuft=true;
+  } else S.laeuft=!S.laeuft;
+  letzte=null; aktualisiere(); tabelle(); graph();
+});
+$("leeren").addEventListener("click",()=>{ neueReihe(); aktualisiere(); tabelle(); graph(); });
+$("markBtn").addEventListener("click",()=>{ if(S.akt&&S.laeuft) { markiere(Math.round(S.t*10)/10); tabelle(); graph(); } });
+$("quotBtn").addEventListener("click",()=>{ S.quot=!S.quot; $("quotBtn").setAttribute("aria-pressed",S.quot); $("quotBtn").textContent=S.quot?"Quotient verbergen":"Quotient zeigen"; tabelle(); });
+$("linealBtn").addEventListener("click",()=>{ S.lineal=!S.lineal; $("linealBtn").setAttribute("aria-pressed",S.lineal); $("linealBtn").textContent=S.lineal?"Lineal wegnehmen":"Lineal anlegen"; graph(); });
+
+function volumen(t){ return S.akt ? Math.min(S.akt.q*t, GEF[S.akt.gef].cap) : 0; }
+function markiere(t){
+  const r=S.akt, g=GEF[r.gef], vol=volumen(t);
+  if(r.marks.length && Math.abs(r.marks[r.marks.length-1].t-t)<1e-6) return;
+  r.marks.push({t:t, w:g.wert(vol), h:g.hoehe(vol)});
+  S.neuIdx=r.marks.length-1;
+}
+
+/* Bedienelemente sperren/freigeben, Texte setzen */
+function aktualisiere(){
+  const mitten=!!S.akt;
+  document.querySelectorAll("#hahn button,#takt button,#gefaess button").forEach(b=>b.disabled=mitten);
+  const st=$("start");
+  if(!S.akt){ st.textContent="Glas unterstellen und Stoppuhr starten"; st.disabled=S.stufe===0; }
+  else if(S.voll){ st.textContent="Das Glas ist voll"; st.disabled=true; }
+  else { st.textContent=S.laeuft?"Anhalten":"Weiterlaufen lassen"; st.disabled=false; }
+  $("markBtn").hidden=!(S.akt&&S.takt===0);
+  $("markBtn").disabled=!S.laeuft;
+  const h=$("hinweis"); h.className="hinweis";
+  if(!S.akt && S.stufe===0) h.textContent="Dreht zuerst den Wasserhahn auf (Stufe 1 bis 5).";
+  else if(!S.akt) h.textContent=`Stufe ${S.stufe}: Das Wasser läuft ins Becken. Wenn der Strahl passt, stellt das Glas unter – die Stoppuhr startet sofort.`;
+  else if(S.voll){ h.className="hinweis ok"; h.textContent=`Das Glas ist voll. Für eine neue Messung: „Glas ausleeren“.`; }
+  else if(!S.laeuft) h.textContent="Angehalten. Der Hahn bleibt so eingestellt, bis ihr das Glas ausleert.";
+  else h.textContent=S.takt===0?"Drückt „Jetzt markieren“, um den Wasserstand zu markieren.":`Die Stoppuhr läuft. Alle ${S.takt} s wird der Wasserstand markiert.`;
+  $("uhrInfo").textContent=S.akt?`Messreihe ${S.akt.nr} · Stufe ${S.akt.stufe}`:"";
+}
+
+/* ---------------- Szene ---------------- */
+const NS="http://www.w3.org/2000/svg";
+const szene=$("szene");
+const MITTE=240, SEITE=440, AUSLAUF_Y=118;
+szene.innerHTML=`
+  <defs>
+    <linearGradient id="chrom" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="var(--fg-5)"/><stop offset="1" stop-color="var(--fg-4)"/></linearGradient>
+    <linearGradient id="glas" x1="0" x2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".55"/><stop offset=".25" stop-color="#ffffff" stop-opacity=".15"/><stop offset="1" stop-color="var(--line-2)" stop-opacity=".35"/></linearGradient>
+  </defs>
+  <rect x="0" y="0" width="600" height="560" fill="var(--surface-soft)"/>
+  <rect x="0" y="0" width="600" height="60" fill="var(--surface-sunken)"/>
+  <!-- Becken -->
+  <path d="M10,96 L590,96 L590,120 Q590,150 560,150 L560,520 Q560,548 532,548 L68,548 Q40,548 40,520 L40,150 Q10,150 10,120 Z" fill="#ffffff" stroke="var(--line-3)" stroke-width="2"/>
+  <path d="M58,160 L542,160 L542,512 Q542,532 522,532 L78,532 Q58,532 58,512 Z" fill="var(--surface-sunken)" stroke="var(--line-2)" stroke-width="1.5"/>
+  <ellipse cx="${MITTE}" cy="${BODEN+20}" rx="16" ry="5" fill="var(--fg-4)"/>
+  <!-- Wasserhahn -->
+  <rect x="${MITTE-130}" y="62" width="44" height="40" rx="6" fill="url(#chrom)" stroke="var(--fg-4)"/>
+  <path d="M${MITTE-92},70 L${MITTE+8},70 Q${MITTE+22},70 ${MITTE+22},84 L${MITTE+22},${AUSLAUF_Y-10} L${MITTE-22+4},${AUSLAUF_Y-10} L${MITTE-18},86 L${MITTE-92},86 Z" fill="url(#chrom)" stroke="var(--fg-4)" stroke-width="1.5"/>
+  <rect x="${MITTE-17}" y="${AUSLAUF_Y-12}" width="34" height="8" rx="2" fill="var(--fg-3)"/>
+  <g id="griff"><rect x="${MITTE-117}" y="34" width="18" height="30" rx="4" fill="url(#chrom)" stroke="var(--fg-4)"/><rect x="${MITTE-134}" y="26" width="52" height="12" rx="6" fill="var(--fg-3)"/></g>
+  <text id="griffText" x="${MITTE-108}" y="20" text-anchor="middle" font-size="15" fill="var(--fg-3)" font-family="Source Sans 3, sans-serif">zu</text>
+  <g id="dyn"></g>`;
+const dyn=$("dyn");
+
+function kolbenPfad(cx,hMax,aussen){
+  // Umriss (aussen=true) bzw. Wasserfläche bis Höhe hMax
+  const g=GEF.kolben, pts=[];
+  const hs=[0]; if(hMax>HK) hs.push(HK); hs.push(hMax);
+  const w=aussen?3:0;
+  hs.forEach(h=>pts.push([cx-g.radius(Math.min(h,HHALS))*PX-w, BODEN-h*PX]));
+  const rechts=hs.slice().reverse().map(h=>[cx+g.radius(Math.min(h,HHALS))*PX+w, BODEN-h*PX]);
+  return "M"+pts.concat(rechts).map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" L")+" Z";
+}
+function zeichneSzene(){
+  const gefName=S.akt?S.akt.gef:S.gef, g=GEF[gefName];
+  const unter=!!S.akt;
+  const cx=unter?MITTE:SEITE;
+  const vol=volumen(S.t), h=g.hoehe(vol);
+  const q=FLUSS[S.akt?S.akt.stufe:S.stufe];
+  let s="";
+  // Glas + Wasser
+  if(gefName==="becher"){
+    const r=R0*PX, top=BODEN-g.rand*PX;
+    s+=`<rect x="${cx-r}" y="${BODEN-h*PX}" width="${2*r}" height="${h*PX}" fill="var(--physik-line)" opacity=".85"/>`;
+    s+=`<path d="M${cx-r-4},${top-4} L${cx-r},${top} L${cx-r},${BODEN} Q${cx-r},${BODEN+6} ${cx-r+6},${BODEN+6} L${cx+r-6},${BODEN+6} Q${cx+r},${BODEN+6} ${cx+r},${BODEN} L${cx+r},${top}" fill="url(#glas)" stroke="var(--fg-3)" stroke-width="3"/>`;
+    // Skala
+    for(let v=50; v<=1000; v+=50){
+      const y=BODEN-g.hoehe(v)*PX, lang=v%100===0;
+      s+=`<line x1="${cx+r-(lang?26:14)}" y1="${y}" x2="${cx+r}" y2="${y}" stroke="var(--fg-2)" stroke-width="${lang?2:1.2}"/>`;
+      if(lang) s+=`<text x="${cx+r-30}" y="${y+5}" text-anchor="end" font-size="14" fill="var(--fg-2)" font-family="Source Sans 3, sans-serif">${v}</text>`;
+    }
+    s+=`<text x="${cx+r-30}" y="${top+14}" text-anchor="end" font-size="14" fill="var(--fg-3)" font-family="Source Sans 3, sans-serif">ml</text>`;
+  } else {
+    s+=`<path d="${kolbenPfad(cx,h,false)}" fill="var(--physik-line)" opacity=".85"/>`;
+    const top=BODEN-g.rand*PX;
+    s+=`<path d="M${cx-R1*PX-8},${top} L${cx-R1*PX-3},${top+4} L${cx-R1*PX-3},${BODEN-HK*PX} L${cx-R0*PX-3},${BODEN} L${cx+R0*PX+3},${BODEN} L${cx+R1*PX+3},${BODEN-HK*PX} L${cx+R1*PX+3},${top+4} L${cx+R1*PX+8},${top}" fill="url(#glas)" stroke="var(--fg-3)" stroke-width="3" stroke-linejoin="round"/>`;
+    // Lineal
+    if(unter){
+      const lx=cx+R0*PX+30;
+      s+=`<rect x="${lx}" y="${BODEN-17*PX}" width="44" height="${17*PX+4}" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="1.5"/>`;
+      for(let c=0;c<=34;c++){
+        const y=BODEN-c*PX/2, ganz=c%2===0;
+        s+=`<line x1="${lx}" y1="${y}" x2="${lx+(ganz?14:8)}" y2="${y}" stroke="var(--fg-2)" stroke-width="${ganz?1.6:1}"/>`;
+        if(ganz && c/2%2===0) s+=`<text x="${lx+32}" y="${y+5}" text-anchor="middle" font-size="13" fill="var(--fg-2)" font-family="Source Sans 3, sans-serif">${c/2}</text>`;
+      }
+      s+=`<text x="${lx+22}" y="${BODEN-17*PX-6}" text-anchor="middle" font-size="13" fill="var(--fg-3)" font-family="Source Sans 3, sans-serif">cm</text>`;
+    }
+  }
+  // Markierungen (alle Reihen dieses Gefäßes, solange das Glas unter dem Hahn steht)
+  if(unter){
+    S.reihen.filter(r=>r.gef===gefName).forEach(r=>{
+      const aktuell=r===S.akt;
+      const lab=r.marks.length>1 ? (r.marks[1].h-r.marks[0].h)*PX : 99;
+      r.marks.forEach((m,i)=>{
+        if(m.t===0) return;
+        const y=BODEN-m.h*PX, rx=g.radius(m.h)*PX;
+        s+=`<line x1="${cx-rx-6}" y1="${y}" x2="${cx-rx+22}" y2="${y}" stroke="${r.farbe}" stroke-width="${aktuell?4:2.5}" stroke-linecap="round" opacity="${aktuell?1:.55}"/>`;
+        const zeigen=aktuell && (lab>=15 || i%2===0 || S.takt===0);
+        if(zeigen) s+=`<text x="${cx-rx-12}" y="${y+5}" text-anchor="end" font-size="14" font-weight="700" fill="${r.farbe}" font-family="Source Sans 3, sans-serif">${fmt(m.t,1)} s</text>`;
+      });
+    });
+  }
+  // Wasserstrahl
+  if(q>0){
+    const breite=1.5+Math.sqrt(q)*1.6;
+    const ziel=unter ? BODEN-h*PX : BODEN+18;
+    s+=`<rect x="${MITTE-breite/2}" y="${AUSLAUF_Y-4}" width="${breite}" height="${ziel-AUSLAUF_Y+4}" fill="var(--physik-line)" opacity=".95"/>`;
+    s+=`<rect x="${MITTE-breite/2+breite*.25}" y="${AUSLAUF_Y}" width="${breite*.2}" height="${ziel-AUSLAUF_Y}" fill="#ffffff" opacity=".6"/>`;
+    const p=(performance.now()/90)%12;
+    s+=`<ellipse cx="${MITTE}" cy="${ziel}" rx="${breite*1.6+p*.6}" ry="${2+p*.15}" fill="none" stroke="var(--physik)" stroke-width="1.2" opacity="${.5-p/30}"/>`;
+  }
+  dyn.innerHTML=s;
+  // Griff
+  const gr=$("griff"); gr.setAttribute("transform",`rotate(${-(S.akt?S.akt.stufe:S.stufe)*12} ${MITTE-108} 62)`);
+  $("griffText").textContent=(S.akt?S.akt.stufe:S.stufe)===0?"zu":"Stufe "+(S.akt?S.akt.stufe:S.stufe);
+  $("uhr").innerHTML=`${M("<i>t</i>")} = ${S.t.toFixed(1).replace(".",",")} s`;
+}
+
+/* ---------------- Tabelle ---------------- */
+function tabelle(){
+  const rb=$("reihen");
+  rb.innerHTML=S.reihen.map(r=>`<button data-nr="${r.nr}" aria-pressed="${r===S.zeige}"><i style="background:${r.farbe}"></i>Messreihe ${r.nr} · ${r.gef==="becher"?"Stufe "+r.stufe:"Kolben, Stufe "+r.stufe}</button>`).join("");
+  rb.querySelectorAll("button").forEach(b=>b.onclick=()=>{ S.zeige=S.reihen[+b.dataset.nr-1]; S.neuIdx=-1; tabelle(); });
+  const r=S.zeige, box=$("tabelle");
+  if(!r){ box.innerHTML=`<div class="leer">Noch keine Messung. Die Werte erscheinen hier, sobald die Stoppuhr läuft.</div>`; return; }
+  const g=GEF[r.gef];
+  const zellen=f=>r.marks.map((m,i)=>`<td class="${i===S.neuIdx&&r===S.akt?'neu':''}">${f(m)}</td>`).join("");
+  let h=`<div class="tabwrap" id="tabwrap"><table class="wt"><tbody>
+    <tr><th>Zeit ${M("<i>t</i>")} in s</th>${zellen(m=>fmt(m.t,1))}</tr>
+    <tr><th>${g.groesse} ${M("<i>"+g.sym+"</i>")} in ${g.einheit}</th>${zellen(m=>fmt(m.w,g.dig))}</tr>`;
+  if(S.quot) h+=`<tr class="quot"><th>${M("<i>"+g.sym+"</i> : <i>t</i>")}</th>${zellen(m=>m.t===0?"–":fmt(m.w/m.t,2))}</tr>`;
+  h+=`</tbody></table></div>`;
+  box.innerHTML=h;
+  if(r===S.akt){ const w=$("tabwrap"); w.scrollLeft=w.scrollWidth; }
+}
+
+/* ---------------- Graph ---------------- */
+const GL=64,GR=580,GT=18,GB=340;
+function graph(){
+  const gefName=S.zeige?S.zeige.gef:S.gef, g=GEF[gefName];
+  const reihen=S.reihen.filter(r=>r.gef===gefName);
+  let tmax=40; reihen.forEach(r=>r.marks.forEach(m=>tmax=Math.max(tmax,m.t)));
+  const xstep=tmax<=60?10:tmax<=150?20:50;
+  const xmax=Math.ceil(tmax/xstep)*xstep;
+  const X=t=>GL+t/xmax*(GR-GL), Y=v=>GB-v/g.ymax*(GB-GT);
+  let s="";
+  for(let t=0;t<=xmax+1e-9;t+=xstep/2) s+=`<line class="gitter" x1="${X(t)}" y1="${GT}" x2="${X(t)}" y2="${GB}"/>`;
+  for(let v=0;v<=g.ymax+1e-9;v+=g.ystep/2) s+=`<line class="gitter" x1="${GL}" y1="${Y(v)}" x2="${GR}" y2="${Y(v)}"/>`;
+  s+=`<line class="achse" x1="${GL}" y1="${GB}" x2="${GR+10}" y2="${GB}"/><path d="M${GR+14},${GB} l-11,-5 l0,10 z" fill="var(--fg-1)"/>`;
+  s+=`<line class="achse" x1="${GL}" y1="${GB}" x2="${GL}" y2="${GT-8}"/><path d="M${GL},${GT-12} l-5,11 l10,0 z" fill="var(--fg-1)"/>`;
+  for(let t=0;t<=xmax+1e-9;t+=xstep){ s+=`<line class="achse" x1="${X(t)}" y1="${GB}" x2="${X(t)}" y2="${GB+6}" style="stroke-width:1.5"/><text x="${X(t)}" y="${GB+24}" text-anchor="middle">${t}</text>`; }
+  for(let v=g.ystep;v<=g.ymax+1e-9;v+=g.ystep){ s+=`<line class="achse" x1="${GL-6}" y1="${Y(v)}" x2="${GL}" y2="${Y(v)}" style="stroke-width:1.5"/><text x="${GL-10}" y="${Y(v)+5}" text-anchor="end">${v}</text>`; }
+  s+=`<text class="alab" x="${GR}" y="${GB+48}" text-anchor="end"><tspan font-style="italic">t</tspan> in s</text>`;
+  s+=`<text class="alab" x="${GL+10}" y="${GT+4}"><tspan font-style="italic">${g.sym}</tspan> in ${g.einheit}</text>`;
+  if(S.lineal){
+    reihen.forEach(r=>{
+      const last=r.marks[r.marks.length-1]; if(!last||last.t===0) return;
+      const k=last.w/last.t;
+      let t2=xmax, v2=k*t2; if(v2>g.ymax){ v2=g.ymax; t2=v2/k; }
+      s+=`<line x1="${X(0)}" y1="${Y(0)}" x2="${X(t2)}" y2="${Y(v2)}" stroke="${r.farbe}" stroke-width="2" stroke-dasharray="7 6" opacity=".8"/>`;
+    });
+  }
+  reihen.forEach(r=>r.marks.forEach(m=>{ s+=`<circle cx="${X(m.t)}" cy="${Y(m.w)}" r="${r===S.zeige?6:5}" fill="${r.farbe}" stroke="#fff" stroke-width="1.5"/>`; }));
+  if(!reihen.length) s+=`<text x="${(GL+GR)/2}" y="${(GT+GB)/2}" text-anchor="middle" fill="var(--fg-4)" style="font-family:'Source Sans 3',sans-serif;font-style:italic">Noch keine Messpunkte</text>`;
+  $("graph").innerHTML=s;
+  $("legende").innerHTML=reihen.map(r=>`<span><i style="background:${r.farbe}"></i>Messreihe ${r.nr} (Stufe ${r.stufe})</span>`).join("");
+}
+
+/* ---------------- Ablauf ---------------- */
+let letzte=null;
+function schritt(jetzt){
+  if(S.laeuft && S.akt){
+    if(letzte!=null){
+      const dt=Math.min(.5,(jetzt-letzte)/1000)*S.tempo;
+      const g=GEF[S.akt.gef];
+      const tVoll=g.cap/S.akt.q;
+      let tNeu=Math.min(S.t+dt,tVoll);
+      if(S.akt.takt>0){
+        let n=Math.floor(S.t/S.akt.takt+1e-9)+1, geaendert=false;
+        while(n*S.akt.takt<=tNeu+1e-9){ markiere(n*S.akt.takt); n++; geaendert=true; }
+        if(geaendert){ tabelle(); graph(); }
+      }
+      S.t=tNeu;
+      if(S.t>=tVoll-1e-9){ S.laeuft=false; S.voll=true; aktualisiere(); }
+    }
+    letzte=jetzt;
+  } else letzte=null;
+  zeichneSzene();
+}
+
+zeigeAuftrag(); aktualisiere(); tabelle(); graph();
+// Timer statt requestAnimationFrame: läuft auch in eingebetteten Ansichten zuverlässig
+setInterval(()=>schritt(performance.now()),33);
+})();
+</script>
+</body>
+</html>

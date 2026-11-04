@@ -45,6 +45,19 @@ window.PLATTFORM = {
    --------------------------------------------------------- */
 window.SIMULATIONEN = [
   {
+    id: "wasserstrahl",
+    titel: "Wasserstrahl – ein Glas füllt sich",
+    fach: "mathe",
+    stufen: ["7"],
+    thema: "Funktionen · Proportionale Zuordnungen",
+    beschreibung: "Einstiegsexperiment digital: Ein Messbecher füllt sich unter einem gleichmäßigen Wasserstrahl, alle 5 Sekunden wird der Wasserstand markiert. Wertetabelle, Vervielfachen, Quotient V : t, Graph mit Lineal und Formel erkunden, zwei Strahlstärken vergleichen. Für Schnelle: Erlenmeyerkolben als Gegenbeispiel.",
+    pfad: "sims/mathe/wasserstrahl/",
+    vorschau: "sims/mathe/wasserstrahl/vorschau.png",
+    sozialform: "Gruppenarbeit (2–3) am iPad",
+    dauer: "ca. 30 min",
+    datum: "2026-11-04"
+  },
+  {
     id: "extremwerte",
     titel: "Extremwerte in Sachaufgaben",
     fach: "mathe",
