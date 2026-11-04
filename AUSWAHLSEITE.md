@@ -15,6 +15,11 @@ bedienen sich gleich.
 | `assets/lmg.css` | Design-Tokens + alle Komponenten dieser Seiten |
 | `simulationen.js` | Konfiguration (`PLATTFORM`) und Inhalte (`SIMULATIONEN`) |
 
+Einbindung der Inhaltsdatei (seit 2026-11-04): Startseite und Katalog laden `simulationen.js`
+per `document.write` mit Zeitstempel (`?v=` + Minute), weil GitHub Pages Dateien bis zu 10 min
+im Browser-Cache hält und neue Einträge sonst nicht sofort erscheinen. Auf anderen Plattformen
+mit derselben Hosting-Art genauso übernehmen.
+
 - Lokal: `C:\Users\Anwender\OneDrive\Schule\Vorlagen\KI_Tools\Simulationen\`
 - Online: https://github.com/timkucz-cmyk/Simulationen (Seite: https://timkucz-cmyk.github.io/Simulationen/)
 

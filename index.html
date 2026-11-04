@@ -55,7 +55,9 @@
   </footer>
 </div>
 
-<script src="simulationen.js"></script>
+<!-- simulationen.js mit Zeitstempel laden (wechselt jede Minute), damit neue Einträge
+     sofort erscheinen und nicht bis zu 10 min aus dem Browser-Cache kommen -->
+<script>document.write('<script src="simulationen.js?v=' + Math.floor(Date.now() / 60000) + '"><\/script>');</script>
 <script>
 (function(){
   const P = window.PLATTFORM, S = window.SIMULATIONEN || [];
