@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Schlittenberg · Energie, Arbeit und Leistung</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Tokens aus dem LMG-Designsystem (Werte wie in assets/lmg.css, hier eigenständig) */
+:root{
+  --surface-page:#ffffff; --surface-soft:#f6f6f4; --surface-sunken:#ecece8;
+  --fg-1:#17181a; --fg-2:#3d4147; --fg-3:#646a72; --fg-4:#9097a0;
+  --line-1:#e4e5e3; --line-2:#cfd1cf; --line-3:#a8acaa;
+  --mathe:#B61E33;
+  --physik:#2C5282; --physik-soft:#e8eef5; --physik-line:#b9c8da; --physik-ink:#1d3a5c;
+  --ok:#3f6e3a; --ok-soft:#e7eee5; --warn:#8a6a1e; --warn-soft:#f3ecd9;
+  --hl-soft:#ede5f2; --hl-ink:#6b4a8a; --hl-line:#d6c5e0;
+  --radius-sm:4px; --radius-md:6px; --radius-lg:10px; --radius-pill:999px;
+  --shadow-1:0 1px 2px rgba(20,22,25,.04),0 1px 1px rgba(20,22,25,.03);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--surface-soft);color:var(--fg-1);
+  font-family:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--physik);outline-offset:3px;border-radius:var(--radius-sm)}
+[hidden]{display:none!important}
+
+.brandline{height:4px;background:linear-gradient(90deg,var(--mathe) 0 50%,var(--physik) 50% 100%)}
+.wrap{max-width:1160px;margin:0 auto;padding:0 16px 40px}
+@media (min-width:700px){.wrap{padding:0 32px 48px}}
+header.top{padding:18px 0 4px}
+.backlink{display:inline-block;margin:0 0 10px;font-size:.92rem;color:var(--fg-3);text-decoration:none}
+.backlink:hover{color:var(--fg-1);text-decoration:underline}
+h1{font-size:clamp(28px,5vw,40px);line-height:1.15;margin:0;letter-spacing:-.01em}
+.sub{margin:4px 0 0;color:var(--fg-2)}
+
+/* Steuerleiste */
+.simbar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;background:var(--surface-page);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:10px 12px;margin:16px 0 12px;box-shadow:var(--shadow-1)}
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:var(--radius-pill);padding:3px;background:var(--surface-soft)}
+.seg button{border:0;background:transparent;border-radius:var(--radius-pill);padding:6px 15px;min-height:38px;cursor:pointer;color:var(--fg-2)}
+.seg button:hover{color:var(--fg-1)}
+.seg button[aria-pressed="true"]{background:var(--physik);color:#fff;font-weight:600}
+#fric button[aria-pressed="true"]#friction{background:var(--warn)}
+.spacer{flex:1}
+.btn{border:1px solid var(--physik);background:var(--physik);color:#fff;border-radius:var(--radius-md);padding:8px 16px;min-height:42px;cursor:pointer;font-weight:600}
+.btn:hover{background:var(--physik-ink);border-color:var(--physik-ink)}
+.btn.ghost{background:transparent;color:var(--physik)}
+.btn.ghost:hover{background:var(--physik-soft)}
+#play{min-width:132px}
+
+/* Bühne: Szene + Energiepanel */
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:12px;align-items:start}
+@media (max-width:900px){.stage{grid-template-columns:minmax(0,1fr)}}
+.scene,.panel{background:var(--surface-page);border:1px solid var(--line-2);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-1)}
+.scene svg{display:block;width:100%;height:auto}
+.scene svg text{font-family:inherit;fill:var(--fg-2);font-size:21px}
+.caption{display:flex;justify-content:space-between;align-items:baseline;gap:6px 16px;flex-wrap:wrap;padding:12px 18px;border-top:1px solid var(--line-1);min-height:58px}
+#message{color:var(--physik-ink);font-weight:600;font-size:18px}
+#status{color:var(--fg-3);font-size:15px;white-space:nowrap}
+
+.panel{padding:14px 16px 16px}
+.panel h2{margin:0 0 8px;font-size:15px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-3)}
+.bars{display:flex;justify-content:center;align-items:flex-start;gap:8px;padding-bottom:4px}
+.bar{display:flex;flex-direction:column;align-items:center;width:54px}
+.bar .val{font-size:14px;font-variant-numeric:tabular-nums;color:var(--fg-2);white-space:nowrap;min-height:22px}
+.track{width:40px;height:190px;background:var(--surface-soft);border:1px solid var(--line-1);border-bottom:2px solid var(--fg-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;display:flex;flex-direction:column-reverse;overflow:hidden}
+.fill{display:block;width:100%;height:0;flex:none}
+.f-pot{background:var(--physik)}.f-kin{background:var(--ok)}.f-inner{background:var(--warn)}
+.bar .name{margin-top:6px;font-weight:700;text-align:center;line-height:1.1}
+.bar .name small{display:block;font-weight:400;color:var(--fg-3);font-size:13px;margin-top:2px}
+.bar.pot .name{color:var(--physik)}.bar.kin .name{color:var(--ok)}.bar.inner .name{color:var(--warn)}
+/* Arbeit ist kein Vorrat, sondern übertragene Energie: Pfeil statt Balken */
+.flow .ftrack{height:190px;display:flex;align-items:center}
+.flow svg{width:52px;height:28px;overflow:visible}
+.flow .line{fill:none;stroke-width:5;stroke-dasharray:7 5}
+.flow.w .line{stroke:var(--hl-ink)}.flow.w .head{fill:var(--hl-ink)}.flow.w .name,.flow.w .val{color:var(--hl-ink)}
+.flow.r .line{stroke:var(--warn)}.flow.r .head{fill:var(--warn)}.flow.r .name,.flow.r .val{color:var(--warn)}
+.flow.on .line{animation:fliessen .6s linear infinite}
+@keyframes fliessen{to{stroke-dashoffset:-12}}
+.legende{margin:6px 0 0;padding-top:8px;border-top:1px solid var(--line-1);font-size:14px;color:var(--fg-3)}
+.legende b{font-weight:600;color:var(--fg-2)}
+
+table.werte{width:100%;border-collapse:collapse;margin-top:8px;font-variant-numeric:tabular-nums}
+.werte th,.werte td{padding:5px 0;text-align:right;border-bottom:1px solid var(--line-1)}
+.werte tbody th{text-align:left;font-weight:400;color:var(--fg-2)}
+.werte thead th{font-size:14px;color:var(--fg-3);font-weight:600;padding-top:0}
+.werte td{font-size:21px;font-weight:600;padding-left:10px}
+.werte td.cmp{color:var(--fg-3)}
+.formel{margin:10px 0 0;color:var(--fg-2);font-size:16px}
+.fazit{margin:10px 0 0;padding:8px 12px;border-radius:var(--radius-md);background:var(--hl-soft);color:var(--hl-ink);font-weight:600}
+.modell{margin:10px 0 0;font-size:14px;color:var(--fg-3)}
+
+details.lehrkraft{margin-top:18px;border:1px solid var(--line-2);border-radius:var(--radius-lg);background:var(--surface-soft)}
+details.lehrkraft summary{cursor:pointer;padding:12px 14px;font-weight:600;color:var(--fg-2);min-height:44px}
+details.lehrkraft .in{padding:0 16px 12px}
+details.lehrkraft dl{margin:0}
+details.lehrkraft dt{font-weight:700;margin-top:8px}
+details.lehrkraft dd{margin:0;max-width:95ch}
+
+@media (max-width:600px){
+  .simbar{gap:8px}
+  .seg button{padding:6px 11px}
+  .spacer{display:none}
+  #message{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){.flow.on .line{animation:none}}
+</style>
+</head>
+<body>
+<div class="brandline"></div>
+<main class="wrap">
+  <header class="top">
+    <a class="backlink noprint" href="../../../katalog.html?stufe=10&amp;fach=physik">← Alle Simulationen</a>
+    <h1>Energie, Arbeit und Leistung</h1>
+    <p class="sub">Mit dem Schlitten auf den Berg – und wieder hinunter.</p>
+  </header>
+
+  <div class="simbar">
+    <div class="seg" role="group" aria-label="Vorgang">
+      <button id="up" aria-pressed="true">Bergauf ziehen</button><button id="down" aria-pressed="false">Abfahren</button>
+    </div>
+    <div class="seg" role="group" aria-label="Tempo" id="pace">
+      <button id="slow" aria-pressed="true">Langsam</button><button id="fast" aria-pressed="false">Schnell</button>
+    </div>
+    <div class="seg" role="group" aria-label="Reibung" id="fric" hidden>
+      <button id="noFriction" aria-pressed="true">Ohne Reibung</button><button id="friction" aria-pressed="false">Mit Reibung</button>
+    </div>
+    <span class="spacer"></span>
+    <button class="btn" id="play">▶ Start</button>
+    <button class="btn ghost" id="reset">↺ Zurück</button>
+  </div>
+
+  <div class="stage">
+    <section class="scene" aria-label="Schlittenberg">
+      <svg viewBox="0 0 800 460" role="img" aria-labelledby="desc">
+        <title id="desc"></title>
+        <defs>
+          <marker id="dimTip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="var(--fg-3)"/></marker>
+          <marker id="wTip" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0 0L10 5L0 10Z" fill="var(--hl-ink)"/></marker>
+          <marker id="rTip" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0 0L10 5L0 10Z" fill="var(--warn)"/></marker>
+          <g id="fir"><path d="M0 -46L13 -18H6L17 0H-17L-6 -18H-13Z" fill="var(--physik-line)"/><path d="M0 0V6" stroke="var(--line-3)" stroke-width="4"/></g>
+        </defs>
+        <rect width="800" height="460" fill="var(--physik-soft)"/>
+        <path d="M0 290L95 225L170 262L300 150L400 228L470 196L560 238L800 140V460H0Z" fill="var(--surface-page)" opacity=".6"/>
+        <path d="M0 400H110L590 150H800V460H0Z" fill="var(--surface-page)"/>
+        <path d="M0 400H110L590 150H800" fill="none" stroke="var(--physik-line)" stroke-width="4" stroke-linejoin="round"/>
+        <use href="#fir" x="660" y="150"/><use href="#fir" x="694" y="150" transform="translate(694 150) scale(.8) translate(-694 -150)"/>
+        <text x="730" y="182" text-anchor="end" style="font-weight:600">Gipfel</text>
+        <text x="16" y="440" style="font-weight:600">Tal</text>
+
+        <!-- Nullniveau und Höhe -->
+        <path d="M0 400H800" stroke="var(--fg-4)" stroke-width="1.5" stroke-dasharray="7 6"/>
+        <text x="786" y="428" text-anchor="end" style="fill:var(--fg-3)">Nullniveau h = 0</text>
+        <path d="M742 150H770M742 400H770" stroke="var(--fg-3)" stroke-width="1.5"/>
+        <path d="M756 154V396" stroke="var(--fg-3)" stroke-width="2" marker-start="url(#dimTip)" marker-end="url(#dimTip)"/>
+        <path id="hLine" stroke="var(--physik)" stroke-width="1.5" stroke-dasharray="3 5"/>
+        <text x="744" y="284" text-anchor="end" stroke="var(--surface-page)" stroke-width="8" paint-order="stroke" style="font-size:24px;font-weight:700;fill:var(--fg-1)">h = 10 m</text>
+        <circle id="hDot" cx="756" r="6" fill="var(--physik)" stroke="var(--surface-page)" stroke-width="2"/>
+
+        <g id="heatTrail" aria-hidden="true"></g>
+        <g id="ghost" opacity=".35" aria-hidden="true"></g>
+        <g id="main"></g>
+      </svg>
+      <div class="caption"><span id="message"></span><span id="status" role="status"></span></div>
+    </section>
+
+    <aside class="panel" aria-label="Energie und Messwerte">
+      <h2>Energie</h2>
+      <div class="bars">
+        <div class="bar flow w" id="colW"><span class="val" id="vW"></span><div class="ftrack"><svg viewBox="0 0 52 28" aria-hidden="true"><path class="line" d="M2 14H38"/><path class="head" d="M36 3L51 14L36 25Z"/></svg></div><span class="name">W<small>Arbeit</small></span></div>
+        <div class="bar pot"><span class="val" id="vPot"></span><div class="track"><i class="fill f-pot" id="fPot"></i></div><span class="name">E<sub>pot</sub><small>Lage</small></span></div>
+        <div class="bar kin" id="colKin"><span class="val" id="vKin"></span><div class="track"><i class="fill f-kin" id="fKin"></i></div><span class="name">E<sub>kin</sub><small>Bewegung</small></span></div>
+        <div class="bar flow r" id="colR"><span class="val" id="vR"></span><div class="ftrack"><svg viewBox="0 0 52 28" aria-hidden="true"><path class="line" d="M2 14H38"/><path class="head" d="M36 3L51 14L36 25Z"/></svg></div><span class="name">W<sub>R</sub><small>Reibung</small></span></div>
+        <div class="bar inner" id="colInner"><span class="val" id="vInner"></span><div class="track"><i class="fill f-inner" id="fInner"></i></div><span class="name">ΔE<sub>i</sub><small>Schnee</small></span></div>
+        <div class="bar sum" id="colSum"><span class="val" id="vSum"></span><div class="track"><i class="fill f-pot" id="sPot"></i><i class="fill f-kin" id="sKin"></i><i class="fill f-inner" id="sInner"></i></div><span class="name">Summe<small>&nbsp;</small></span></div>
+      </div>
+      <p class="legende"><b>Balken:</b> Energie, die im System steckt · <b>Pfeil:</b> Arbeit, also Energie, die über die Systemgrenze übertragen wird</p>
+      <table class="werte">
+        <thead id="cmpHead"><tr><th></th><th>schnell</th><th>langsam (blass)</th></tr></thead>
+        <tbody>
+          <tr class="r-up"><th>Zeit t</th><td id="tA"></td><td class="cmp" id="tB"></td></tr>
+          <tr><th>Höhe h</th><td id="hA"></td><td class="cmp" id="hB"></td></tr>
+          <tr class="r-up"><th>Arbeit W</th><td id="wA"></td><td class="cmp" id="wB"></td></tr>
+          <tr class="r-up"><th>Leistung P</th><td id="pA"></td><td class="cmp" id="pB"></td></tr>
+          <tr class="r-down"><th>Tempo v</th><td id="vA"></td><td class="cmp"></td></tr>
+        </tbody>
+      </table>
+      <p class="formel" id="formel"></p>
+      <p class="fazit" id="fazit" hidden></p>
+      <p class="modell">System: Kind mit Schlitten (und Erde), m = 40 kg · g = 9,81 m/s²</p>
+    </aside>
+  </div>
+
+  <details class="lehrkraft"><summary>Für Lehrkräfte</summary><div class="in"><dl>
+    <dt>Zweck</dt><dd>Wiederholung von Energie, Arbeit und Leistung im Unterrichtsgespräch am Beamer, ohne Arbeitsaufträge. Kern ist die Unterscheidung von Energie (Füllstand im System, Zustandsgröße) und Arbeit (Pfeil über die Systemgrenze, Prozessgröße). Aufstieg: Die Person zieht das Kind auf dem Schlitten hinauf; die Arbeit W = m · g · h fließt über die Systemgrenze und füllt den Rucksack mit Lageenergie. Tempo „Schnell“: Eine blasse langsame Vergleichsgruppe startet gleichzeitig – gleiche Arbeit, halbe Zeit, doppelte Leistung P = W / t; die Energiepakete auf dem Pfeil wandern schneller. Abfahrt: Im System wird Lageenergie zu Bewegungsenergie; mit Reibung verlässt Energie als Reibungsarbeit W<sub>R</sub> das System und erhöht die innere Energie des Schnees. Der Summenbalken bleibt gleich.</dd>
+    <dt>Vorwissen</dt><dd>Lage- und Bewegungsenergie, Nullniveau, Energieerhaltung und Energiebalken (Skript 1, „Energie der Bewegung“); Arbeit und Leistung aus der Mittelstufe.</dd>
+    <dt>Ablauf</dt><dd>Aufstieg langsam (ca. 3 min) · Aufstieg schnell mit Vergleich (ca. 3 min) · Abfahrt ohne und mit Reibung (ca. 4 min).</dd>
+    <dt>Modell</dt><dd>System: Kind mit Schlitten, m = 40 kg, zusammen mit der Erde (Lageenergie im System Körper–Erde). Die ziehende Person gehört nicht zum System; ihre chemische Energie liegt außerhalb des Modells. h = 10 m, g = 9,81 m/s², also W = 3 924 J. Aufstieg mit konstantem Tempo in 16 s bzw. 8 s (P = 245,3 W bzw. 490,5 W); Bewegungsenergie beim Aufstieg und Reibung beim Ziehen werden vernachlässigt, W ist nur die Hubarbeit. P ist die Leistung während des Aufstiegs; die Wartezeit der schnellen Gruppe am Gipfel zählt nicht.<br>
+      Abfahrt aus der Ruhe, gleichmäßig beschleunigt und in Zeitlupe (deshalb ohne Zeitangabe). Mit Reibung werden auf jedem Wegstück 45 % der frei werdenden Lageenergie abgegeben; die Beschleunigung beträgt dann 55 % des reibungsfreien Wertes. Die Erwärmung der Kufen wird vereinfachend dem Schnee (Umgebung) zugerechnet. v wird aus E<sub>kin</sub> = ½ · m · v² berechnet (ohne Reibung v ≈ 14 m/s, mit Reibung v ≈ 10,4 m/s, jeweils unabhängig von der Masse). Rucksack und ockerfarbene Spur sind symbolisch.</dd>
+    <dt>Hinweise</dt><dd>Mögliche Impulse: Was gehört zum System, was nicht? Warum ist W bei beiden Tempi gleich? Wie ändern sich W, P und v bei doppelter Masse? Woher stammt die Energie der ziehenden Person? Ein Wechsel von Vorgang, Tempo oder Reibung setzt die Animation zurück. Es werden keine Daten gespeichert oder übertragen.</dd>
+  </dl></div></details>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const M=40,G=9.81,H=10,E0=M*G*H;        // 3924 J
+const T_SLOW=16,T_FAST=8;               // Aufstiegszeiten in s
+const LOSS=.45;                          // Anteil der frei werdenden Lageenergie, der bei Reibung das System verlässt
+const X0=110,Y0=400,X1=590,Y1=150;       // Fuß und Gipfel des Hangs in der Szene
+const TAN=(Y0-Y1)/(X1-X0),ANG=Math.atan(TAN)*180/Math.PI,AXIS=756;
+const S=1.4,SYS=1.7,D=70;                // Größe von Person und System, Abstand Person–Schlitten
+let mode='up',fast=false,friction=false,running=false,last=null,t=0;
+
+// Zahlen deutsch, Tausender mit schmalem Leerzeichen
+const fmt=(x,d=0)=>x.toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d}).replace(/\./g,' ');
+const point=h=>[X0+(X1-X0)*h,Y0-(Y0-Y1)*h];
+const groundY=x=>x<=X0?Y0:x>=X1?Y1:Y0-(x-X0)*TAN;
+const tDown=()=>5/Math.sqrt(friction?1-LOSS:1);
+const ink='var(--physik-ink)';
+
+// System Kind + Schlitten mit Energie-Rucksack; Systemgrenze und Pfeile nur bei der Hauptfigur
+function systemSVG(p,main){
+  return `<g id="${p}sys">
+  ${main?`<rect x="-36" y="-56" width="70" height="68" rx="14" fill="none" stroke="var(--fg-3)" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="-35" y="25" stroke="var(--surface-page)" stroke-width="3" paint-order="stroke" style="font-size:11px;font-weight:600;fill:var(--fg-3)">System</text>`:''}
+  ${main?'':`<text x="0" y="27" text-anchor="middle" style="font-size:11px;font-weight:700;fill:${ink}">langsam</text>`}
+  <g id="${p}flip">
+    <g id="${p}sled"><path d="M-20 -2H18Q26 -2 26 -10M-17 -9H19M-12 -9V-2M10 -9V-2" fill="none" stroke="${ink}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></g>
+    <path d="M0 -11L9 -16L15 -11" fill="none" stroke="${ink}" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M0 -11L2 -27" stroke="${ink}" stroke-width="7" stroke-linecap="round"/>
+    <path d="M2 -24L9 -20L13 -16" fill="none" stroke="${ink}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="3" cy="-34" r="5.5" fill="${ink}"/>
+    <rect x="-27" y="-47" width="22" height="37" rx="4" fill="var(--surface-page)" stroke="${ink}" stroke-width="1.6"/>
+    <rect id="${p}rPot" x="-25" width="18" height="0" fill="var(--physik)"/>
+    <rect id="${p}rKin" x="-25" width="18" height="0" fill="var(--ok)"/>
+    <path d="M-6 -42L1 -26" stroke="${ink}" stroke-width="1.6"/>
+  </g>
+  ${main?`<g id="mWork"><path id="mWArrow" fill="none" stroke="var(--hl-ink)" stroke-width="3.5" marker-end="url(#wTip)"/>
+    <circle id="mPk0" r="2.8" fill="var(--hl-ink)"/><circle id="mPk1" r="2.8" fill="var(--hl-ink)"/><circle id="mPk2" r="2.8" fill="var(--hl-ink)"/>
+    <text id="mWLabel" text-anchor="end" stroke="var(--surface-page)" stroke-width="4" paint-order="stroke" style="font-size:14px;font-weight:700;fill:var(--hl-ink)"></text></g>
+  <g id="mFric"><path d="M16 -16Q46 -12 58 12" fill="none" stroke="var(--warn)" stroke-width="3.5" marker-end="url(#rTip)"/>
+    <text x="48" y="-14" stroke="var(--surface-page)" stroke-width="4" paint-order="stroke" style="font-size:14px;font-weight:700;fill:var(--warn)">W<tspan dy="4" style="font-size:10px">R</tspan></text></g>`:''}
+</g>`;
+}
+// Ziehende Person (außerhalb des Systems) mit Leine
+function personSVG(p,label){
+  return `<path id="${p}rope" fill="none" stroke="var(--fg-3)" stroke-width="1.8"/>
+  <g id="${p}person">
+    <path id="${p}legs" fill="none" stroke="${ink}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M-2 -26L5 -47" stroke="${ink}" stroke-width="9" stroke-linecap="round"/>
+    <path d="M4 -44L-5 -37L-13 -33M4 -44L11 -36L16 -31" fill="none" stroke="${ink}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="8" cy="-57" r="7.5" fill="${ink}"/>
+    <text id="${p}label" text-anchor="middle" style="font-weight:700;font-size:15px;fill:${ink}" ${label.pos}>${label.text}</text>
+  </g>`;
+}
+$('main').innerHTML=personSVG('m',{text:'schnell',pos:'x="4" y="-74"'})+systemSVG('m',true);
+$('ghost').innerHTML=personSVG('g',{text:'',pos:''})+systemSVG('g',false);
+
+// Setzt System (Kind + Schlitten) auf Höhe h; bergauf mit Person davor. Gibt die Hand der Person zurück.
+function place(p,h,up,stride,pot,kin){
+  const [x,y]=point(h),tilt=ANG*Math.max(0,Math.min(1,h/.04,(1-h)/.04));
+  $(p+'sys').setAttribute('transform',`translate(${x} ${y}) scale(${SYS})`);
+  $(p+'flip').setAttribute('transform',up?'':'scale(-1 1)');
+  $(p+'sled').setAttribute('transform',`rotate(${up?-tilt:tilt})`);
+  const hp=33*pot/E0,hk=33*kin/E0;
+  $(p+'rPot').setAttribute('y',-12-hp);$(p+'rPot').setAttribute('height',hp);
+  $(p+'rKin').setAttribute('y',-12-hp-hk);$(p+'rKin').setAttribute('height',hk);
+  $(p+'person').style.display=$(p+'rope').style.display=up?'':'none';
+  if(!up)return null;
+  const px=x+D*SYS,py=groundY(px),k=px>X0&&px<X1?TAN:0;
+  $(p+'person').setAttribute('transform',`translate(${px} ${py}) scale(${S})`);
+  const leg=f=>{const fx=f*stride,fy=-f*stride*k;return `M-2 -26L${(fx-2)/2+4} ${(fy-26)/2}L${fx} ${fy}`;};
+  $(p+'legs').setAttribute('d',leg(1)+leg(-1));
+  const r=-tilt*Math.PI/180,fx=x+SYS*(25*Math.cos(r)+10*Math.sin(r)),fy=y+SYS*(25*Math.sin(r)-10*Math.cos(r));
+  const hx=px-13*S,hy=py-33*S;
+  $(p+'rope').setAttribute('d',`M${hx} ${hy}Q${(hx+fx)/2} ${Math.max(hy,fy)+5} ${fx} ${fy}`);
+  return [(hx-x)/SYS,(hy-y)/SYS];
+}
+
+// Wärmespur hinter dem Schlitten (symbolisch)
+$('heatTrail').innerHTML=Array.from({length:22},(_,i)=>{const h=(i+.5)/22,[x,y]=point(h);
+  return `<path data-h="${h}" d="M${x-7} ${y-7}q3.5 -5 7 0t7 0M${x-7} ${y-14}q3.5 -5 7 0t7 0" fill="none" stroke="var(--warn)" stroke-width="2" stroke-linecap="round"/>`;}).join('');
+
+function setBar(id,v){$(id).style.height=(100*v/E0).toFixed(3)+'%';}
+
+function render(){
+  const up=mode==='up',compare=up&&fast;
+  const T=up?(fast?T_FAST:T_SLOW):tDown();
+  const q=up?Math.min(1,t/T):Math.min(1,(t/T)**2);
+  const h=up?q:1-q,[x,y]=point(h);
+  const pot=E0*h,kin=up?0:E0*q*(friction?1-LOSS:1),inner=up?0:E0*q*(friction?LOSS:0),w=up?E0*q:0;
+  const moving=running&&q<1;
+
+  // Szene
+  const hand=place('m',h,up,moving&&up?Math.sin(t*(fast?15:9))*9:0,pot,kin);
+  $('mlabel').style.display=compare?'':'none';
+  const gq=Math.min(1,t/T_SLOW);
+  $('ghost').style.display=compare&&gq<1?'':'none';  // oben stehen beide am selben Ort
+  if(compare)place('g',gq,true,running&&gq<1?Math.sin(t*9)*9:0,E0*gq,0);
+  $('mWork').style.display=up?'':'none';
+  if(up){
+    const [sx,sy]=hand,ex=-16,ey=-51,cx=(sx+ex)/2,cy=Math.min(sy,ey)-34;
+    $('mWArrow').setAttribute('d',`M${sx} ${sy}Q${cx} ${cy} ${ex} ${ey}`);
+    for(let i=0;i<3;i++){const u=(t*(fast?1.2:.6)+i/3)%1,v=1-u,c=$('mPk'+i);
+      c.setAttribute('cx',v*v*sx+2*v*u*cx+u*u*ex);c.setAttribute('cy',v*v*sy+2*v*u*cy+u*u*ey);c.style.display=moving?'':'none';}
+    const lbl=$('mWLabel');lbl.setAttribute('x',cx-4);lbl.setAttribute('y',(sy+2*cy+ey)/4-8);lbl.textContent='W = '+fmt(w)+' J';
+  }
+  $('mFric').style.display=!up&&friction&&q>0?'':'none';
+  for(const m of $('heatTrail').children)m.style.display=!up&&friction&&+m.dataset.h>=h?'':'none';
+  $('hLine').setAttribute('d',`M${x+60} ${y}H${AXIS}`);$('hDot').setAttribute('cy',y);
+
+  // Panel: Balken für Energie, Pfeile für Arbeit
+  setBar('fPot',pot);setBar('fKin',kin);setBar('fInner',inner);
+  setBar('sPot',pot);setBar('sKin',kin);setBar('sInner',inner);
+  $('vW').textContent=fmt(w)+' J';$('vR').textContent=fmt(inner)+' J';
+  $('vPot').textContent=fmt(pot)+' J';$('vKin').textContent=fmt(kin)+' J';
+  $('vInner').textContent=fmt(inner)+' J';$('vSum').textContent=fmt(pot+kin+inner)+' J';
+  $('colW').hidden=!up;$('colKin').hidden=$('colSum').hidden=up;
+  $('colR').hidden=$('colInner').hidden=up||!friction;
+  $('colW').classList.toggle('on',moving&&up);$('colR').classList.toggle('on',moving&&!up&&friction);
+  $('colW').querySelector('.line').style.animationDuration=fast?'.3s':'.6s';
+
+  // Messwerte
+  const tA=Math.min(t,T),P=tA>0?w/tA:null;
+  for(const r of document.querySelectorAll('.r-up'))r.hidden=!up;
+  for(const r of document.querySelectorAll('.r-down'))r.hidden=up;
+  for(const c of document.querySelectorAll('.cmp'))c.hidden=!compare;
+  $('cmpHead').hidden=!compare;
+  $('tA').textContent=fmt(tA,1)+' s';$('hA').textContent=fmt(H*h,1)+' m';
+  $('wA').textContent=fmt(w)+' J';$('pA').textContent=P===null?'–':fmt(P,1)+' W';
+  $('vA').textContent=fmt(Math.sqrt(2*kin/M),1)+' m/s';
+  if(compare){const tB=Math.min(t,T_SLOW),wB=E0*gq;
+    $('tB').textContent=fmt(tB,1)+' s';$('hB').textContent=fmt(H*gq,1)+' m';
+    $('wB').textContent=fmt(wB)+' J';$('pB').textContent=tB>0?fmt(wB/tB,1)+' W':'–';}
+  $('formel').innerHTML=up?'W = m · g · h &nbsp;&nbsp;·&nbsp;&nbsp; P = W / t':'E<sub>pot</sub> = m · g · h &nbsp;&nbsp;·&nbsp;&nbsp; E<sub>kin</sub> = ½ · m · v²';
+  const done=t>=(up?T_SLOW:T);
+  $('fazit').hidden=!(compare&&done);
+  $('fazit').textContent='Gleiche Arbeit W, halbe Zeit t → doppelte Leistung P.';
+
+  // Texte
+  $('message').innerHTML=up
+    ?(compare&&q>=1&&!done?'Die schnelle Gruppe ist oben. Die langsame überträgt dieselbe Energie – sie braucht nur länger.'
+      :q>=1?'Gleiche Höhe → gleiche Arbeit → gleiche Lageenergie im System.'
+      :'Die Person verrichtet Arbeit W am System: Energie fließt über die Systemgrenze und erhöht die Lageenergie.')
+    :friction?'Reibung: Energie verlässt das System und erhöht die innere Energie des Schnees. Die Summe bleibt gleich.'
+      :'Im System wird Lageenergie zu Bewegungsenergie. Ohne Reibung verlässt keine Energie das System.';
+  $('status').textContent=compare&&q>=1&&!done?'Schnell: oben · Langsam: unterwegs'
+    :done?(up?(compare?'Beide oben':'Gipfel erreicht'):'Im Tal angekommen')
+    :running?(up?'Läuft bergauf':'Fährt bergab'):t===0?'Bereit':'Pausiert';
+  $('desc').textContent=up?'Eine Person zieht ein Kind auf dem Schlitten den Berg hinauf. Ein Pfeil zeigt die Arbeit, die über die Systemgrenze fließt; der Rucksack des Kindes füllt sich mit Lageenergie.'
+    :'Das Kind fährt mit dem Schlitten bergab. Lageenergie wird zu Bewegungsenergie'+(friction?'; ein Pfeil zeigt Energie, die durch Reibung das System verlässt':'')+'.';
+
+  // Schalter
+  $('up').setAttribute('aria-pressed',up);$('down').setAttribute('aria-pressed',!up);
+  $('slow').setAttribute('aria-pressed',!fast);$('fast').setAttribute('aria-pressed',fast);
+  $('noFriction').setAttribute('aria-pressed',!friction);$('friction').setAttribute('aria-pressed',friction);
+  $('pace').hidden=!up;$('fric').hidden=up;
+  $('play').textContent=running?'Ⅱ Pause':done?'↻ Noch einmal':t>0?'▶ Weiter':'▶ Start';
+}
+const finished=()=>t>=(mode==='up'?T_SLOW:tDown());
+function reset(){t=0;running=false;last=null;render();}
+$('up').onclick=()=>{mode='up';reset();};$('down').onclick=()=>{mode='down';reset();};
+$('slow').onclick=()=>{fast=false;reset();};$('fast').onclick=()=>{fast=true;reset();};
+$('noFriction').onclick=()=>{friction=false;reset();};$('friction').onclick=()=>{friction=true;reset();};
+$('reset').onclick=reset;
+$('play').onclick=()=>{if(finished())t=0;running=!running;last=null;render();};
+function frame(now){
+  if(running&&last!==null){t+=Math.min(.08,(now-last)/1000);if(finished()){t=mode==='up'?T_SLOW:tDown();running=false;}render();}
+  last=now;requestAnimationFrame(frame);
+}
+document.addEventListener('visibilitychange',()=>last=null);
+render();requestAnimationFrame(frame);
+</script>
+</body>
+</html>

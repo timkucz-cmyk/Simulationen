@@ -84,6 +84,19 @@ window.SIMULATIONEN = [
     datum: "2026-11-01"
   },
   {
+    id: "schlittenberg-10",
+    titel: "Schlittenberg: Energie, Arbeit und Leistung",
+    fach: "physik",
+    stufen: ["10"],
+    thema: "Mechanik · Energie",
+    beschreibung: "Eine Person zieht ein Kind auf dem Schlitten auf den Berg: Die Arbeit W fließt als Pfeil über die Systemgrenze, der Energie-Rucksack des Kindes füllt sich mit Lageenergie. Ein langsamer und ein schneller Aufstieg im Vergleich veranschaulichen die Leistung P = W / t; bei der Abfahrt wird Lageenergie zu Bewegungsenergie, mit Reibung verlässt Energie das System. Ohne Arbeitsaufträge.",
+    pfad: "sims/physik/schlittenberg-10/",
+    vorschau: "sims/physik/schlittenberg-10/vorschau.png",
+    sozialform: "Unterrichtsgespräch am Beamer",
+    dauer: "ca. 10 min",
+    datum: "2026-11-05"
+  },
+  {
     id: "reihe-parallel",
     titel: "Lernzirkel: Reihen- und Parallelschaltung",
     fach: "physik",
