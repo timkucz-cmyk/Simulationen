@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Halbwertszeit und Verdopplungszeit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Tokens aus dem LMG-Designsystem (Werte wie in assets/lmg.css, hier eigenständig) */
+:root{
+  --surface-page:#ffffff; --surface-soft:#f6f6f4; --surface-sunken:#ecece8;
+  --fg-1:#17181a; --fg-2:#3d4147; --fg-3:#646a72; --fg-4:#9097a0; --fg-5:#c2c7cd;
+  --line-1:#e4e5e3; --line-2:#cfd1cf; --line-3:#a8acaa;
+  --mathe:#B61E33; --mathe-soft:#f5e1e3; --mathe-line:#e8b8be; --mathe-ink:#6f0f1c;
+  --physik:#2C5282;
+  --ok:#3f6e3a; --ok-soft:#e7eee5; --warn:#8a6a1e; --warn-soft:#f3ecd9;
+  --radius-sm:4px; --radius-md:6px; --radius-lg:10px; --radius-pill:999px;
+  --shadow-1:0 1px 2px rgba(20,22,25,.04),0 1px 1px rgba(20,22,25,.03);
+  --font-math:"Cambria Math","STIX Two Math","STIX Two Text",Cambria,"Times New Roman",Georgia,serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}
+body{margin:0;background:var(--surface-soft);color:var(--fg-1);
+  font-family:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  font-size:18px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+a{color:var(--mathe)}
+:focus-visible{outline:2px solid var(--mathe);outline-offset:3px;border-radius:var(--radius-sm)}
+.m{font-family:var(--font-math);white-space:nowrap}
+.m i{font-style:italic}
+.m sup,.m sub{font-size:.72em;line-height:0}
+
+.brandline{height:4px;background:linear-gradient(90deg,var(--mathe) 0 50%,var(--physik) 50% 100%)}
+.wrap{max-width:1240px;margin:0 auto;padding:0 16px}
+@media (min-width:700px){.wrap{padding:0 24px}}
+header.top{padding:12px 0 0}
+.backlink{display:inline-block;margin:0 0 4px;font-size:.92rem;color:var(--fg-3);text-decoration:none;padding:6px 0}
+.backlink:hover{color:var(--fg-1);text-decoration:underline}
+h1{font-size:clamp(26px,4vw,34px);line-height:1.15;margin:0;letter-spacing:-.01em}
+.sub{margin:2px 0 0;color:var(--fg-2)}
+
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 12px}
+nav.tabs button{border:1px solid var(--line-2);background:var(--surface-page);border-radius:var(--radius-pill);padding:6px 16px;cursor:pointer;font-size:1rem;min-height:44px}
+nav.tabs button[aria-current="true"]{background:var(--fg-1);color:var(--surface-page);border-color:var(--fg-1)}
+
+.btn{border:1px solid var(--mathe);background:var(--mathe);color:#fff;border-radius:var(--radius-md);padding:8px 16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:1rem;font-weight:600;min-height:44px}
+.btn:active{background:var(--mathe-ink);border-color:var(--mathe-ink)}
+.btn.ghost{background:var(--surface-page);color:var(--mathe)}
+.btn.ghost:active{background:var(--mathe-soft)}
+.btn[aria-pressed="true"]{background:var(--mathe-ink);border-color:var(--mathe-ink);color:#fff}
+
+.station{display:none;background:var(--surface-page);border:1px solid var(--line-2);border-top:6px solid var(--mathe);border-radius:var(--radius-lg);padding:14px 18px 18px;margin-bottom:20px;box-shadow:var(--shadow-1)}
+.station.show{display:block}
+.chip{font-size:.85rem;border-radius:var(--radius-sm);padding:2px 9px;font-weight:700;display:inline-block;background:var(--mathe-soft);color:var(--mathe-ink)}
+h2{font-size:1.45rem;margin:4px 0 6px;line-height:1.2}
+.lead{margin:0 0 10px;max-width:85ch}
+
+.grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media (min-width:980px){.grid{grid-template-columns:minmax(0,1fr) 330px}}
+.panel{border:1px solid var(--line-1);border-radius:var(--radius-lg);padding:10px 12px;background:var(--surface-page)}
+.side{display:flex;flex-direction:column;gap:12px}
+.side h3{font-size:1rem;margin:0 0 4px;color:var(--fg-2)}
+.fragen{margin:0;padding-left:22px}
+.fragen li{margin:4px 0}
+
+.vis{width:100%;height:auto;display:block;user-select:none;-webkit-user-select:none;touch-action:none}
+.vis .grd{stroke:var(--line-1);stroke-width:1}
+.vis .ax{stroke:var(--fg-2);stroke-width:2;fill:none}
+.vis text{fill:var(--fg-2);font-family:"Source Sans 3",system-ui,sans-serif;font-size:17px}
+.vis text.uhr{fill:var(--fg-4);font-size:15px}
+.vis text.ach{fill:var(--fg-1);font-weight:700}
+.vis .kurve{fill:none;stroke:var(--mathe);stroke-width:3.5;stroke-linejoin:round}
+.vis .halb{stroke:var(--fg-3);stroke-width:1.6;stroke-dasharray:7 6}
+.vis .lot{stroke:var(--fg-4);stroke-width:1.4;stroke-dasharray:4 5}
+.vis .spanne{stroke:var(--mathe-ink);stroke-width:2.4;fill:none}
+.vis text.sp{fill:var(--mathe-ink);font-weight:700;font-size:19px}
+.vis .trp{stroke:var(--fg-1);stroke-width:2.2;fill:none}
+.vis text.trw{fill:var(--fg-1);font-weight:700;font-size:16px}
+.vis text.trt{fill:var(--fg-3);font-size:15px}
+.vis .pkt{fill:var(--mathe);stroke:#fff;stroke-width:3}
+.vis .pkt2{fill:var(--surface-page);stroke:var(--mathe-ink);stroke-width:3}
+.vis .griff{fill:transparent;cursor:grab}
+.vis text.frage{fill:var(--mathe-ink);font-weight:700;font-size:19px}
+
+.readout{background:var(--surface-soft);border-radius:var(--radius-md);padding:8px 12px;font-size:1.15rem;line-height:1.45}
+.readout b{font-variant-numeric:tabular-nums}
+.readout .gross{font-size:1.4rem}
+.sl-lab{display:flex;justify-content:space-between;gap:8px;font-weight:600;color:var(--fg-2)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;margin:0;touch-action:pan-y}
+input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:5px;background:var(--line-2)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:34px;height:34px;border-radius:50%;background:var(--mathe);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);margin-top:-12px}
+input[type=range]::-moz-range-track{height:10px;border-radius:5px;background:var(--line-2)}
+input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--mathe);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.knoepfe{display:flex;flex-wrap:wrap;gap:8px}
+.formel{font-family:var(--font-math);font-size:1.25rem;background:var(--surface-soft);border-radius:var(--radius-md);padding:8px 12px;line-height:1.8}
+.hinweis{color:var(--fg-3);font-size:.95rem;margin:0}
+
+.intro p{max-width:80ch}
+.karten{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:14px 0}
+.karte{text-align:left;border:1px solid var(--line-2);border-radius:var(--radius-lg);background:var(--surface-page);padding:12px 14px;cursor:pointer;min-height:96px}
+.karte:active{border-color:var(--mathe)}
+.karte b{display:block;font-size:1.1rem}
+.karte span{color:var(--fg-3);font-size:.95rem}
+details.lehrkraft{margin-top:18px;border:1px solid var(--line-2);border-radius:var(--radius-lg);background:var(--surface-soft)}
+details.lehrkraft summary{cursor:pointer;padding:12px 14px;font-weight:600;color:var(--fg-2);min-height:44px}
+details.lehrkraft .in{padding:0 16px 12px}
+details.lehrkraft dt{font-weight:700;margin-top:8px}
+details.lehrkraft dd{margin:0}
+footer{color:var(--fg-3);font-size:.88rem;padding:0 0 28px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="brandline"></div>
+<div class="wrap">
+  <header class="top">
+    <a class="backlink noprint" href="../../../katalog.html?stufe=10&amp;fach=mathe">← Alle Simulationen</a>
+    <h1>Halbwertszeit und Verdopplungszeit</h1>
+    <p class="sub">Wie lange dauert es bis zur Hälfte – und bis zum Doppelten?</p>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="Teile"></nav>
+  <main>
+    <section class="station" id="st-0"></section>
+    <section class="station" id="st-1"></section>
+    <section class="station" id="st-2"></section>
+    <section class="station" id="st-3"></section>
+  </main>
+  <footer>Diese Seite speichert und überträgt nichts. Beim Neuladen ist alles zurückgesetzt.</footer>
+</div>
+
+<script>
+/* =========================================================
+   Hilfen
+   ========================================================= */
+const $=s=>document.querySelector(s);
+/* Zahl deutsch: Komma, schmale Tausendertrennung, echtes Minus, hoechstens d Nachkommastellen */
+const de=(v,d=1)=>{ const r=Number(v.toFixed(d)); let [i,f]=String(Math.abs(r)).split('.');
+  i=i.replace(/\B(?=(\d{3})+(?!\d))/g,' '); return (r<0?'−':'')+i+(f?','+f:''); };
+/* kleine Werte mit genug gueltigen Ziffern, damit man sieht: nicht 0 */
+const deKlein=v=>{ if(v>=10) return de(v,1); if(v>=1) return de(v,2);
+  const d=Math.min(8,Math.ceil(-Math.log10(v))+2); return de(v,d); };
+const M=s=>`<span class="m">${s}</span>`;
+const LOG=(b,c)=>`<span class="m">log<sub>${b}</sub>(${c})</span>`;
+/* schoene Achsenteilung */
+function schritt(max,n=6){ const roh=max/n, p=10**Math.floor(Math.log10(roh));
+  for(const k of [1,2,2.5,5,10]) if(k*p>=roh) return k*p; return 10*p; }
+
+/* =========================================================
+   Graph: f(t) = a · b^t, Startpunkt ziehbar, Spanne bis zur Haelfte
+   bzw. zum Doppelten, Treppe ab t = 0
+   ========================================================= */
+const W=960,H=520,L=86,R=24,O=22,U=86;
+function graph(z){
+  const {a,b,tmax,ymax}=z, f=t=>a*b**t, wachs=b>1, q=wachs?2:.5;
+  const T=Math.log(q)/Math.log(b);
+  const X=t=>L+t*(W-L-R)/tmax, Y=y=>H-U-y*(H-U-O)/ymax;
+  const dx=z.dx||schritt(tmax,8), dy=schritt(ymax,6);
+  let h='';
+  for(let t=0;t<=tmax+1e-9;t+=dx){ h+=`<line class="grd" x1="${X(t)}" y1="${O}" x2="${X(t)}" y2="${H-U}"/>
+    <text x="${X(t)}" y="${H-U+24}" text-anchor="middle">${de(t,1)}</text>`;
+    if(z.uhr) h+=`<text class="uhr" x="${X(t)}" y="${H-U+46}" text-anchor="middle">${((z.uhr+Math.round(t))%24)} Uhr</text>`; }
+  for(let y=0;y<=ymax+1e-9;y+=dy){ h+=`<line class="grd" x1="${L}" y1="${Y(y)}" x2="${W-R}" y2="${Y(y)}"/>
+    <text x="${L-10}" y="${Y(y)+6}" text-anchor="end">${de(y,1)}</text>`; }
+  h+=`<path class="ax" d="M${L} ${H-U}H${W-R+6}M${L} ${H-U}V${O-8}"/>
+    <text class="ach" x="${W-R}" y="${H-U+(z.uhr?72:52)}" text-anchor="end">${z.xname}</text>
+    <text class="ach" x="${L+10}" y="${O+8}">${z.yname}</text>`;
+  /* Kurve, oben abgeschnitten */
+  let d='', n=400;
+  for(let i=0;i<=n;i++){ const t=tmax*i/n, y=f(t); if(y>ymax*1.02) break; d+=(i?'L':'M')+X(t).toFixed(1)+' '+Y(y).toFixed(1); }
+  h+=`<path class="kurve" d="${d}"/>`;
+  /* Treppe ab t = 0 */
+  if(z.treppe){ let k=0;
+    while((k+1)*T<=tmax+1e-9 && f((k+1)*T)<=ymax*1.02 && k<12){
+      const t1=k*T,t2=(k+1)*T,y1=f(t1),y2=f(t2), yt=H-U-44;
+      h+=`<path class="trp" d="M${X(t1)} ${Y(y1)}H${X(t2)}V${Y(y2)}"/>
+        <line class="lot" x1="${X(t2)}" y1="${Y(y2)}" x2="${X(t2)}" y2="${H-U}"/>
+        <text class="trt" x="${(X(t1)+X(t2))/2}" y="${yt}" text-anchor="middle">${de(T,1)}${z.einheit?' '+z.einheit:''}</text>`+
+        (X(t2)>W-R-44?'':wachs?`<text class="trw" x="${X(t2)-8}" y="${Y(y2)+6}" text-anchor="end">${de(y2,y2<10?2:0)}</text>`
+              :`<text class="trw" x="${X(t2)+8}" y="${Y(y2)-8}">${de(y2,y2<10?2:0)}</text>`);
+      k++; }
+    h+=`<text class="trw" x="${X(0)+8}" y="${Y(a)-8}">${de(a,0)}</text>`;
+  }
+  /* Startpunkt und Spanne */
+  const t0=z.t0, y0=f(t0), yz=y0*q, tz=t0+T;
+  if(z.spanne!==null){
+    h+=`<line class="halb" x1="${L}" y1="${Y(yz)}" x2="${W-R}" y2="${Y(yz)}"/>
+      <text class="frage" x="${W-R-6}" y="${Y(yz)-8}" text-anchor="end">${wachs?'das Doppelte':'die Hälfte'}: ${de(yz,yz<10?2:1)}</text>
+      <line class="lot" x1="${X(t0)}" y1="${Y(y0)}" x2="${X(t0)}" y2="${H-U}"/>`;
+    if(z.spanne && tz<=tmax){
+      const yb=H-U-14;
+      h+=`<line class="lot" x1="${X(tz)}" y1="${Y(yz)}" x2="${X(tz)}" y2="${H-U}"/>
+        <path class="spanne" d="M${X(t0)} ${yb}H${X(tz)}M${X(t0)+9} ${yb-6}L${X(t0)} ${yb}L${X(t0)+9} ${yb+6}M${X(tz)-9} ${yb-6}L${X(tz)} ${yb}L${X(tz)-9} ${yb+6}"/>
+        <text class="sp" x="${(X(t0)+X(tz))/2}" y="${yb-10}" text-anchor="middle">${de(T,1)} ${z.einheit}</text>
+        <circle class="pkt2" cx="${X(tz)}" cy="${Y(yz)}" r="9"/>`;
+    }
+    h+=`<circle class="pkt" cx="${X(t0)}" cy="${Y(y0)}" r="11"/>`;
+  }
+  return {svg:`<svg class="vis" viewBox="0 0 ${W} ${H}" role="img" aria-label="Graph von f mit f von t gleich ${de(a,2)} mal ${de(b,3)} hoch t">${h}</svg>`,
+          X,Y,T,f,inv:px=>(px-L)*tmax/(W-L-R)};
+}
+/* Startpunkt per Ziehen am Graphen verschieben */
+function ziehbar(svgHost,z,setze){
+  const svg=svgHost.querySelector('svg'); if(!svg) return;
+  const zuT=ev=>{ const r=svg.getBoundingClientRect(); const px=(ev.clientX-r.left)*W/r.width;
+    return Math.max(0,Math.min(z.t0max,(px-L)*z.tmax/(W-L-R))); };
+  let aktiv=false;
+  svg.addEventListener('pointerdown',ev=>{ aktiv=true; svg.setPointerCapture(ev.pointerId); setze(zuT(ev)); });
+  svg.addEventListener('pointermove',ev=>{ if(aktiv) setze(zuT(ev)); });
+  svg.addEventListener('pointerup',()=>{ aktiv=false; });
+}
+
+/* =========================================================
+   Teile
+   ========================================================= */
+const TEILE=['Start','1 Koffein','2 Geld auf dem Konto','3 Freie Wahl'];
+const Z={
+  1:{a:80,b:.87,tmax:30,tmax2:60,ymax:90,t0:0,t0max:25,spanne:false,treppe:false,uhr:16,dx:5,
+     xname:'t in h',yname:'Koffein in mg',einheit:'h',lang:false},
+  2:{a:1000,p:3,tmax:80,ymax:10000,t0:0,t0max:60,spanne:false,treppe:false,dx:10,
+     xname:'t in Jahren',yname:'Kontostand in €',einheit:'Jahre'},
+  3:{a:50,b:.8,t0:0,spanne:false,treppe:false}
+};
+
+function tabs(akt){
+  $('#tabs').innerHTML=TEILE.map((t,i)=>`<button type="button" data-tab="${i}" aria-current="${i===akt}">${t}</button>`).join('');
+  document.querySelectorAll('.station').forEach((s,i)=>s.classList.toggle('show',i===akt));
+  document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>zeige(+b.dataset.tab));
+}
+function zeige(i){ tabs(i); if(i===1) teil1(); if(i===2) teil2(); if(i===3) teil3(); history.replaceState(null,'','#teil'+i); }
+
+/* ---------- Start ---------- */
+function start(){
+  $('#st-0').innerHTML=`<div class="intro"><span class="chip">Start</span><h2>Wie lange dauert es bis zur Hälfte?</h2>
+    <p>Wächst oder schrumpft ein Bestand exponentiell, wird er in gleichen Zeitschritten immer mit demselben Faktor multipliziert. Hier untersuchst du, wie lange es dauert, bis nur noch die Hälfte da ist (<b>Halbwertszeit</b>) oder bis sich der Bestand verdoppelt hat (<b>Verdopplungszeit</b>).</p>
+    <div class="karten">
+      <button class="karte" data-go="1"><b>1 Koffein im Körper</b><span>Ein Energydrink um 16 Uhr: Wie viel ist abends noch da?</span></button>
+      <button class="karte" data-go="2"><b>2 Geld auf dem Konto</b><span>1000 € mit Zinseszins: Wann hat sich das Geld verdoppelt?</span></button>
+      <button class="karte" data-go="3"><b>3 Freie Wahl</b><span>Eigene Funktion ${M('<i>f</i>(<i>x</i>) = <i>a</i> · <i>b</i><sup><i>x</i></sup>')} einstellen.</span></button>
+    </div>
+    <details class="lehrkraft"><summary>Für Lehrkräfte</summary><div class="in"><dl>
+      <dt>Zweck</dt><dd>Einzelstunde Halbwertszeit und Verdopplungszeit (Klasse 10, Skript 2). Gemeinsam am Beamer: Eine Person bedient, die Klasse sagt vorher, was passiert. Kern: Die Zeit bis zur Hälfte ist immer gleich, egal wo man startet und wie groß der Anfangswert ist; der Bestand wird nie 0.</dd>
+      <dt>Vorwissen</dt><dd>Allgemeine Exponentialfunktion ${M('<i>a</i> · <i>b</i><sup><i>x</i></sup>')}, Asymptote, Exponentialgleichungen mit dem Logarithmus (Taste ${M('log<sub>■</sub>□')} am Casio fx-991DE X).</dd>
+      <dt>Ablauf (ca. 6 min)</dt><dd>Teil 1 direkt nach dem Einstieg (Energydrink, Halbwertszeit 5 h, Festlegen „Wann ist das Koffein ganz weg?“).
+        1. Startpunkt bei 0 h, Klasse vermutet die Zeit bis 40 mg, dann „Zeitspanne zeigen“. 2. Startpunkt auf 3 h oder 8 h ziehen (andere Menge): vorher fragen, ob es länger oder kürzer dauert. 3. „Treppe zeigen“. 4. „Zeitachse bis 60 h“: Ablesen zeigt, dass der Wert klein wird, aber nie 0.
+        Teil 2 nach dem Regelhefteintrag zur Kontrolle der Partnerarbeit (Zinsen 3 %, Verdopplungszeit ≈ 23,4 Jahre; Zinssatz-Regler für die 72er-Regel). Teil 3 für Rückfragen und Beispiele aus dem Quiz.</dd>
+      <dt>Modell</dt><dd>Koffein: ${M('<i>f</i>(<i>t</i>) = 80 · 0,87<sup><i>t</i></sup>')}, also Halbwertszeit ${LOG('0,87','0,5')} ≈ 4,98 h ≈ 5 h (Erwachsene: je nach Person etwa 3 bis 7 h). Geld: ${M('<i>f</i>(<i>t</i>) = 1000 · 1,03<sup><i>t</i></sup>')}.</dd>
+      <dt>Hinweise</dt><dd>Den Startpunkt kann man mit dem Regler oder direkt am Graphen ziehen. Es werden keine Daten gespeichert oder übertragen.</dd>
+    </dl></div></details></div>`;
+  document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>zeige(+b.dataset.go));
+}
+
+/* gemeinsamer Aufbau fuer Teil 1 und 2 */
+function rahmen(id,chip,titel,lead,fragen,extra){
+  $('#st-'+id).innerHTML=`<span class="chip">${chip}</span><h2>${titel}</h2><p class="lead">${lead}</p>
+   <div class="grid"><div class="panel" id="g${id}"></div><div class="side">
+     <div><div class="sl-lab"><label for="t0-${id}">Startpunkt</label><span id="t0w-${id}"></span></div>
+       <input type="range" id="t0-${id}" min="0" max="${Z[id].t0max}" step="0.5" value="${Z[id].t0}"></div>
+     <div class="readout" id="ro${id}"></div>
+     <div class="knoepfe">
+       <button class="btn" id="sp-${id}" aria-pressed="false">Zeitspanne zeigen</button>
+       <button class="btn ghost" id="tr-${id}" aria-pressed="false">Treppe zeigen</button>
+       ${extra||''}</div>
+     <div><h3>Fragen</h3><ol class="fragen">${fragen.map(f=>`<li>${f}</li>`).join('')}</ol></div>
+   </div></div>`;
+  $('#t0-'+id).oninput=e=>{ Z[id].t0=+e.target.value; zeichne(id); };
+  $('#sp-'+id).onclick=()=>{ Z[id].spanne=!Z[id].spanne; zeichne(id); };
+  $('#tr-'+id).onclick=()=>{ Z[id].treppe=!Z[id].treppe; zeichne(id); };
+}
+function zeichne(id){
+  const z=Z[id]; let g;
+  if(id===1){ const tm=z.lang?z.tmax2:z.tmax; g=graph({...z,tmax:tm,dx:z.lang?10:5}); }
+  else if(id===2){ g=graph({...z,b:1+z.p/100}); }
+  const host=$('#g'+id); host.innerHTML=g.svg;
+  ziehbar(host,{...z,tmax:id===1&&z.lang?z.tmax2:z.tmax},t=>{ z.t0=Math.round(t*2)/2; $('#t0-'+id).value=z.t0; zeichne(id); });
+  $('#sp-'+id).setAttribute('aria-pressed',z.spanne); $('#sp-'+id).textContent=z.spanne?'Zeitspanne verdecken':'Zeitspanne zeigen';
+  $('#tr-'+id).setAttribute('aria-pressed',z.treppe);
+  const y0=g.f(z.t0);
+  if(id===1){
+    const uhr=(z.uhr+Math.floor(z.t0))%24, min=z.t0%1?':30':'';
+    $('#t0w-1').textContent=`t = ${de(z.t0,1)} h`;
+    $('#ro1').innerHTML=`nach <b>${de(z.t0,1)} h</b> (um ${uhr}${min||''} Uhr):<br><b class="gross">${deKlein(y0)} mg</b> Koffein`+
+      (z.spanne?`<br>Hälfte nach weiteren <b>${de(g.T,1)} h</b>`:'');
+    $('#lang-1').setAttribute('aria-pressed',z.lang); $('#lang-1').textContent=z.lang?'Zeitachse bis 30 h':'Zeitachse bis 60 h';
+  } else {
+    $('#t0w-2').textContent=`nach ${de(z.t0,1)} Jahren`;
+    $('#ro2').innerHTML=`nach <b>${de(z.t0,1)} Jahren</b>:<br><b class="gross">${de(y0,2)} €</b>`+
+      (z.spanne?`<br>Doppelt so viel nach weiteren <b>${de(g.T,1)} Jahren</b>`:'')+
+      `<div class="formel" style="margin-top:8px">${M('<i>f</i>(<i>t</i>) = 1000 · '+de(1+z.p/100,3)+'<sup><i>t</i></sup>')}</div>`+
+      (z.zeigeRegel?`<p class="hinweis" style="margin-top:6px">genau: ${LOG(de(1+z.p/100,3),2)} ≈ ${de(g.T,2)} Jahre<br>72er-Regel: 72 : ${de(z.p,1)} = ${de(72/z.p,2)} Jahre</p>`:'');
+  }
+}
+
+/* ---------- Teil 1: Koffein ---------- */
+function teil1(){
+  rahmen(1,'Teil 1','Koffein im Körper',
+    `Um 16 Uhr trinkt Lina einen Energydrink mit 80 mg Koffein. Pro Stunde baut ihr Körper etwa 13 % ab: ${M('<i>f</i>(<i>t</i>) = 80 · 0,87<sup><i>t</i></sup>')} (${M('<i>t</i>')} in Stunden).`,
+    ['Wie lange dauert es von 80 mg bis 40 mg? Vermute zuerst.',
+     'Starte später, etwa bei 3 h oder 8 h. Dauert es jetzt länger oder kürzer bis zur Hälfte?',
+     'Wie viel ist nach 10 h, nach 30 h, nach 60 h noch da? Ist das Koffein irgendwann ganz weg?'],
+    `<button class="btn ghost" id="lang-1" aria-pressed="false">Zeitachse bis 60 h</button>`);
+  $('#lang-1').onclick=()=>{ const z=Z[1]; z.lang=!z.lang; z.t0max=z.lang?55:25; $('#t0-1').max=z.t0max;
+    if(z.t0>z.t0max){ z.t0=z.t0max; $('#t0-1').value=z.t0; } zeichne(1); };
+  zeichne(1);
+}
+
+/* ---------- Teil 2: Geld ---------- */
+function teil2(){
+  rahmen(2,'Teil 2','Geld auf dem Konto',
+    `Tom legt 1000 € an. Die Bank zahlt jedes Jahr Zinsen, die mitverzinst werden (Zinseszins).`,
+    ['Wie lange dauert es, bis aus 1000 € 2000 € geworden sind?',
+     'Dauert es von 2000 € bis 4000 € genauso lange? Begründe.',
+     'Ändere den Zinssatz. Passt die 72er-Regel „Verdopplungszeit ≈ 72 : Zinssatz“?'],
+    `<button class="btn ghost" id="rg-2" aria-pressed="false">Rechnung zeigen</button>`);
+  const box=document.createElement('div');
+  box.innerHTML=`<div class="sl-lab"><label for="p-2">Zinssatz</label><span id="pw-2">${de(Z[2].p,1)} %</span></div>
+    <input type="range" id="p-2" min="1" max="10" step="0.5" value="${Z[2].p}">`;
+  $('#ro2').before(box);
+  $('#p-2').oninput=e=>{ Z[2].p=+e.target.value; $('#pw-2').textContent=de(Z[2].p,1)+' %'; zeichne(2); };
+  $('#rg-2').onclick=()=>{ Z[2].zeigeRegel=!Z[2].zeigeRegel; $('#rg-2').setAttribute('aria-pressed',!!Z[2].zeigeRegel); zeichne(2); };
+  zeichne(2);
+}
+
+/* ---------- Teil 3: Freie Wahl ---------- */
+function teil3(){
+  const z=Z[3];
+  $('#st-3').innerHTML=`<span class="chip">Teil 3</span><h2>Freie Wahl</h2>
+   <p class="lead">Stelle ${M('<i>a</i>')} und ${M('<i>b</i>')} ein. Für ${M('0 < <i>b</i> < 1')} zeigt der Graph die Halbwertszeit, für ${M('<i>b</i> > 1')} die Verdopplungszeit.</p>
+   <div class="grid"><div class="panel" id="g3"></div><div class="side">
+     <div><div class="sl-lab"><label for="a-3">Anfangswert ${M('<i>a</i>')}</label><span id="aw-3"></span></div>
+       <input type="range" id="a-3" min="5" max="200" step="5" value="${z.a}"></div>
+     <div><div class="sl-lab"><label for="b-3">Faktor ${M('<i>b</i>')}</label><span id="bw-3"></span></div>
+       <input type="range" id="b-3" min="0.5" max="1.5" step="0.01" value="${z.b}"></div>
+     <div><div class="sl-lab"><label for="t0-3">Startpunkt</label><span id="t0w-3"></span></div>
+       <input type="range" id="t0-3" min="0" max="1" step="0.01" value="0"></div>
+     <div class="readout" id="ro3"></div>
+     <div class="knoepfe"><button class="btn" id="sp-3" aria-pressed="false">Zeitspanne zeigen</button>
+       <button class="btn ghost" id="tr-3" aria-pressed="false">Treppe zeigen</button></div>
+     <p class="hinweis">Was ändert sich an der Zeitspanne, wenn du nur ${M('<i>a</i>')} veränderst?</p>
+   </div></div>`;
+  $('#a-3').oninput=e=>{ z.a=+e.target.value; zeichne3(); };
+  $('#b-3').oninput=e=>{ z.b=+e.target.value; zeichne3(); };
+  $('#t0-3').oninput=e=>{ z.anteil=+e.target.value; zeichne3(); };
+  $('#sp-3').onclick=()=>{ z.spanne=!z.spanne; zeichne3(); };
+  $('#tr-3').onclick=()=>{ z.treppe=!z.treppe; zeichne3(); };
+  zeichne3();
+}
+function zeichne3(){
+  const z=Z[3], b=z.b, a=z.a;
+  $('#aw-3').textContent=de(a,0); $('#bw-3').textContent=de(b,2);
+  $('#sp-3').setAttribute('aria-pressed',z.spanne); $('#sp-3').textContent=z.spanne?'Zeitspanne verdecken':'Zeitspanne zeigen';
+  $('#tr-3').setAttribute('aria-pressed',z.treppe);
+  if(Math.abs(b-1)<1e-9){
+    $('#g3').innerHTML=`<p class="lead" style="padding:40px 10px">Für ${M('<i>b</i> = 1')} ist ${M('<i>f</i>(<i>x</i>) = <i>a</i>')} konstant: Es gibt weder Halbwertszeit noch Verdopplungszeit.</p>`;
+    $('#ro3').innerHTML=''; $('#t0w-3').textContent=''; return; }
+  const wachs=b>1, T=Math.log(wachs?2:.5)/Math.log(b);
+  const tmax=wachs?4.5*T:5*T, ymax=wachs?a*2**4.6:a*1.12;
+  const t0max=wachs?2*T:3*T, t0=(z.anteil||0)*t0max; z.t0=t0;
+  const g=graph({a,b,tmax,ymax,t0,spanne:z.spanne,treppe:z.treppe,xname:'x',yname:'f(x)',einheit:''});
+  $('#g3').innerHTML=g.svg;
+  ziehbar($('#g3'),{tmax,t0max},t=>{ z.anteil=t/t0max; $('#t0-3').value=z.anteil; zeichne3(); });
+  $('#t0w-3').textContent='x = '+de(t0,2);
+  $('#ro3').innerHTML=`<div class="formel">${M('<i>f</i>(<i>x</i>) = '+de(a,0)+' · '+de(b,2)+'<sup><i>x</i></sup>')}</div>`+
+    (z.spanne?`<p style="margin:6px 0 0">${wachs?'Verdopplungszeit':'Halbwertszeit'}:<br>${M((wachs?'<i>T</i><sub>V</sub>':'<i>T</i><sub>H</sub>')+' = ')}${LOG(de(b,2),wachs?'2':'0,5')} ≈ <b>${de(T,2)}</b></p>`
+      :`<p class="hinweis" style="margin-top:6px">Vermute zuerst: Wie lange dauert es bis ${wachs?'zum Doppelten':'zur Hälfte'}?</p>`);
+}
+
+/* =========================================================
+   Start
+   ========================================================= */
+start();
+/* Direktsprung, z. B. #teil1&t0=8&spanne&treppe (Vorschaubilder, Folien) */
+const m=location.hash.match(/teil(\d)/), nr=m?Math.min(3,+m[1]):0;
+if(nr===1||nr===2){ const h=location.hash, t=h.match(/t0=([\d.]+)/);
+  if(t) Z[nr].t0=Math.min(Z[nr].t0max,+t[1]);
+  Z[nr].spanne=/spanne/.test(h); Z[nr].treppe=/treppe/.test(h); }
+zeige(nr);
+</script>
+</body>
+</html>

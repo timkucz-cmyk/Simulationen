@@ -149,6 +149,19 @@ window.SIMULATIONEN = [
     datum: "2026-10-06"
   },
   {
+    id: "halbwertszeit",
+    titel: "Halbwertszeit und Verdopplungszeit",
+    fach: "mathe",
+    stufen: ["10"],
+    thema: "Exponentialfunktionen",
+    beschreibung: "Koffein im Körper und Geld mit Zinseszins: Am Graphen den Startpunkt verschieben und sehen, dass es immer gleich lange bis zur Hälfte bzw. zum Doppelten dauert. Treppe der Halbierungen, Ablesen bis 60 Stunden (nie 0), 72er-Regel und eine freie Funktion a · bˣ.",
+    pfad: "sims/mathe/halbwertszeit/",
+    vorschau: "sims/mathe/halbwertszeit/vorschau.png",
+    sozialform: "Plenum am Beamer",
+    dauer: "ca. 6 min",
+    datum: "2026-11-05"
+  },
+  {
     id: "logarithmus",
     titel: "Logarithmus – wie oft mal b?",
     fach: "mathe",
