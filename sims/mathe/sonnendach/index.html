@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sonnendach – Licht und Schatten am Fahrradunterstand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Tokens aus dem LMG-Designsystem (Werte wie in assets/lmg.css, hier eigenständig) */
+:root{
+  --surface-page:#ffffff; --surface-soft:#f6f6f4; --surface-sunken:#ecece8; --surface-ink:#1a1c1f;
+  --fg-1:#17181a; --fg-2:#3d4147; --fg-3:#646a72; --fg-4:#9097a0; --fg-5:#c2c7cd;
+  --line-1:#e4e5e3; --line-2:#cfd1cf; --line-3:#a8acaa;
+  --mathe:#B61E33; --mathe-soft:#f5e1e3; --mathe-line:#e8b8be; --mathe-ink:#6f0f1c;
+  --physik:#2C5282; --physik-soft:#e8eef5; --physik-line:#b9c8da; --physik-ink:#1d3a5c;
+  --ok:#3f6e3a; --ok-soft:#e7eee5; --warn:#8a6a1e; --warn-soft:#f3ecd9;
+  --hl-soft:#ede5f2; --hl-ink:#6b4a8a; --hl-line:#d6c5e0;
+  --radius-sm:4px; --radius-md:6px; --radius-lg:10px; --radius-pill:999px;
+  --shadow-1:0 1px 2px rgba(20,22,25,.04),0 1px 1px rgba(20,22,25,.03);
+  --font-math:"Cambria Math","STIX Two Math","STIX Two Text",Cambria,"Times New Roman",Georgia,serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}
+body{margin:0;background:var(--surface-soft);color:var(--fg-1);
+  font-family:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+a{color:var(--mathe)}
+:focus-visible{outline:2px solid var(--mathe);outline-offset:3px;border-radius:var(--radius-sm)}
+code{font-size:.9em;background:var(--surface-page);padding:0 4px;border-radius:var(--radius-sm)}
+
+/* Formelsatz */
+.m{font-family:var(--font-math);white-space:nowrap}
+.m i,i.v{font-family:var(--font-math);font-style:italic}
+.m sub{font-size:.72em;line-height:0}
+.vec{position:relative;display:inline-block;margin-right:.07em;font-family:var(--font-math);font-style:italic;padding-top:.28em;line-height:1}
+.vec::before{content:"";position:absolute;left:.02em;right:.18em;top:.12em;border-top:.075em solid currentColor}
+.vec::after{content:"";position:absolute;right:.04em;top:.12em;width:.22em;height:.22em;border-top:.075em solid currentColor;border-right:.075em solid currentColor;transform:translateY(-50%) rotate(45deg);transform-origin:center}
+.cv{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;padding:.08em .42em;position:relative;line-height:1.12;font-size:.92em;margin:0 .1em}
+.cv::before,.cv::after{content:"";position:absolute;top:0;bottom:0;width:.32em;border:.08em solid currentColor}
+.cv::before{left:0;border-right:0;border-radius:.6em 0 0 .6em}
+.cv::after{right:0;border-left:0;border-radius:0 .6em .6em 0}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.94em;margin:0 .12em;line-height:1.2}
+.fr>span:first-child{border-bottom:.07em solid currentColor;padding:0 .2em .05em}
+.fr>span:last-child{padding:.05em .2em 0}
+.sq{white-space:nowrap}
+.sq>span{border-top:.07em solid currentColor;padding:0 .08em;margin-left:.02em}
+
+.brandline{height:4px;background:linear-gradient(90deg,var(--mathe) 0 50%,var(--physik) 50% 100%)}
+.wrap{max-width:1280px;margin:0 auto;padding:0 16px}
+@media (min-width:700px){.wrap{padding:0 24px}}
+header.top{padding:12px 0 0}
+.backlink{display:inline-block;margin:0 0 4px;font-size:.92rem;color:var(--fg-3);text-decoration:none;padding:6px 0}
+.backlink:hover{color:var(--fg-1);text-decoration:underline}
+h1{font-size:clamp(26px,4vw,34px);line-height:1.15;margin:0;letter-spacing:-.01em}
+.sub{margin:2px 0 0;color:var(--fg-2)}
+
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 12px}
+nav.tabs button{border:1px solid var(--line-2);background:var(--surface-page);border-radius:var(--radius-pill);padding:6px 16px;cursor:pointer;font-size:1rem;min-height:44px}
+nav.tabs button[aria-current="true"]{background:var(--fg-1);color:var(--surface-page);border-color:var(--fg-1)}
+
+.btn{border:1px solid var(--mathe);background:var(--mathe);color:#fff;border-radius:var(--radius-md);padding:8px 16px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;font-size:1rem;font-weight:600;min-height:48px}
+.btn:active{background:var(--mathe-ink);border-color:var(--mathe-ink)}
+.btn.ghost{background:var(--surface-page);color:var(--mathe)}
+.btn.ghost:active{background:var(--mathe-soft)}
+.btn.small{padding:6px 12px;font-size:.92rem;min-height:44px}
+
+.station{display:none;background:var(--surface-page);border:1px solid var(--line-2);border-top:6px solid var(--mathe);border-radius:var(--radius-lg);padding:14px 18px 18px;margin-bottom:20px;box-shadow:var(--shadow-1)}
+@media (max-width:560px){.station{padding:12px 12px 16px}}
+.station.show{display:block}
+.sthead{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.chip{font-size:.85rem;border-radius:var(--radius-sm);padding:2px 9px;font-weight:700;display:inline-block;background:var(--mathe-soft);color:var(--mathe-ink)}
+h2{font-size:1.45rem;margin:4px 0 0;line-height:1.2}
+h3{font-size:1.1rem;margin:0 0 8px}
+.lead{margin:0 0 12px;max-width:85ch}
+
+.layout{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}
+@media (min-width:980px){.layout{grid-template-columns:minmax(0,1.5fr) minmax(340px,1fr)}}
+.figcol{display:flex;flex-direction:column;gap:10px;min-width:0}
+.side{display:flex;flex-direction:column;gap:12px;min-width:0}
+/* Hochkant und Handy: Aufträge über dem Bild, Regler direkt unter dem Bild, Rechnung darunter */
+@media (max-width:979px){
+  .layout{display:flex;flex-direction:column;align-items:stretch;gap:12px}
+  .layout>.figcol,.layout>.side{display:contents}
+  .layout .auftr{order:1}
+  .layout .figcard{order:2}
+  .layout .ctrl{order:3}
+  .layout .viewbar,.layout .figcol>.hinweis,.layout .legend{order:4}
+  .layout .status{order:5}
+  .layout .werte{order:6}
+}
+.panel{border:1px solid var(--line-1);border-radius:var(--radius-lg);padding:12px 14px;background:var(--surface-page)}
+.figcard{border:1px solid var(--line-1);border-radius:var(--radius-lg);background:var(--surface-page);overflow:hidden;position:relative}
+.hinweis{color:var(--fg-3);font-size:.95rem;margin:0}
+.viewbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.viewbar .btn{flex:1 1 auto}
+.viewbar .zoom{flex:0 0 48px;padding:0;font-size:1.4rem}
+
+/* 3D-Ansicht */
+svg.v3{width:100%;height:auto;aspect-ratio:4/3;display:block;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab}
+@media (min-width:561px) and (max-width:979px){svg.v3{aspect-ratio:16/9}}
+@media (max-width:560px){svg.v3{aspect-ratio:1/1}}
+svg.v3 text.ge{font-family:"Source Sans 3",system-ui,sans-serif;font-size:15px;font-weight:700;fill:var(--warn)}
+.gedanke{margin:6px 0 0;padding:6px 10px;border-radius:var(--radius-md);background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);font-size:.95rem}
+.gedanke[hidden]{display:none}
+.ge-i{font-style:normal;font-weight:700;color:var(--warn)}
+svg.v3.dragging{cursor:grabbing}
+svg.v3:focus{outline:none}
+svg.v3:focus-visible{outline:2px solid var(--mathe);outline-offset:-2px}
+svg.v3 text{font-family:var(--font-math);fill:var(--fg-1)}
+svg.v3 .plate{fill:var(--surface-soft);stroke:var(--line-2);stroke-width:1}
+svg.v3 .grid{stroke:var(--line-1);stroke-width:1.2}
+svg.v3 .grid3{stroke:var(--line-2);stroke-width:1.2}
+svg.v3 .axis{stroke:var(--fg-3);stroke-width:1.8}
+svg.v3 .axl{font-size:17px;font-style:italic;fill:var(--fg-3)}
+svg.v3 .tick{font-size:12px;fill:var(--fg-4)}
+svg.v3 .post{stroke:var(--fg-2);stroke-width:4;stroke-linecap:round}
+svg.v3 .mast{stroke:var(--fg-2);stroke-width:5;stroke-linecap:round}
+svg.v3 .flag{fill:var(--mathe);stroke:var(--mathe-ink);stroke-width:1}
+svg.v3 .roof{fill:var(--physik-soft);fill-opacity:.9;stroke:var(--physik);stroke-width:2.5;stroke-linejoin:round}
+svg.v3 .roof.dunkel{fill:var(--surface-sunken);stroke:var(--fg-3)}
+svg.v3 .roof.unten{fill:var(--surface-sunken);fill-opacity:.85;stroke:var(--fg-3)}
+svg.v3 .cell{stroke:var(--physik-line);stroke-width:1.2}
+svg.v3 .ghost{fill:none;stroke:var(--line-3);stroke-width:2;stroke-dasharray:7 6}
+svg.v3 .achse{stroke:var(--mathe-ink);stroke-width:5;stroke-linecap:round}
+svg.v3 .ray{stroke:var(--warn);stroke-width:2.6;fill:none}
+svg.v3 .ray.dick{stroke-width:3.6}
+svg.v3 .ray.dash{stroke-dasharray:8 6}
+svg.v3 .ray.thin{stroke-width:1.7;stroke-opacity:.85}
+svg.v3 .inplane{stroke:var(--mathe);stroke-width:5;stroke-linecap:round}
+svg.v3 .vn{stroke:var(--mathe);stroke-width:3.6;stroke-linecap:round}
+svg.v3 .vs{stroke:var(--warn);stroke-width:3.6;stroke-linecap:round}
+svg.v3 .proj{stroke:var(--hl-ink);stroke-width:9;stroke-linecap:butt;stroke-opacity:.6}
+svg.v3 .lot{stroke:var(--fg-3);stroke-width:1.8;stroke-dasharray:5 4;fill:none}
+svg.v3 .nverl{stroke:var(--mathe);stroke-width:1.8;stroke-dasharray:5 4}
+svg.v3 .arc{stroke:var(--fg-2);stroke-width:2;fill:none}
+svg.v3 .shadow{fill:var(--fg-3);fill-opacity:.26}
+svg.v3 .shline{stroke:var(--fg-2);stroke-opacity:.6;stroke-width:4.5;stroke-linecap:round}
+svg.v3 .sun{fill:var(--warn-soft);stroke:var(--warn);stroke-width:2.6}
+svg.v3 .sunray{stroke:var(--warn);stroke-width:2.2;stroke-linecap:round}
+svg.v3 .dot{fill:var(--fg-1)}
+svg.v3 .hit{fill:var(--mathe);stroke:#fff;stroke-width:2.5}
+svg.v3 .qdot{fill:var(--surface-page);stroke:var(--mathe);stroke-width:3}
+svg.v3 .spur{fill:var(--mathe);fill-opacity:.55}
+svg.v3 .spurline{stroke:var(--mathe);stroke-width:2;stroke-dasharray:3 5}
+svg.v3 .pt{font-size:17px;font-weight:700;font-style:italic}
+svg.v3 .pts{font-size:15px;font-style:italic;fill:var(--fg-2)}
+svg.v3 .lbn{font-size:19px;font-weight:700;font-style:italic;fill:var(--mathe)}
+svg.v3 .lbs{font-size:19px;font-weight:700;font-style:italic;fill:var(--warn)}
+svg.v3 .lbp{font-size:17px;font-weight:700;font-style:italic;fill:var(--hl-ink)}
+svg.v3 .lbh{font-size:17px;font-weight:700;font-style:italic;fill:var(--mathe-ink)}
+svg.v3 .lbg{font-size:15px;fill:var(--fg-3)}
+svg.v3 .halo{stroke:var(--surface-page);stroke-width:5;stroke-linejoin:round;paint-order:stroke}
+
+/* Schieberegler mit großen Touch-Flächen */
+.sl{margin:0 0 8px}
+.sl-l{display:block;font-size:1.1rem;margin-bottom:2px}
+.sl-l output{font-weight:700;font-variant-numeric:tabular-nums}
+.sl-row{display:flex;align-items:center;gap:10px}
+.step{flex:none;width:48px;height:48px;border:2px solid var(--line-3);border-radius:var(--radius-md);background:var(--surface-page);font-size:1.5rem;font-weight:700;cursor:pointer;line-height:1}
+.step:active{background:var(--mathe-soft)}
+.step[disabled]{opacity:.4;cursor:default}
+.sl-ends{display:flex;justify-content:space-between;color:var(--fg-3);font-size:.88rem;margin:0 58px}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;min-width:0;height:48px;background:transparent;margin:0;touch-action:pan-y}
+input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:5px;background:var(--line-2)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:40px;height:40px;border-radius:50%;background:var(--mathe);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);margin-top:-15px}
+input[type=range]::-moz-range-track{height:10px;border-radius:5px;background:var(--line-2)}
+input[type=range]::-moz-range-thumb{width:32px;height:32px;border-radius:50%;background:var(--mathe);border:4px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+
+.toggle{display:flex;align-items:center;gap:12px;min-height:50px;width:100%;padding:8px 14px;border:2px solid var(--line-3);border-radius:var(--radius-md);background:var(--surface-page);cursor:pointer;font-size:1.02rem;font-weight:600;text-align:left;margin-top:8px}
+.toggle .knopf{flex:none;width:46px;height:26px;border-radius:13px;background:var(--line-2);position:relative;transition:background .18s}
+.toggle .knopf::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:left .18s}
+.toggle[aria-pressed="true"]{border-color:var(--mathe);background:var(--mathe-soft)}
+.toggle[aria-pressed="true"] .knopf{background:var(--mathe)}
+.toggle[aria-pressed="true"] .knopf::after{left:23px}
+.seg{display:flex;border:2px solid var(--mathe);border-radius:var(--radius-md);overflow:hidden;margin:0 0 10px}
+.seg button{flex:1;border:0;background:var(--surface-page);color:var(--mathe);padding:8px 10px;min-height:46px;font-weight:600;cursor:pointer;font-size:1rem}
+.seg button+button{border-left:2px solid var(--mathe)}
+.seg button[aria-pressed="true"]{background:var(--mathe);color:#fff}
+.seglab{font-size:.95rem;color:var(--fg-3);margin:0 0 4px}
+
+/* Aufträge */
+ol.beob{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+ol.beob li{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start;font-size:1.05rem;line-height:1.4}
+ol.beob .nr{width:30px;height:30px;border-radius:50%;border:2px solid var(--mathe);color:var(--mathe-ink);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.95rem}
+ol.beob li.ok .nr{background:var(--ok);border-color:var(--ok);color:#fff}
+ol.beob li.ok .nr::before{content:"✓"}
+ol.beob li.ok .nr span{display:none}
+ol.beob li.frei .nr{border-style:dashed}
+ol.beob .extra{color:var(--fg-3);font-size:.95rem}
+.prog{color:var(--fg-3);margin:8px 0 0;font-size:.95rem}
+
+/* Anzeigen */
+.werte{background:var(--surface-soft);border-radius:var(--radius-md);padding:10px 14px;font-size:1.08rem;display:flex;flex-direction:column;gap:6px}
+.werte .zl{display:block;font-family:var(--font-math);line-height:2}
+.werte .zl .t{font-family:"Source Sans 3",system-ui,sans-serif;color:var(--fg-2);font-size:.98rem;margin-right:.3em}
+.werte .zl.gross{font-size:1.25rem}
+.werte .sep{border-top:1px solid var(--line-2);margin:2px 0}
+.werte .hl{color:var(--mathe-ink);font-weight:700}
+.werte .klein{font-family:"Source Sans 3",system-ui,sans-serif;font-size:.95rem;color:var(--fg-2)}
+.werte .scroll{overflow-x:auto;max-width:100%}
+.bar{display:inline-block;vertical-align:middle;height:18px;width:min(48%,220px);margin-left:8px;border-radius:9px;background:var(--surface-page);border:1px solid var(--line-2);overflow:hidden}
+.bar>span{display:block;height:100%;background:var(--warn);transition:width .18s}
+.status{border-radius:var(--radius-lg);padding:10px 14px;border:2px solid var(--line-2);background:var(--surface-soft)}
+.status .gross{font-size:1.35rem;font-weight:700;line-height:1.25}
+.status.dach .gross{color:var(--physik)}
+.status.boden .gross{color:var(--fg-2)}
+.status.par .gross{color:var(--warn)}
+.status.in .gross{color:var(--mathe)}
+.status p{margin:4px 0 0}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.92rem;color:var(--fg-2);margin:0}
+.legend>span::before{content:"";display:inline-block;width:18px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--c)}
+
+/* Start */
+.intro p{max-width:82ch}
+.startgrid{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}
+@media (min-width:980px){.startgrid{grid-template-columns:minmax(0,1.3fr) minmax(320px,1fr)}}
+.karten{display:grid;grid-template-columns:1fr;gap:10px;margin:0}
+.karte{display:grid;grid-template-columns:70px 1fr;gap:12px;align-items:center;text-align:left;border:1px solid var(--line-2);border-radius:var(--radius-lg);background:var(--surface-page);padding:10px 12px;cursor:pointer;min-height:96px}
+.karte:hover{border-color:var(--line-3);background:var(--surface-soft)}
+.karte:active{border-color:var(--mathe)}
+.karte .ic{width:70px;height:70px;display:flex;align-items:center;justify-content:center;background:var(--surface-soft);border-radius:var(--radius-md)}
+.karte b{display:block;font-size:1.08rem}
+.karte span.k{color:var(--fg-3);font-size:.92rem}
+.anker{font-size:.98rem;color:var(--fg-2)}
+.anker ul{margin:4px 0;padding-left:20px}
+details.lehrkraft{margin-top:18px;border:1px solid var(--line-2);border-radius:var(--radius-lg);background:var(--surface-soft)}
+details.lehrkraft summary{cursor:pointer;padding:12px 14px;font-weight:600;color:var(--fg-2);min-height:44px}
+details.lehrkraft .in{padding:0 16px 12px}
+details.lehrkraft dl{margin:0}
+details.lehrkraft dt{font-weight:700;margin-top:10px}
+details.lehrkraft dd{margin:0}
+details.lehrkraft ul{margin:2px 0;padding-left:20px}
+footer{color:var(--fg-3);font-size:.88rem;padding:0 0 28px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="brandline"></div>
+<div class="wrap">
+  <header class="top">
+    <a class="backlink noprint" href="../../../katalog.html?stufe=Q1&amp;fach=mathe">← Alle Simulationen</a>
+    <h1>Sonnendach – Licht und Schatten am Fahrradunterstand</h1>
+    <p class="sub">Solar-Pultdach, Fahnenmast und Sonne im Raum: Projektion, Schatten und Scharen</p>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="Stationen"></nav>
+  <main>
+    <section class="station" id="st-0" aria-labelledby="h-0"></section>
+    <section class="station" id="st-1" aria-label="Station 1"></section>
+    <section class="station" id="st-2" aria-label="Station 2"></section>
+    <section class="station" id="st-3" aria-label="Station 3"></section>
+  </main>
+  <footer>Diese Seite speichert und überträgt nichts. Beim Neuladen sind alle Einstellungen weg.</footer>
+</div>
+
+<script>
+/* =========================================================
+   Hilfen: Vektoren, Zahlen, Brüche, Formelsatz
+   ========================================================= */
+const $=s=>document.querySelector(s);
+const DEG=Math.PI/180;
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]];
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const mul=(a,k)=>[a[0]*k,a[1]*k,a[2]*k];
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const len=a=>Math.hypot(a[0],a[1],a[2]);
+const unit=a=>mul(a,1/len(a));
+const lerp=(a,b,t)=>add(a,mul(sub(b,a),t));
+
+/* Zahl mit Komma, höchstens d Nachkommastellen, echtes Minuszeichen */
+function num(v,d=3){ const f=Math.pow(10,d); let r=Math.round(v*f)/f; if(Math.abs(r)<1e-12) r=0;
+  let s=r.toFixed(d); if(s.indexOf('.')>=0) s=s.replace(/0+$/,'').replace(/\.$/,''); return s.replace('.',',').replace('-','−'); }
+const exactAt=(v,d)=>Math.abs(v*Math.pow(10,d)-Math.round(v*Math.pow(10,d)))<1e-9;
+const appr=(v,d)=>(exactAt(v,d)?'= ':'≈ ')+num(v,d);
+
+/* Brüche (ganzzahlig, klein) */
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){const t=a%b;a=b;b=t;}return a||1;}
+function Fr(n,d=1){ if(d<0){n=-n;d=-d;} const g=gcd(n,d); return {n:n/g,d:d/g}; }
+const fadd=(x,y)=>Fr(x.n*y.d+y.n*x.d,x.d*y.d), fmul=(x,y)=>Fr(x.n*y.n,x.d*y.d), fdiv=(x,y)=>Fr(x.n*y.d,x.d*y.n);
+const fv=x=>x.n/x.d;
+const fromDec=(v,den)=>Fr(Math.round(v*den),den);
+function terminating(x){ let d=x.d; while(d%2===0) d/=2; while(d%5===0) d/=5; return d===1; }
+/* Bruch als Dezimalzahl (wenn abbrechend) oder als Bruch */
+function fH(x){ if(x.d===1) return num(x.n,0); if(terminating(x)) return num(fv(x),6);
+  return (x.n<0?'−':'')+fr(String(Math.abs(x.n)),String(x.d)); }
+/* Parameter r: Bruch wie im Vertrag (15/4), bei abbrechender Dezimalzahl mit „= 3,75“ */
+function rH(x){ if(x.d===1) return num(x.n,0);
+  const f=(x.n<0?'−':'')+fr(String(Math.abs(x.n)),String(x.d));
+  return terminating(x)?`${f} = ${num(fv(x),6)}`:f; }
+/* Koordinate: exakt als Dezimalzahl oder gerundet */
+function cH(x){ return terminating(x)?num(fv(x),6):'≈ '+num(fv(x),2); }
+
+/* HTML-Bausteine */
+const V=s=>`<i class="v">${s}</i>`;
+const vec=s=>`<span class="vec">${s}</span>`;
+const nvec=s=>`−${vec(s)}`;
+const fr=(a,b)=>`<span class="fr"><span>${a}</span><span>${b}</span></span>`;
+const sq=r=>`<span class="sq">√<span>${r}</span></span>`;
+const col=a=>`<span class="cv">${a.map(x=>`<span>${typeof x==='number'?num(x,3):x}</span>`).join('')}</span>`;
+const pt=(name,a)=>`${name}(${a.join('&#8201;|&#8201;')})`;
+const ptn=(name,a)=>pt(name,a.map(v=>num(v,3)));
+/* Faktor in Klammern, wenn negativ */
+const pf=v=>v<0?`(${num(v,3)})`:num(v,3);
+
+/* √n vereinfachen: [a,b] mit √n = a·√b */
+function sqrtSimp(n){ for(let i=Math.floor(Math.sqrt(n));i>1;i--) if(n%(i*i)===0) return [i,n/(i*i)]; return [1,n]; }
+/* exakter Wert von N/(√R1·√R2) (N, R1, R2 Brüche) als HTML, z. B. 2/√5 */
+function cosExact(N,R1,R2){
+  if(N.n===0) return '0';
+  const R=fmul(R1,R2), F=fdiv(fmul(N,N),R);
+  let [a1,b1]=sqrtSimp(F.n), [a2,b2]=sqrtSimp(F.d);
+  const g=gcd(a1,a2); a1/=g; a2/=g;
+  const part=(a,b)=>b>1?(a===1?'':a)+sq(b):String(a);
+  const top=part(a1,b1), bot=part(a2,b2);
+  return (N.n<0?'−':'')+(bot==='1'?top:fr(top,bot));
+}
+
+/* √R als HTML (R Bruch); Quadratzahlen werden gezogen: √1 → 1 */
+function sqH(R){ const isq=n=>{ const r=Math.round(Math.sqrt(n)); return r*r===n?r:null; };
+  const a=isq(R.n), b=isq(R.d); if(a!==null&&b!==null) return fH(Fr(a,b));
+  if(b!==null){ const [c,r]=sqrtSimp(R.n), k=Fr(c,b);
+    const coef=(k.n===1&&k.d===2)?'½':(k.d===1?(k.n===1?'':String(k.n)):fH(k)); return coef+sq(r); }
+  return sq(fH(R)); }
+/* Kette  N/(√R1·√R2) = exakt ≈ Dezimal  */
+function cosChain(N,R1,R2){
+  const v=fv(N)/Math.sqrt(fv(R1)*fv(R2));
+  const ins=fr(fH(N),`${sqH(R1)} · ${sqH(R2)}`), ex=cosExact(N,R1,R2);
+  let h=`${ins} = ${ex}`;
+  if(ex.indexOf('<')>=0) h+=` ${exactAt(v,3)?'=':'≈'} ${num(v,3)}`;
+  return {h,v};
+}
+/* Vieleck in der Bodenebene auf das Rechteck lo..hi (x₁, x₂) zuschneiden (Sutherland–Hodgman) */
+function clipGround(pts){
+  const lo=BOX.lo, hi=BOX.hi;
+  const edges=[[0,lo[0],1],[0,hi[0],-1],[1,lo[1],1],[1,hi[1],-1]];
+  let out=pts;
+  for(const [i,c,sg] of edges){
+    const inp=out; out=[]; if(!inp.length) break;
+    for(let j=0;j<inp.length;j++){
+      const p=inp[j], q=inp[(j+1)%inp.length], ip=sg*(p[i]-c)>=0, iq=sg*(q[i]-c)>=0;
+      if(ip) out.push(p);
+      if(ip!==iq){ const t=(c-p[i])/(q[i]-p[i]); out.push(lerp(p,q,t)); }
+    }
+  }
+  return out;
+}
+
+/* lineare Terme wie „6 − r“, „3r“, „6“ */
+function lin(c0,c1,v='r'){
+  const t1=c1===0?'':(Math.abs(c1)===1?'':num(Math.abs(c1),3))+`<i>${v}</i>`;
+  if(c1===0) return num(c0,3);
+  if(c0===0) return (c1<0?'−':'')+t1;
+  return num(c0,3)+(c1<0?' − ':' + ')+t1;
+}
+
+/* =========================================================
+   3D-Ansicht: eigene Parallelprojektion auf SVG
+   Achsen: x₁ nach vorn, x₂ nach rechts, x₃ nach oben
+   ========================================================= */
+const VIEW0={th:35,el:20,z:1};
+/* Startansicht je Station: Station 1 zeigt nur das Dach, daher näher dran */
+const VIEWS={'0':{th:48,el:24,z:1},'1':{th:58,el:10,z:2.4,c:[1.9,2.6,4]},'2':{th:48,el:24,z:1},'3':{th:48,el:24,z:1}};
+VIEWS['3B']={th:60,el:10,z:1.8,c:[2.2,3,3.8]};
+const view0=st=>({...VIEWS[st]});
+function camera(v){
+  const t=v.th*DEG,e=v.el*DEG;
+  return {R:[-Math.sin(t),Math.cos(t),0],
+          U:[-Math.sin(e)*Math.cos(t),-Math.sin(e)*Math.sin(t),Math.cos(e)],
+          C:[Math.cos(e)*Math.cos(t),Math.cos(e)*Math.sin(t),Math.sin(e)]};
+}
+const BOX={lo:[-2,-2,0],hi:[9,9,9]};
+/* Strecke p→q auf den Bildquader zuschneiden (Liang–Barsky) */
+function clipSeg(p,q,box=BOX){
+  let t0=0,t1=1; const d=sub(q,p);
+  for(let i=0;i<3;i++){
+    for(const [pp,qq] of [[-d[i],p[i]-box.lo[i]],[d[i],box.hi[i]-p[i]]]){
+      if(Math.abs(pp)<1e-12){ if(qq<0) return null; continue; }
+      const r=qq/pp;
+      if(pp<0){ if(r>t1) return null; if(r>t0) t0=r; } else { if(r<t0) return null; if(r<t1) t1=r; }
+    }
+  }
+  return [lerp(p,q,t0),lerp(p,q,t1)];
+}
+const inBox=(p,box=BOX)=>p.every((v,i)=>v>=box.lo[i]-1e-9&&v<=box.hi[i]+1e-9);
+
+function Scene(svg,view,plane){
+  const W=Math.max(200,svg.clientWidth||600), H=Math.max(200,svg.clientHeight||450);
+  const cam=camera(view), C0=view.c||[3.5,3.4,2.4];
+  const sc=Math.min(W/12.5,H/11.3)*view.z;
+  const P=p=>{ const q=sub(p,C0); return [W/2+sc*dot(q,cam.R), H*0.53-sc*dot(q,cam.U)]; };
+  const items=[];
+  const side=plane?Math.sign(dot(plane.n,cam.C))||1:1;
+  const f=p=>plane?dot(plane.n,p)-plane.d:-1;
+  const push=(L,html)=>items.push({L,html});
+  const xy=p=>{ const a=P(p); return a[0].toFixed(1)+','+a[1].toFixed(1); };
+  function layerOf(p,q){ if(!plane) return 3; const fm=f(lerp(p,q,.5)); if(Math.abs(fm)<1e-6) return 3; return Math.sign(fm)===side?3:1; }
+  function head(p,q,color,size){
+    const a=P(p), b=P(q), dx=b[0]-a[0], dy=b[1]-a[1], l=Math.hypot(dx,dy); if(l<3) return '';
+    const ux=dx/l, uy=dy/l, s=size, w=s*.5;
+    return `<polygon points="${b[0]},${b[1]} ${b[0]-s*ux+w*uy},${b[1]-s*uy-w*ux} ${b[0]-s*ux-w*uy},${b[1]-s*uy+w*ux}" style="fill:${color}"/>`;
+  }
+  function piece(p,q,cls,o){
+    const L=o.L!=null?o.L:layerOf(p,q);
+    let a=P(p), b=P(q);
+    let h='';
+    if(o.arrow){ const dx=b[0]-a[0], dy=b[1]-a[1], l=Math.hypot(dx,dy); const s=o.size||13;
+      h=head(p,q,o.color,s); if(l>s){ b=[b[0]-dx/l*s*.7,b[1]-dy/l*s*.7]; } }
+    push(L,`<line class="${cls}" x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}"/>`+h);
+  }
+  return {
+    W,H,P,cam,side,f,
+    line(p,q,cls,o={}){
+      if(o.clip){ const c=clipSeg(p,q); if(!c) return; if(o.arrow&&!inBox(q)) o={...o,arrow:false}; [p,q]=c; }
+      const fp=f(p), fq=f(q);
+      if(plane&&o.L==null&&fp*fq<0&&Math.abs(fp)>1e-6&&Math.abs(fq)>1e-6){
+        const m=lerp(p,q,fp/(fp-fq)); piece(p,m,cls,{...o,arrow:false}); piece(m,q,cls,o);
+      } else piece(p,q,cls,o);
+    },
+    poly(pts,cls,L){ push(L,`<polygon class="${cls}" points="${pts.map(xy).join(' ')}"/>`); },
+    path(pts,cls,L){ push(L!=null?L:layerOf(pts[0],pts[pts.length-1]),`<polyline class="${cls}" points="${pts.map(xy).join(' ')}"/>`); },
+    dot(p,r,cls,L=5){ const a=P(p); push(L,`<circle class="${cls}" cx="${a[0].toFixed(1)}" cy="${a[1].toFixed(1)}" r="${r}"/>`); },
+    text(p,s,dx,dy,cls,anchor='middle',L=6,inside=false){ const a=P(p); let x=a[0]+dx, y=a[1]+dy;
+      if(inside){ x=clamp(x,14,W-14); y=clamp(y,18,H-6); }
+      push(L,`<text class="${cls} halo" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}">${s}</text>`); },
+    /* Vektorname mit Pfeil darüber; neg = mit Minuszeichen davor */
+    vlab(p,name,dx,dy,cls,color,neg){ const a=P(p), x=clamp(a[0]+dx,neg?34:16,W-16), y=clamp(a[1]+dy,28,H-8), w=11;
+      let h=`<text class="${cls} halo" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle">${name}</text>`;
+      h+=`<line x1="${x-w/2}" y1="${y-19}" x2="${x+w/2+1}" y2="${y-19}" style="stroke:${color};stroke-width:1.8"/>`+
+         `<polygon points="${x+w/2+4},${y-19} ${x+w/2-1},${y-22.5} ${x+w/2-1},${y-15.5}" style="fill:${color}"/>`;
+      if(neg) h+=`<text class="${cls} halo" x="${(x-12).toFixed(1)}" y="${y.toFixed(1)}" text-anchor="end">−</text>`;
+      push(6,h); },
+    /* Vektorname hinter der Pfeilspitze, in Pfeilrichtung versetzt */
+    vtip(base,tip,name,cls,color,neg){ const a=P(base), b=P(tip); let dx=b[0]-a[0], dy=b[1]-a[1]; const l=Math.hypot(dx,dy)||1; dx/=l; dy/=l;
+      this.vlab(tip,name,dx*24+(neg?6:0),dy*24+(dy>0?20:4),cls,color,neg); },
+    sun(p){ const a=P(p), r=15; let h='';
+      for(let i=0;i<8;i++){ const w=i*Math.PI/4; h+=`<line class="sunray" x1="${(a[0]+Math.cos(w)*(r+4)).toFixed(1)}" y1="${(a[1]+Math.sin(w)*(r+4)).toFixed(1)}" x2="${(a[0]+Math.cos(w)*(r+11)).toFixed(1)}" y2="${(a[1]+Math.sin(w)*(r+11)).toFixed(1)}"/>`; }
+      push(5,h+`<circle class="sun" cx="${a[0].toFixed(1)}" cy="${a[1].toFixed(1)}" r="${r}"/>`); },
+    raw(L,h){ push(L,h); },
+    render(extraDefs=''){
+      items.sort((a,b)=>a.L-b.L);
+      svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+      svg.innerHTML=extraDefs+items.map(i=>i.html).join('');
+    }
+  };
+}
+
+/* Ankerobjekt (Vertrag §3) */
+const A0=[0,0,0],B0=[0,6,0],C0p=[3,6,0],D0=[3,0,0];
+const PA=[0,0,3],PB=[0,6,3],PC=[3,6,2],PD=[3,0,2];
+const MF=[6,2,0],MM=[6,2,6];
+const NR=[1,0,3], DR=9;                  // Dach E: x₁ + 3x₃ = 9
+const ROOFPLANE={n:NR,d:DR};
+const inRoof=p=>p[0]>=-1e-9&&p[0]<=3+1e-9&&p[1]>=-1e-9&&p[1]<=6+1e-9;
+
+/* Boden, Gitter, Achsen */
+function drawGround(G){
+  const lo=BOX.lo, hi=BOX.hi;
+  G.poly([[lo[0],lo[1],0],[hi[0],lo[1],0],[hi[0],hi[1],0],[lo[0],hi[1],0]],'plate',0);
+  for(let x=lo[0];x<=hi[0];x++) G.line([x,lo[1],0],[x,hi[1],0],x%3===0?'grid3':'grid',{L:0});
+  for(let y=lo[1];y<=hi[1];y++) G.line([lo[0],y,0],[hi[0],y,0],y%3===0?'grid3':'grid',{L:0});
+  G.line([0,0,0],[9.8,0,0],'axis',{L:0.5,arrow:true,color:'var(--fg-3)',size:11});
+  G.line([0,0,0],[0,9.8,0],'axis',{L:0.5,arrow:true,color:'var(--fg-3)',size:11});
+  G.line([0,0,0],[0,0,7.6],'axis',{L:0.6,arrow:true,color:'var(--fg-3)',size:11});
+  G.text([10.3,0,0],'x₁',0,6,'axl','middle',6,true);
+  G.text([0,10.3,0],'x₂',0,6,'axl','middle',6,true);
+  if(G.cam.C[2]<.98) G.text([0,0,7.9],'x₃',0,-4,'axl','middle',6,true);
+  [3,6,9].forEach(v=>{ G.text([v,0,0],String(v),-10,14,'tick','end',0.7); G.text([0,v,0],String(v),0,16,'tick','middle',0.7); });
+  [3,6].forEach(v=>G.text([0,0,v],String(v),-16,14,'tick','end',0.7));
+}
+function drawPosts(G){
+  [[A0,PA],[B0,PB],[C0p,PC],[D0,PD]].forEach(([a,b])=>G.line(a,b,'post'));
+}
+function drawMast(G){
+  G.line(MF,MM,'mast');
+  const f1=[6,2,5.35], f2=[6,2.95,5.65];
+  G.raw(3,`<polygon class="flag" points="${G.P(MM).join(',')} ${G.P(f2).join(',')} ${G.P(f1).join(',')}"/>`);
+  G.dot(MF,4,'dot'); G.dot(MM,5,'dot');
+  G.text(MF,'F',14,6,'pt','start'); G.text(MM,'M',-12,-6,'pt','end');
+}
+/* Dach als gefülltes Viereck; Zellen nur sichtbar, wenn man von oben draufschaut */
+function drawRoof(G,lit){
+  const top=G.side>0;
+  G.poly([PA,PB,PC,PD],'roof'+(top?(lit?'':' dunkel'):' unten'),2);
+  if(top){ for(let i=1;i<6;i++) G.line(lerp(PA,PB,i/6),lerp(PD,PC,i/6),'cell',{L:2.1});
+    for(let j=1;j<3;j++) G.line(lerp(PA,PD,j/3),lerp(PB,PC,j/3),'cell',{L:2.1}); }
+}
+function cornerLabels(G,ghost,aRight){
+  const c=ghost?'pts':'pt';
+  if(aRight) G.text(PA,'A',10,-8,c,'start'); else G.text(PA,'A',-6,-10,c,'end'); G.text(PB,'B',8,-10,c,'start');
+  G.text(PC,'C',10,18,c,'start'); G.text(PD,'D',-10,18,c,'end');
+}
+/* Schatten von Dach, Pfosten und Mast auf dem Boden (und Mastschatten auf dem Dach) */
+function drawShadows(G,u){
+  if(u[2]>=-1e-9) return;
+  const g=p=>sub(p,mul(u,p[2]/u[2]));
+  const sh=clipGround([PA,PB,PC,PD].map(g)); if(sh.length>2) G.poly(sh,'shadow',0.2);
+  [[A0,PA],[B0,PB],[C0p,PC],[D0,PD]].forEach(([a,b])=>G.line(a,g(b),'shline',{L:0.25,clip:true}));
+  // Mast: Punkte (6|2|t); Strahl trifft zuerst das Dach oder den Boden
+  const m=u[0]+3*u[2], ground=[], roof=[]; let cur=null, curRoof=null;
+  for(let i=0;i<=240;i++){
+    const t=6*i/240, p=[6,2,t], rg=-t/u[2];
+    let onRoof=null;
+    if(Math.abs(m)>1e-12){ const rr=(DR-6-3*t)/m; if(rr>1e-9&&rr<rg){ const h=add(p,mul(u,rr)); if(inRoof(h)) onRoof=h; } }
+    if(onRoof){ if(cur){ground.push(cur);cur=null;} if(!curRoof) curRoof=[onRoof,onRoof]; else curRoof[1]=onRoof; }
+    else { if(curRoof){roof.push(curRoof);curRoof=null;} const h=add(p,mul(u,rg)); if(!cur) cur=[h,h]; else cur[1]=h; }
+  }
+  if(cur) ground.push(cur); if(curRoof) roof.push(curRoof);
+  ground.forEach(([a,b])=>{ const c=clipSeg(a,b); if(c) G.line(c[0],c[1],'shline',{L:0.3}); });
+  if(G.side>0) roof.forEach(([a,b])=>G.line(a,b,'shline',{L:2.3}));
+}
+/* Ziehen = Drehen, zwei Finger = Zoomen, Pfeiltasten = Drehen */
+function orbit(svg,st){
+  const pts=new Map(); let last=null, pinch=null;
+  const gv=()=>S[st].view;
+  svg.addEventListener('pointerdown',e=>{
+    e.preventDefault(); try{ svg.setPointerCapture(e.pointerId); }catch(_){}
+    pts.set(e.pointerId,[e.clientX,e.clientY]); svg.classList.add('dragging');
+    if(pts.size===2){ const [a,b]=[...pts.values()]; pinch={d:Math.hypot(a[0]-b[0],a[1]-b[1]),z:gv().z}; }
+    last=[e.clientX,e.clientY];
+  });
+  svg.addEventListener('pointermove',e=>{
+    if(!pts.has(e.pointerId)) return; e.preventDefault();
+    pts.set(e.pointerId,[e.clientX,e.clientY]);
+    const v=gv();
+    if(pts.size>=2&&pinch){ const [a,b]=[...pts.values()]; const d=Math.hypot(a[0]-b[0],a[1]-b[1]);
+      v.z=clamp(pinch.z*d/pinch.d,.6,2.4); }
+    else if(pts.size===1&&last){ const dx=e.clientX-last[0], dy=e.clientY-last[1];
+      v.th=((v.th-dx*.45)%360+540)%360-180; v.el=clamp(v.el+dy*.4,0,90); last=[e.clientX,e.clientY]; }
+    viewChanged(st);
+  });
+  const fin=e=>{ pts.delete(e.pointerId); if(pts.size<2) pinch=null;
+    if(pts.size===1) last=[...pts.values()][0]; else { last=null; svg.classList.remove('dragging'); } };
+  svg.addEventListener('pointerup',fin); svg.addEventListener('pointercancel',fin);
+  svg.addEventListener('keydown',e=>{
+    const v=gv(), k=e.key;
+    if(k==='ArrowLeft') v.th=((v.th+5)%360+540)%360-180; else if(k==='ArrowRight') v.th=((v.th-5)%360+540)%360-180;
+    else if(k==='ArrowUp') v.el=clamp(v.el+5,0,90); else if(k==='ArrowDown') v.el=clamp(v.el-5,0,90);
+    else if(k==='+') v.z=clamp(v.z*1.15,.6,2.4); else if(k==='-') v.z=clamp(v.z/1.15,.6,2.4);
+    else return;
+    e.preventDefault(); viewChanged(st);
+  });
+}
+function viewbar(st){
+  return `<div class="viewbar" role="group" aria-label="Ansicht">
+    <button type="button" class="btn ghost small" data-view="${st}:reset">Ansicht zurücksetzen</button>
+    <button type="button" class="btn ghost small" data-view="${st}:seite">Seitenansicht</button>
+    <button type="button" class="btn ghost small" data-view="${st}:oben">Von oben</button>
+    <button type="button" class="btn ghost small" data-view="${st}:vorn">Von vorn</button>
+    <button type="button" class="btn ghost small zoom" data-view="${st}:minus" aria-label="Verkleinern">−</button>
+    <button type="button" class="btn ghost small zoom" data-view="${st}:plus" aria-label="Vergrößern">+</button></div>
+    <p class="hinweis">Bild mit dem Finger ziehen: drehen · zwei Finger: zoomen · zum Scrollen neben dem Bild wischen</p>`;
+}
+function setView(st,what){
+  const v=S[st].view;
+  if(what==='reset'){ Object.assign(v,view0(st==='3'&&S[3].teil==='B'?'3B':st)); }
+  else if(what==='seite'){ v.th=90; v.el=0; }
+  else if(what==='oben'){ v.th=0; v.el=90; }
+  else if(what==='vorn'){ v.th=0; v.el=0; }
+  else if(what==='plus') v.z=clamp(v.z*1.2,.6,2.4);
+  else if(what==='minus') v.z=clamp(v.z/1.2,.6,2.4);
+  viewChanged(st);
+}
+const isSide=v=>v.el<=8&&Math.abs(Math.sin(v.th*DEG))>=.97;
+const isTop=v=>v.el>=75;
+function viewChanged(st){
+  const s=S[st], v=s.view;
+  if(st==='1'){ if(isTop(v)) s.seen.oben=true; if(isSide(v)) s.seen.seite=true; }
+  if(st==='2'){ if(Math.abs(v.th-VIEWS['2'].th)>25||Math.abs(v.el-VIEWS['2'].el)>15) s.seen.dreh=true; }
+  if(st==='3'){ if(isTop(v)) s.seen.oben=true; }
+  FIG[st](); if(BEOB[st]) BEOB[st]();
+}
+
+/* =========================================================
+   Sonnenstände für Station 1 und 2 (Vektor −u zur Sonne, ganzzahlig)
+   ========================================================= */
+const SUNS=[[3,0,1],[2,0,1],[1,0,1],[1,0,2],[1,0,3],[0,0,1],[-1,0,3],[-1,0,2],[-1,0,1],[-2,0,1],[-3,0,1],[-4,0,1],[-6,0,1]];
+const SUN0=2, SENK=4, STREIF=10;
+const uOf=i=>mul(SUNS[i],-1).map(x=>x===0?0:x);          // u = Lichtrichtung (von der Sonne weg)
+/* In Uetersen (53,6° N) steht die Sonne mittags höchstens etwa 60° hoch. */
+const sunH=i=>Math.atan2(SUNS[i][2],Math.abs(SUNS[i][0]))/DEG;
+const sunReal=i=>SUNS[i][0]>0&&sunH(i)<=60;
+function sunNote(i){
+  if(sunReal(i)) return '';
+  if(SUNS[i][0]>=0) return 'Gedankenexperiment: So hoch steht die Sonne in Uetersen nie – mittags höchstens etwa 60°.';
+  return 'Gedankenexperiment: Hinter dem Unterstand steht die Sonne in Uetersen so nicht. Wir nehmen es nur an, um zu sehen, was passiert.';
+}
+function geLabel(G,i){ if(!sunReal(i)) G.raw(7,`<text class="ge halo" x="${G.W-10}" y="22" text-anchor="end">Gedankenexperiment</text>`); }
+function sunText(i){
+  const s=SUNS[i], h=Math.atan2(s[2],Math.abs(s[0]))/DEG;
+  if(s[0]===0) return 'senkrecht über dem Unterstand (90°)';
+  return `${s[0]>0?'vorn':'hinten'}, ${appr(h,1).replace('= ','')}° hoch`;
+}
+
+/* Schieberegler */
+const SL={
+  '1:sun':{min:0,max:SUNS.length-1,step:1,name:'Sonnenstand',ends:['vorn','hinten']},
+  '2:sun':{min:0,max:SUNS.length-1,step:1,name:'Sonnenstand',ends:['vorn','hinten']},
+  '3:k':{min:-10,max:15,step:1,name:'Scharparameter k',ends:['−1','1,5']},
+  '3:a':{min:0,max:12,step:1,name:'Scharparameter a',ends:['0','6']}
+};
+function slLabel(st,k){
+  const v=S[st][k];
+  if(k==='sun') return sunText(v);
+  if(k==='k') return num(v/10,1);
+  if(k==='a') return num(v/2,1);
+}
+function slider(st,k,lab){
+  const c=SL[st+':'+k], v=S[st][k];
+  return `<div class="sl"><label class="sl-l" for="r-${st}-${k}">${lab} <output id="o-${st}-${k}">${slLabel(st,k)}</output></label>
+    <div class="sl-row"><button type="button" class="step" data-step="${st}:${k}:-1" aria-label="${c.name} verkleinern">−</button>
+    <input type="range" id="r-${st}-${k}" data-st="${st}" data-k="${k}" min="${c.min}" max="${c.max}" step="${c.step}" value="${v}" aria-label="${c.name}">
+    <button type="button" class="step" data-step="${st}:${k}:1" aria-label="${c.name} vergrößern">+</button></div>
+    <div class="sl-ends" aria-hidden="true"><span>${c.ends[0]}</span><span>${c.ends[1]}</span></div>${k==='sun'?`<p class="gedanke" id="ge-${st}" role="status" hidden></p>`:''}</div>`;
+}
+function syncSl(st){
+  Object.keys(SL).filter(x=>x.startsWith(st+':')).forEach(x=>{
+    const k=x.split(':')[1], r=$(`#r-${st}-${k}`); if(!r) return;
+    r.value=S[st][k]; $(`#o-${st}-${k}`).textContent=slLabel(st,k);
+    if(k==='sun'){ const g=$(`#ge-${st}`); if(g){ const t=sunNote(S[st][k]); g.textContent=t; g.hidden=!t; } }
+    document.querySelectorAll(`[data-step^="${st}:${k}:"]`).forEach(b=>{ const d=+b.dataset.step.split(':')[2]; b.disabled=d<0?S[st][k]<=SL[x].min:S[st][k]>=SL[x].max; });
+  });
+}
+function setSl(st,k,v){ const c=SL[st+':'+k]; S[st][k]=clamp(Math.round(v),c.min,c.max); UPD[st](); }
+function toggle(id,on,label){ return `<button type="button" class="toggle" id="${id}" aria-pressed="${on}"><span class="knopf"></span>${label}</button>`; }
+function shell(id,chip,title,lead,body){
+  return `<div class="sthead"><div><span class="chip">${chip}</span><h2>${title}</h2></div>
+      <button type="button" class="btn ghost small" data-reset="${id}">Station zurücksetzen</button></div>
+    <p class="lead">${lead}</p>${body}`;
+}
+const li=(ok,n,html,frei)=>`<li class="${ok?'ok':''}${frei?' frei':''}"><span class="nr"><span>${n}</span></span><span>${html}</span></li>`;
+
+/* =========================================================
+   Zustand (nur im Speicher der Seite)
+   ========================================================= */
+const S={};
+const INIT={
+  0:()=>({view:view0('0')}),
+  1:()=>({view:view0('1'),sun:SUN0,proj:true,seen:{oben:false,seite:false,senk:false,neg:false,streif:false}}),
+  2:()=>({view:view0('2'),sun:SUN0,start:'M',verl:false,schatten:true,seen:{dreh:false,verl:false,hoeher:false,streif:false,inE:false}}),
+  3:()=>({view:view0('3'),teil:'A',k:0,a:6,spur:new Set([0]),spurline:false,seen:{oben:false,links:false,rechts:false,senk:false,senkrecht:false}})
+};
+
+/* =========================================================
+   Start: Ankerobjekt und Stationen
+   ========================================================= */
+function renderStart(){
+  $('#st-0').innerHTML=`<div class="intro">
+    <h2 id="h-0">Der Fahrradunterstand mit Solardach</h2>
+    <p>Auf dem Schulhof steht ein Fahrradunterstand mit einem schrägen Solardach (Pultdach). Daneben steht ein Fahnenmast, vorn steht die Sonne. Dreh das Modell mit dem Finger und such dir die Ecken des Dachs, den Mast und den Sonnenstrahl. Eine Einheit im Koordinatensystem ist 1&nbsp;m.</p>
+    <div class="startgrid">
+      <div class="figcol"><div class="figcard"><svg class="v3" id="svg0" tabindex="0" role="img" aria-label="Fahrradunterstand mit Solardach, Fahnenmast und Sonne im Koordinatensystem, drehbar"></svg></div>
+        ${viewbar('0')}</div>
+      <div class="side">
+        <div class="panel anker"><h3>Das Ankerobjekt</h3><ul>
+          <li>Boden: ${V('x')}₁${V('x')}₂-Ebene · ${V('x')}₁ nach vorn, ${V('x')}₂ nach rechts, ${V('x')}₃ nach oben</li>
+          <li>Dachecken <span class="m">${pt('A',[0,0,3])}</span>, <span class="m">${pt('B',[0,6,3])}</span>, <span class="m">${pt('C',[3,6,2])}</span>, <span class="m">${pt('D',[3,0,2])}</span>: hinten 3 m hoch, vorn 2 m</li>
+          <li>Dachebene <span class="m">${V('E')}: ${V('x')}₁ + 3${V('x')}₃ = 9</span></li>
+          <li>Fahnenmast von <span class="m">${pt('F',[6,2,0])}</span> bis <span class="m">${pt('M',[6,2,6])}</span></li>
+          <li>Sonne vorn, 45° hoch: Lichtrichtung <span class="m">${vec('u')} = ${col([-1,0,-1])}</span></li></ul></div>
+        <div class="karten">
+          <button type="button" class="karte" data-go="1"><span class="ic">${icon1()}</span>
+            <span><span class="k">Station 1</span><b>Wie viel Sonne trifft das Dach?</b><span class="k">Normalenvektor, Projektion, Sonnenanteil</span></span></button>
+          <button type="button" class="karte" data-go="2"><span class="ic">${icon2()}</span>
+            <span><span class="k">Station 2</span><b>Wo fällt der Schatten des Mastes?</b><span class="k">Gerade schneidet Ebene, Streiflicht</span></span></button>
+          <button type="button" class="karte" data-go="3"><span class="ic">${icon3()}</span>
+            <span><span class="k">Station 3</span><b>Die Sonne wandert, das Modul wird geneigt</b><span class="k">Geradenschar und Ebenenschar</span></span></button>
+        </div>
+      </div>
+    </div>
+    <details class="lehrkraft"><summary>Für Lehrkräfte</summary><div class="in"><dl>
+      <dt>Zweck</dt><dd>Das Ankerobjekt der Einheit „Analytische Geometrie“ (Q1, grundlegendes Niveau) als drehbares 3D-Modell, damit Lernende mit schwacher Raumvorstellung die Geometrie sehen, ohne GeoGebra 3D bedienen zu müssen. Ergänzt das Basteln (Taschenlampe, Pappe, Spieß), ersetzt es nicht. Alle Startwerte entsprechen dem Ankerobjekt der Folien und Arbeitsblätter.</dd>
+      <dt>Vorwissen</dt><dd>Punkte und Vektoren im Raum, Geraden in Parameterform. Station 1 setzt das Skalarprodukt voraus, Station 2 die Koordinatenform der Ebene, Station 3 Scharen.</dd>
+      <dt>Einsatz und Ablauf</dt><dd><ul>
+        <li><b>Station 1 (Std. 2 „Projektion und Winkel“)</b>, ca. 10 min am Beamer oder in PA nach dem Taschenlampen-Experiment: Sonne verstellen, Projektion von ${nvec('u')} auf ${vec('n')} beobachten. Startwert ${vec('u')} = (−1 | 0 | −1): Sonnenanteil 2/√5 ≈ 0,894 (≈ 89 %), Winkel zwischen ${vec('n')} und ${nvec('u')} ≈ 26,6°.</li>
+        <li><b>Station 2 (Std. 8 „Schatten: Gerade und Ebene“)</b>, ca. 10 min: Strahl durch die Mastspitze, Einsetzen in ${V('E')}, ${V('r')} = 15/4, ${V('P')}(2,25 | 2 | 2,25) auf dem Dach; ohne Dach Boden bei ${V('r')} = 6 in (0 | 2 | 0). Streiflicht ${vec('u')} = (3 | 0 | −1): 24 + 0 · ${V('r')} = 9, keine Lösung (parallel). Auftrag 5: Strahl durch A liegt im Dach (9 = 9). Bei höherer Sonne (Auftrag 3) zeigt die Sim für ${vec('u')} = (−1 | 0 | −3): ${V('r')} = 3/2, (4,5 | 2 | 1,5) nicht auf dem Dach, Boden (4 | 2 | 0).</li>
+        <li><b>Station 3 (Std. 11 „Scharen“)</b>, ca. 25 min Erkundung in PA (AB AG5): Teil A ${V('g')}<sub>${V('k')}</sub> mit ${V('r')} = 15/4 für alle ${V('k')}, ${V('P')}<sub>${V('k')}</sub>(2,25 | 2 + 3,75${V('k')} | 2,25), Spur parallel zur ${V('x')}₂-Achse, auf dem Dach für −8/15 ≤ ${V('k')} ≤ 16/15 (Regler in Schritten von 0,1: −0,5 noch auf dem Dach, −0,6 nicht; 1,0 ja, 1,1 nicht). Teil B ${V('E')}<sub>${V('a')}</sub>: ${V('x')}₁ + ${V('a')}${V('x')}₃ = 3 + 2${V('a')}, Start ${V('a')} = 3 (Dachebene, 0,894), senkrecht zur Sonne bei ${V('a')} = 1 (100 %, Neigung 45°), ${V('a')} = 0 senkrechtes Modul (1/√2 ≈ 0,707).</li>
+        <li>Direktlinks (QR-Codes): <code>…/sims/mathe/sonnendach/#station1</code>, <code>#station2</code>, <code>#station3</code>.</li></ul></dd>
+      <dt>Bedienung</dt><dd>Bild ziehen dreht die Ansicht, zwei Finger zoomen; Knöpfe für Seitenansicht (Dach als Strich, alle Vektoren in der Bildebene), Ansicht von oben und von vorn sowie „Ansicht zurücksetzen“. Am Beamer auch mit Maus und Pfeiltasten. Die Sonne wird über einen Regler mit festen Sonnenständen verstellt, damit alle Vektoren ganzzahlig bleiben und die Rechnungen exakt sind. Hochkant stehen die Aufträge über dem Bild und die Regler direkt darunter; quer (ab 980 px) stehen Bild und Aufträge nebeneinander. Zum Scrollen am iPad neben dem Bild wischen.</dd>
+      <dt>Sonnenstände und Wirklichkeit</dt><dd>In Uetersen (53,6° N) steht die Sonne mittags höchstens etwa 60° hoch. Stände über 60° (63,4°, 71,6° mit 100 %, 90°) und alle Stände „hinten“ (auch das Streiflicht) sind in Station 1 und 2 als <b>Gedankenexperiment</b> gekennzeichnet – im Bild und unter dem Regler. Das eignet sich als Validierungsfrage (Z11): „Kann die Sonne in Uetersen so hoch stehen?“ Der Startwert (vorn, 45°) und die wandernde Sonne in Station 3 (höchstens 45°) sind realistisch.</dd>
+      <dt>Typische Fehlvorstellungen</dt><dd><ul>
+        <li>„Das Dach ist schräg, also hängt die Gleichung von allen drei Koordinaten ab“: In der Seitenansicht erscheint das Dach als Strich – kein ${V('x')}₂ in der Gleichung.</li>
+        <li>„Senkrecht auf das Dach“ heißt „senkrecht von oben“: Bei 90° Sonnenhöhe ist der Sonnenanteil nur 3/√10 ≈ 0,949; 100 % gibt es, wenn ${nvec('u')} in Richtung ${vec('n')} zeigt.</li>
+        <li>Negatives Skalarprodukt als „Rechenfehler“: In Station 1 trifft das Licht dann die Unterseite.</li>
+        <li>Schnittpunkt mit der Ebene = Schatten auf dem Dach: Station 2 zeigt Schnittpunkte der Dachebene, die außerhalb des Dachs liegen (Punktprobe mit den Grenzen 0 ≤ ${V('x')}₁ ≤ 3, 0 ≤ ${V('x')}₂ ≤ 6).</li></ul></dd>
+      <dt>Hinweise</dt><dd>Kein Freitext, keine Pflicht-Vorhersagen: Beobachtungsaufträge mit automatischen Häkchen, Antworten in die Notizen am iPad. Es werden keine Daten gespeichert oder übertragen; Neuladen setzt alles zurück.</dd>
+    </dl></div></details></div>`;
+  orbit($('#svg0'),'0');
+}
+function icon1(){ return `<svg width="62" height="62" viewBox="0 0 80 80" aria-hidden="true">
+  <polygon points="8,52 56,40 72,58 24,70" fill="var(--physik-soft)" stroke="var(--physik)" stroke-width="2.5" stroke-linejoin="round"/>
+  <line x1="40" y1="55" x2="33" y2="14" stroke="var(--mathe)" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="40" y1="55" x2="62" y2="24" stroke="var(--warn)" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="62" y1="24" x2="35" y2="27" stroke="var(--fg-3)" stroke-width="1.8" stroke-dasharray="4 3"/>
+  <line x1="40" y1="55" x2="35" y2="27" stroke="var(--hl-ink)" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="68" cy="14" r="7" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="2"/></svg>`; }
+function icon2(){ return `<svg width="62" height="62" viewBox="0 0 80 80" aria-hidden="true">
+  <polygon points="6,40 44,32 52,46 14,54" fill="var(--physik-soft)" stroke="var(--physik)" stroke-width="2.5" stroke-linejoin="round"/>
+  <line x1="62" y1="72" x2="62" y2="14" stroke="var(--fg-2)" stroke-width="4" stroke-linecap="round"/>
+  <line x1="76" y1="4" x2="30" y2="44" stroke="var(--warn)" stroke-width="2.6"/>
+  <circle cx="30" cy="44" r="5" fill="var(--mathe)" stroke="#fff" stroke-width="2"/></svg>`; }
+function icon3(){ return `<svg width="62" height="62" viewBox="0 0 80 80" aria-hidden="true">
+  <polygon points="6,44 50,36 58,52 14,60" fill="none" stroke="var(--line-3)" stroke-width="2" stroke-dasharray="5 4"/>
+  <polygon points="14,60 58,52 52,18 8,26" fill="var(--physik-soft)" stroke="var(--physik)" stroke-width="2.5" stroke-linejoin="round"/>
+  <line x1="14" y1="60" x2="58" y2="52" stroke="var(--mathe-ink)" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="22" cy="40" r="3" fill="var(--mathe)"/><circle cx="32" cy="38" r="3" fill="var(--mathe)"/><circle cx="42" cy="36" r="3" fill="var(--mathe)"/></svg>`; }
+
+function fig0(){
+  const svg=$('#svg0'); if(!svg||!svg.clientWidth) return;
+  const u=[-1,0,-1];
+  const G=Scene(svg,S[0].view,ROOFPLANE);
+  drawGround(G); drawShadows(G,u); drawPosts(G); drawRoof(G,true); drawMast(G); cornerLabels(G);
+  const P=[2.25,2,2.25], sp=add(MM,mul(unit([1,0,1]),3));
+  G.line(sp,MM,'ray thin'); G.line(MM,P,'ray dick',{arrow:true,color:'var(--warn)'});
+  G.sun(sp); G.dot(P,6,'hit'); G.text(P,'P',12,-8,'lbh','start');
+  G.render();
+}
+
+/* =========================================================
+   Station 1 – Projektion und Sonnenanteil
+   ========================================================= */
+const Z1=[1.5,2.5,2.5];                       // Fußpunkt der Vektoren auf dem Dach (liegt in E)
+function render1(){
+  const s=S[1];
+  const body=`<div class="layout">
+    <div class="figcol"><div class="figcard"><svg class="v3" id="svg1" tabindex="0" role="img" aria-label="Dach mit Normalenvektor n, Vektor minus u zur Sonne und der Projektion von minus u auf n, drehbar"></svg></div>
+      ${viewbar('1')}
+      <p class="legend"><span style="--c:var(--mathe)">Normalenvektor ${vec('n')}</span><span style="--c:var(--warn)">zur Sonne ${nvec('u')}</span><span style="--c:var(--hl-ink)">Projektion von ${nvec('u')} auf ${vec('n')}</span></p>
+      <div class="panel ctrl">${slider(1,'sun','Sonne:')}
+        ${toggle('proj1',s.proj,'Projektion zeigen')}</div></div>
+    <div class="side">
+      <div class="panel auftr"><h3>Beobachtungsaufträge</h3><ol class="beob" id="beob1"></ol><p class="prog">Antworten in deine Notizen.</p></div>
+      <div class="werte" id="w1" aria-live="polite"></div>
+    </div></div>`;
+  $('#st-1').innerHTML=shell(1,'Station 1 · Projektion','Wie viel Sonne trifft das Dach?',
+    `Das Solardach hat den Normalenvektor ${vec('n')} = ${col([1,0,3])}. Das Sonnenlicht läuft in Richtung ${vec('u')}, der Vektor ${nvec('u')} zeigt zur Sonne. Welcher Anteil der Sonne trifft senkrecht auf das Dach?`,body);
+  orbit($('#svg1'),'1');
+  upd1();
+}
+function upd1(){
+  const s=S[1], sv=SUNS[s.sun];
+  if(s.sun===SENK) s.seen.senk=true;
+  if(dot(NR,sv)<0) s.seen.neg=true;
+  if(s.sun===STREIF) s.seen.streif=true;
+  syncSl('1'); fig1(); werte1(); beob1();
+  const t=$('#proj1'); if(t) t.setAttribute('aria-pressed',s.proj);
+}
+function fig1(){
+  const svg=$('#svg1'); if(!svg||!svg.clientWidth) return;
+  const s=S[1], sv=SUNS[s.sun], u=mul(sv,-1), sh=unit(sv), sc=dot(NR,sv);
+  const G=Scene(svg,s.view,ROOFPLANE);
+  drawGround(G); drawPosts(G); drawRoof(G,sc>0); cornerLabels(G,false,true); geLabel(G,s.sun);
+  // Lichtbündel
+  [[.25,5.5],[.75,5.5],[.5,0.4]].forEach(([fa,fb])=>{
+    const q=add(lerp(PA,PD,fa),[0,fb,0]);
+    G.line(add(q,mul(sh,2.6)),q,'ray thin',{arrow:true,color:'var(--warn)',size:10});
+  });
+  G.sun(add(Z1,mul(sh,5.2)));
+  // Vektoren
+  const tipN=add(Z1,NR), tipS=add(Z1,sv);
+  const lam=sc/dot(NR,NR), foot=add(Z1,mul(NR,lam));
+  if(s.proj){
+    if(lam<0) G.line(Z1,add(foot,mul(unit(NR),-.4)),'nverl');
+    if(Math.abs(lam)>1e-9){
+      if(len(sub(tipS,foot))>1e-6){
+        G.line(tipS,foot,'lot');
+        // rechter Winkel am Lotfußpunkt
+        const w=unit(sub(tipS,foot)), nn=mul(unit(NR),lam>0?-1:1), q=.22;
+        G.path([add(foot,mul(w,q)),add(add(foot,mul(w,q)),mul(nn,q)),add(foot,mul(nn,q))],'lot');
+      }
+    }
+  }
+  G.line(Z1,tipN,'vn',{arrow:true,color:'var(--mathe)'});
+  if(s.proj&&Math.abs(lam)>1e-9) G.line(Z1,foot,'proj');
+  G.line(Z1,tipS,'vs',{arrow:true,color:'var(--warn)'});
+  // Winkel φ zwischen n und −u
+  const nh=unit(NR), wv=sub(sh,mul(nh,dot(sh,nh)));
+  if(len(wv)>1e-6){ const w=unit(wv), phi=Math.acos(clamp(dot(sh,nh),-1,1)), pts=[];
+    for(let i=0;i<=24;i++){ const t=phi*i/24; pts.push(add(Z1,add(mul(nh,.75*Math.cos(t)),mul(w,.75*Math.sin(t))))); }
+    G.path(pts,'arc');
+    const m=add(Z1,add(mul(nh,1.05*Math.cos(phi/2)),mul(w,1.05*Math.sin(phi/2))));
+    G.text(m,'φ',0,6,'pt'); }
+  G.dot(Z1,4.5,'dot');
+  G.vtip(Z1,tipN,'n','lbn','var(--mathe)');
+  if(len(sub(tipN,tipS))<.4) G.vlab(tipS,'u',40,30,'lbs','var(--warn)',true);   // −u = n: Beschriftungen nicht übereinander
+  else G.vtip(Z1,tipS,'u','lbs','var(--warn)',true);
+  G.render();
+}
+function werte1(){
+  const s=S[1], sv=SUNS[s.sun], u=mul(sv,-1).map(x=>x||0), N=dot(NR,sv), R2=dot(sv,sv);
+  const cosv=N/Math.sqrt(10*R2), phi=Math.acos(clamp(cosv,-1,1))/DEG;
+  const cosLine=`cos φ = ${fr(`${vec('n')} ∘ (${nvec('u')})`,`|${vec('n')}| · |${nvec('u')}|`)} = ${cosChain(Fr(N),Fr(10),Fr(R2)).h}`;
+  const pct=Math.max(0,cosv)*100;
+  let anteil;
+  if(N>0) anteil=`<span class="hl">${appr(pct,0)} %</span>`;
+  else if(N===0) anteil=`<span class="hl">0 %</span>`;
+  else anteil=`<span class="hl">0 %</span>`;
+  let deut='';
+  if(N===0) deut=`${vec('n')} ∘ (${nvec('u')}) = 0: Das Licht streift am Dach entlang (Streiflicht).`;
+  else if(N<0) deut=`${vec('n')} ∘ (${nvec('u')}) &lt; 0: Die Sonne steht hinter dem Modul, das Licht trifft die Unterseite.`;
+  else if(Math.abs(cosv-1)<1e-12) deut=`${nvec('u')} zeigt genau in Richtung ${vec('n')}: Die Sonne trifft senkrecht auf das Dach.`;
+  const comp=`1 · ${pf(sv[0])} + 0 · ${pf(sv[1])} + 3 · ${pf(sv[2])} = ${num(N,0)}`;
+  const projEx=fr(num(N,0),sq(10));
+  $('#w1').innerHTML=`
+    <div class="zl"><span class="t">Licht:</span> ${vec('u')} = ${col(u)} <span class="t">zur Sonne:</span> ${nvec('u')} = ${col(sv)}</div>
+    <div class="zl"><span class="t">Normalenvektor:</span> ${vec('n')} = ${col([1,0,3])}</div>
+    <div class="sep"></div>
+    <div class="zl scroll">${vec('n')} ∘ (${nvec('u')}) = ${comp}</div>
+    <div class="zl">|${vec('n')}| = ${sq(10)}, &nbsp; |${nvec('u')}| = ${sqH(Fr(R2))}</div>
+    <div class="zl gross scroll">${cosLine}</div>
+    <div class="zl"><span class="t">Winkel zwischen ${vec('n')} und ${nvec('u')}:</span> φ ${appr(phi,1)}°</div>
+    <div class="sep"></div>
+    <div class="zl gross"><span class="t">Sonnenanteil:</span> ${anteil} <span class="bar" aria-hidden="true"><span style="width:${pct.toFixed(1)}%"></span></span></div>
+    ${deut?`<div class="klein">${deut}</div>`:''}
+    <div class="zl"><span class="t">Länge der Projektion (lila):</span> ${fr(`${vec('n')} ∘ (${nvec('u')})`,`|${vec('n')}|`)} = ${projEx} ${appr(N/Math.sqrt(10),2)}</div>`;
+}
+function beob1(){
+  const s=S[1], el=$('#beob1'); if(!el) return;
+  el.innerHTML=
+    li(s.seen.oben,1,`Schaut <b>von oben</b> auf den Unterstand. Wie tief ist das Dach von oben gesehen? Lest am Gitter ab (1 Kästchen = 1 m).`)+
+    li(s.seen.seite,2,`Dreht das Bild, bis das Dach nur noch ein <b>schräger Strich</b> ist (oder „Seitenansicht“). Jetzt liegen ${vec('n')}, ${nvec('u')} und die Projektion in der Bildebene.`)+
+    li(s.seen.senk,3,`<span class="ge-i">Gedankenexperiment:</span> Stellt die Sonne so, dass sie <b>senkrecht</b> auf das Dach scheint (100 %). Wie liegen ${nvec('u')} und ${vec('n')} dann zueinander? Wie hoch steht die Sonne dann – geht das in Uetersen?`)+
+    li(s.seen.neg,4,`<span class="ge-i">Gedankenexperiment:</span> Lasst die Sonne <b>hinter</b> das Dach wandern. Ab welchem Sonnenstand wird ${vec('n')} ∘ (${nvec('u')}) negativ? Wohin zeigt dann die Projektion?`)+
+    li(s.seen.streif,5,`<span class="ge-i">Gedankenexperiment:</span> Bei welchem Sonnenstand streift das Licht genau am Dach entlang, sodass ${vec('n')} ∘ (${nvec('u')}) = 0 ist?`);
+}
+
+/* =========================================================
+   Station 2 – Schatten: Gerade schneidet Ebene
+   ========================================================= */
+function render2(){
+  const s=S[2];
+  const body=`<div class="layout">
+    <div class="figcol"><div class="figcard"><svg class="v3" id="svg2" tabindex="0" role="img" aria-label="Sonnenstrahl durch die Mastspitze M, Schnittpunkt mit dem Dach oder dem Boden, drehbar"></svg></div>
+      ${viewbar('2')}
+      <div class="panel ctrl">${slider(2,'sun','Sonne:')}
+        <p class="seglab">Der Strahl geht durch</p>
+        <div class="seg" role="group" aria-label="Startpunkt des Strahls">
+          <button type="button" data-start="M" aria-pressed="${s.start==='M'}">Mastspitze M</button>
+          <button type="button" data-start="A" aria-pressed="${s.start==='A'}">Dachecke A</button></div>
+        ${toggle('verl2',s.verl,'Strahl ohne Dach verlängern')}
+        ${toggle('sch2',s.schatten,'Schatten auf dem Boden zeigen')}</div></div>
+    <div class="side">
+      <div class="panel auftr"><h3>Beobachtungsaufträge</h3><ol class="beob" id="beob2"></ol><p class="prog">Antworten in deine Notizen.</p></div>
+      <div class="status" id="stat2" aria-live="polite"></div>
+      <div class="werte" id="w2"></div>
+    </div></div>`;
+  $('#st-2').innerHTML=shell(2,'Station 2 · Gerade und Ebene','Wo fällt der Schatten des Mastes?',
+    `Ein Sonnenstrahl geht durch die Mastspitze ${V('M')}(6 | 2 | 6). Wo trifft er auf das Dach ${V('E')}: ${V('x')}₁ + 3${V('x')}₃ = 9 oder auf den Boden? Dort liegt der Schatten der Mastspitze.`,body);
+  orbit($('#svg2'),'2');
+  upd2();
+}
+/* Schnitt des Strahls p + r·u mit Dach und Boden, exakt mit Brüchen */
+function calc2(p,u){
+  const K=p[0]+3*p[2], m=u[0]+3*u[2];       // K + m·r = 9
+  const res={K,m};
+  if(m===0){ res.kind=K===DR?'in':'par'; }
+  else { res.r=Fr(DR-K,m); res.P=[0,1,2].map(i=>fadd(Fr(p[i]),fmul(Fr(u[i]),res.r)));
+    res.Pv=res.P.map(fv); res.onRoof=fv(res.r)>=-1e-12&&inRoof(res.Pv); }
+  if(u[2]<0){ res.rg=Fr(-p[2],u[2]); res.Q=[0,1,2].map(i=>fadd(Fr(p[i]),fmul(Fr(u[i]),res.rg))); res.Qv=res.Q.map(fv); }
+  // was trifft der Strahl zuerst?
+  if(res.kind==='in') res.hit='in';
+  else if(res.kind==='par') res.hit=res.Q?'boden':'nichts';
+  else if(res.onRoof&&fv(res.r)>1e-12&&(!res.rg||fv(res.r)<=fv(res.rg)+1e-12)) res.hit='dach';
+  else if(res.onRoof&&Math.abs(fv(res.r))<1e-12) res.hit='start';
+  else res.hit=res.Q?'boden':'nichts';
+  return res;
+}
+function upd2(){
+  const s=S[2];
+  const c=calc2(s.start==='M'?MM:PA,uOf(s.sun));
+  if(s.start==='M'&&s.sun>SUN0&&SUNS[s.sun][0]>=0&&c.hit==='boden') s.seen.hoeher=true;
+  if(s.start==='M'&&s.sun===STREIF) s.seen.streif=true;
+  if(s.start==='A'&&c.hit==='in') s.seen.inE=true;
+  if(s.verl) s.seen.verl=true;
+  syncSl('2'); fig2(c); werte2(c); beob2();
+  const t=$('#verl2'); if(t) t.setAttribute('aria-pressed',s.verl);
+  const t2=$('#sch2'); if(t2) t2.setAttribute('aria-pressed',s.schatten);
+  document.querySelectorAll('[data-start]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.start===s.start));
+}
+function fig2(c){
+  const svg=$('#svg2'); if(!svg||!svg.clientWidth) return;
+  const s=S[2]; if(!c) c=calc2(s.start==='M'?MM:PA,uOf(s.sun));
+  const sv=SUNS[s.sun], u=uOf(s.sun), sh=unit(sv), p0=s.start==='M'?MM:PA;
+  const G=Scene(svg,s.view,ROOFPLANE);
+  drawGround(G); if(s.schatten) drawShadows(G,u);
+  drawPosts(G); drawRoof(G,dot(NR,sv)>0); drawMast(G); cornerLabels(G); geLabel(G,s.sun);
+  const sp=add(p0,mul(sh,3));
+  G.line(sp,p0,'ray thin',{clip:true}); G.sun(sp);
+  const far=add(p0,mul(u,40));
+  if(c.hit==='dach'){
+    G.line(p0,c.Pv,'ray dick',{arrow:true,color:'var(--warn)'});
+    if(s.verl&&c.Q) { G.line(c.Pv,c.Qv,'ray dash',{clip:true}); if(inBox(c.Qv)){ G.dot(c.Qv,6,'qdot'); G.text(c.Qv,'Q',10,18,'lbh','start'); } }
+    G.dot(c.Pv,6.5,'hit'); G.text(c.Pv,'P',12,-10,'lbh','start');
+  } else if(c.hit==='in'){
+    // A + r·u läuft entlang der Dachkante AD
+    G.line(p0,PD,'inplane'); G.line(PD,c.Q?c.Qv:far,'ray dick',{clip:true});
+    if(c.Q&&inBox(c.Qv)){ G.dot(c.Qv,6,'qdot'); G.text(c.Qv,'Q',10,18,'lbh','start'); }
+  } else if(c.hit==='start'){
+    G.dot(p0,6.5,'hit');
+  } else {
+    const end=c.Q?c.Qv:far;
+    G.line(p0,end,'ray dick',{clip:true,arrow:true,color:'var(--warn)'});
+    if(s.verl&&c.kind!=='par'&&c.Pv&&!c.onRoof){ /* Schnittpunkt der Ebene außerhalb des Dachs */
+      if(inBox(c.Pv)){ G.line(p0,c.Pv,'ray dash',{clip:true}); G.dot(c.Pv,5,'qdot'); G.text(c.Pv,'P',12,-8,'lbh','start'); } }
+    if(c.Q&&inBox(c.Qv)){ G.dot(c.Qv,6.5,'hit'); G.text(c.Qv,'Q',10,18,'lbh','start'); }
+  }
+  G.render();
+}
+function werte2(c){
+  const s=S[2], u=uOf(s.sun), p0=s.start==='M'?MM:PA, pn=s.start==='M'?'M':'A';
+  const x1=lin(p0[0],u[0]), x3=lin(p0[2],u[2]);
+  const t1=(u[0]===0||p0[0]===0)?x1:`(${x1})`;
+  let h=`<div class="zl scroll"><i>g</i>: ${vec('x')} = ${col(p0)} + <i>r</i> · ${col(u)}</div>
+    <div class="zl"><i>E</i>: <i>x</i>₁ + 3<i>x</i>₃ = 9</div><div class="sep"></div>
+    <div class="zl"><span class="t">Einsetzen von ${V('x')}₁ und ${V('x')}₃:</span></div>
+    <div class="zl scroll">${t1} + 3 · (${x3}) = 9</div>`;
+  const KM=c.m===0?`${num(c.K,0)} + 0 · <i>r</i> = 9`:`${lin(c.K,c.m)} = 9`;
+  h+=`<div class="zl scroll">⇔ ${KM}</div>`;
+  const st=$('#stat2');
+  let sc='',sg='',sp='';
+  if(c.kind==='par'){
+    h+=`<div class="zl">⇔ ${num(c.K,0)} = 9 <span class="t">(falsch)</span></div>
+      <div class="klein">Keine Lösung: Der Strahl trifft die Dachebene nie, er ist parallel zu ${V('E')}. Probe: ${vec('n')} ∘ ${vec('u')} = 1 · ${pf(u[0])} + 0 · ${pf(u[1])} + 3 · ${pf(u[2])} = 0.</div>`;
+    sc='par'; sg='Kein Schnittpunkt: Strahl parallel zum Dach'; sp='Streiflicht – das Licht läuft am Dach vorbei, ohne es zu treffen.';
+  } else if(c.kind==='in'){
+    h+=`<div class="zl">⇔ 9 = 9 <span class="t">(wahr für jedes ${V('r')})</span></div>
+      <div class="klein">Unendlich viele Lösungen: Jeder Punkt des Strahls liegt in ${V('E')}. Der Strahl liegt im Dach (entlang der Kante ${V('A')}${V('D')}).</div>`;
+    sc='in'; sg='Der Strahl liegt in der Dachebene'; sp='Das Licht streift genau über die Dachfläche.';
+  } else {
+    h+=`<div class="zl">⇔ <i>r</i> = ${rH(c.r)}</div>`;
+    h+=`<div class="zl gross scroll">${pt('P',c.P.map(cH))}</div>`;
+    const lage=`0 ≤ ${cH(c.P[0])} ≤ 3 und 0 ≤ ${cH(c.P[1])} ≤ 6`;
+    if(c.hit==='start'){
+      h+=`<div class="klein">${V('r')} = 0: Der Strahl beginnt in ${V('A')}, und ${V('A')} liegt selbst im Dach.</div>`;
+      sc='dach'; sg='Schnittpunkt ist A selbst'; sp=`${V('A')} liegt in ${V('E')}. Wählt Streiflicht oder wieder die Mastspitze.`;
+    } else if(c.hit==='dach'){
+      h+=`<div class="klein">${lage}: ${V('P')} liegt auf dem Dach.</div>`;
+      sc='dach'; sg='Schatten der Mastspitze auf dem Dach'; sp=`Der Strahl trifft das Dach in ${V('P')}.`;
+    } else {
+      let why;
+      if(fv(c.r)<0) why=`${V('r')} &lt; 0: Dieser Schnittpunkt liegt auf der anderen Seite von ${V(pn)}, zur Sonne hin.`;
+      else if(c.Pv[2]<-1e-9) why=`${V('P')} liegt unter dem Boden – der Strahl trifft vorher den Boden.`;
+      else { const x=c.Pv, q=[];
+        if(x[0]<0) q.push(`${V('x')}₁ = ${cH(c.P[0])} &lt; 0`); if(x[0]>3) q.push(`${V('x')}₁ ${cH(c.P[0]).startsWith('≈')?cH(c.P[0]):'= '+cH(c.P[0])} &gt; 3`);
+        if(x[1]<0) q.push(`${V('x')}₂ = ${cH(c.P[1])} &lt; 0`); if(x[1]>6) q.push(`${V('x')}₂ = ${cH(c.P[1])} &gt; 6`);
+        why=`${V('P')} liegt in der Dachebene, aber <b>nicht auf dem Dach</b>, denn ${q.join(' und ')} (auf dem Dach gilt 0 ≤ ${V('x')}₁ ≤ 3 und 0 ≤ ${V('x')}₂ ≤ 6).`; }
+      h+=`<div class="klein">${why}</div>`;
+      sc='boden'; sg='Schatten der Mastspitze auf dem Boden'; sp='Der Strahl verfehlt das Dach.';
+    }
+  }
+  if(c.Q&&(c.hit!=='dach'||s.verl)&&c.hit!=='start'){
+    const z=lin(p0[2],u[2]);
+    h+=`<div class="sep"></div><div class="zl"><span class="t">${c.hit==='dach'?'Ohne Dach – ':''}Boden ${V('x')}₃ = 0:</span></div>
+      <div class="zl scroll">${z} = 0 ⇔ <i>r</i> = ${rH(c.rg)} &nbsp;→&nbsp; ${pt('Q',c.Q.map(cH))}</div>`;
+    if(c.hit==='dach') h+=`<div class="klein">Vergleich der Parameter: Der Strahl erreicht das Dach in ${V('P')} bei ${V('r')} = ${rH(c.r)}, den Boden erst bei ${V('r')} = ${rH(c.rg)}. ${V('P')} kommt zuerst – das Dach ist im Weg, der Schatten liegt auf dem Dach.${inRoof(c.Qv)?` ${V('Q')} liegt unter dem Dach.`:''}</div>`;
+    else if(!inBox(c.Qv)) h+=`<div class="klein">${V('Q')} liegt außerhalb des Bildes.</div>`;
+  } else if(!c.Q&&c.hit!=='in'&&c.hit!=='start'){
+    h+=`<div class="klein">Der Strahl läuft waagerecht und trifft den Boden nie.</div>`;
+  }
+  $('#w2').innerHTML=h;
+  if(st){ st.className='status '+sc; st.innerHTML=`<div class="gross">${sg}</div><p>${sp}</p>`; }
+}
+function beob2(){
+  const s=S[2], el=$('#beob2'); if(!el) return;
+  el.innerHTML=
+    li(s.seen.dreh,1,`Sucht den Schattenpunkt ${V('P')} der Mastspitze. Dreht das Bild, bis ihr sicher seid, dass ${V('P')} <b>auf</b> dem Dach liegt.`)+
+    li(s.seen.verl,2,`Schaltet „Strahl ohne Dach verlängern“ ein. Wo träfe der Strahl ohne Dach den Boden? Warum liegt der Schatten trotzdem auf dem Dach?`)+
+    li(s.seen.hoeher,3,`<span class="ge-i">Gedankenexperiment:</span> Lasst die Sonne <b>höher</b> als 45° steigen. Wo fällt der Schatten der Mastspitze jetzt? Was zeigt die Rechnung, obwohl es einen Schnittpunkt mit der Dachebene gibt?`)+
+    li(s.seen.streif,4,`<span class="ge-i">Gedankenexperiment:</span> Stellt <b>Streiflicht</b> ein: Sonne hinten, ≈ 18,4° hoch, ${vec('u')} = ${col([3,0,-1])}. Was passiert beim Einsetzen?`)+
+    li(s.seen.inE,5,`<span class="ge-i">Gedankenexperiment:</span> Lasst den Strahl durch die Dachecke ${V('A')} gehen. Bei welchem Sonnenstand liegt der ganze Strahl im Dach? Was steht dann am Ende der Rechnung?`);
+}
+
+/* =========================================================
+   Station 3 – Scharen: Sonne wandert (g_k), Modul neigen (E_a)
+   ========================================================= */
+function render3(){
+  const s=S[3];
+  const ctrl=s.teil==='A'
+    ? `${slider(3,'k',`${V('k')} =`)}
+       ${toggle('line3',s.spurline,'Gerade durch die Schattenpunkte zeigen')}
+       <div class="actions" style="margin-top:8px"><button type="button" class="btn ghost small" id="clear3">Spur löschen</button></div>`
+    : `${slider(3,'a',`${V('a')} =`)}<p class="hinweis">Das Modul dreht sich um die vordere Dachkante ${V('C')}${V('D')}. Die Sonne steht wieder vorn, 45° hoch: ${vec('u')} = (−1 | 0 | −1).</p>`;
+  const body=`<div class="seg" role="group" aria-label="Teil">
+      <button type="button" data-teil="A" aria-pressed="${s.teil==='A'}">Teil A: Die Sonne wandert</button>
+      <button type="button" data-teil="B" aria-pressed="${s.teil==='B'}">Teil B: Das Modul wird geneigt</button></div>
+    <div class="layout">
+    <div class="figcol"><div class="figcard"><svg class="v3" id="svg3" tabindex="0" role="img" aria-label="${s.teil==='A'?'Sonnenstrahlen durch die Mastspitze für verschiedene k und die Spur der Schattenpunkte auf dem Dach':'Solarmodul, das um die Kante CD geneigt wird, mit Normalenvektor'}, drehbar"></svg></div>
+      ${viewbar('3')}
+      <div class="panel ctrl">${ctrl}</div></div>
+    <div class="side">
+      <div class="panel auftr"><h3>Beobachtungsaufträge</h3><ol class="beob" id="beob3"></ol><p class="prog">Antworten in deine Notizen.</p></div>
+      <div class="werte" id="w3" aria-live="polite"></div>
+    </div></div>`;
+  $('#st-3').innerHTML=shell(3,'Station 3 · Scharen',s.teil==='A'?'Die Sonne wandert':'Das Modul wird geneigt',
+    s.teil==='A'
+      ? `Im Laufe des Tages wandert die Sonne zur Seite. Die Strahlen durch die Mastspitze bilden eine Geradenschar ${V('g')}<sub>${V('k')}</sub>: ${vec('x')} = ${col([6,2,6])} + ${V('r')} · ${col([-1,V('k'),-1])}. Wohin wandert der Schatten ${V('P')}<sub>${V('k')}</sub> der Mastspitze?`
+      : `Das Solarmodul lässt sich um die vordere Dachkante ${V('C')}${V('D')} neigen. Die Modulebenen bilden eine Ebenenschar ${V('E')}<sub>${V('a')}</sub>: ${V('x')}₁ + ${V('a')} · ${V('x')}₃ = 3 + 2${V('a')}. Bei welcher Neigung bekommt das Modul am meisten Sonne?`,body);
+  orbit($('#svg3'),'3');
+  upd3();
+}
+function calc3(){
+  const s=S[3], k=Fr(s.k,10), u=[-1,s.k/10,-1];
+  const r=Fr(15,4), P=[Fr(9,4),fadd(Fr(2),fmul(r,k)),Fr(9,4)], Pv=P.map(fv);
+  const on=inRoof(Pv);
+  const Q=[Fr(0),fadd(Fr(2),fmul(Fr(6),k)),Fr(0)];
+  return {k,u,r,P,Pv,on,Q,Qv:Q.map(fv)};
+}
+function upd3(){
+  const s=S[3];
+  if(s.teil==='A'){ s.spur.add(s.k); if(s.k/10< -8/15) s.seen.links=true; if(s.k/10>16/15) s.seen.rechts=true; }
+  else { if(s.a===2) s.seen.senk=true; if(s.a===0) s.seen.senkrecht=true; }
+  syncSl('3'); fig3(); werte3(); beob3();
+  const t=$('#line3'); if(t) t.setAttribute('aria-pressed',s.spurline);
+}
+function fig3(){
+  const svg=$('#svg3'); if(!svg||!svg.clientWidth) return;
+  const s=S[3];
+  if(s.teil==='A'){
+    const c=calc3(), u=c.u, sh=unit(mul(u,-1));
+    const G=Scene(svg,s.view,ROOFPLANE);
+    drawGround(G); drawShadows(G,u); drawPosts(G); drawRoof(G,true); drawMast(G); cornerLabels(G);
+    if(s.spurline) G.line([2.25,-2,2.25],[2.25,9,2.25],'spurline',{L:3});
+    [...s.spur].forEach(kk=>{ const y=2+3.75*kk/10; if(y>=0&&y<=6&&kk!==s.k) G.dot([2.25,y,2.25],5,'spur',4); });
+    const sp=add(MM,mul(sh,3)); G.line(sp,MM,'ray thin',{clip:true}); G.sun(sp);
+    if(c.on){ G.line(MM,c.Pv,'ray dick',{arrow:true,color:'var(--warn)'}); G.dot(c.Pv,6.5,'hit'); G.text(c.Pv,'P',12,-10,'lbh','start'); }
+    else { G.line(MM,c.Qv,'ray dick',{clip:true,arrow:true,color:'var(--warn)'}); if(inBox(c.Qv)){ G.dot(c.Qv,6.5,'hit'); G.text(c.Qv,'Q',10,18,'lbh','start'); } }
+    G.render();
+  } else {
+    const a=s.a/2, n=[1,0,a], d=[-a,0,1], dh=unit(d), L=Math.sqrt(10);
+    const C2=add(PC,mul(dh,L)), D2=add(PD,mul(dh,L));
+    const G=Scene(svg,s.view,{n,d:3+2*a});
+    const u=[-1,0,-1], sv=[1,0,1], sh=unit(sv);
+    drawGround(G); drawPosts(G); drawMast(G);
+    G.poly([PA,PB,PC,PD],'ghost',1.5);
+    G.text(PA,'A',10,-8,'pts','start'); G.text(PB,'B',8,-10,'pts','start');
+    G.text(PC,'C',10,18,'pt','start'); G.text(PD,'D',-10,18,'pt','end');
+    const top=G.side>0;
+    G.poly([PD,PC,C2,D2],'roof'+(top?'':' unten'),2);
+    if(top){ for(let i=1;i<6;i++) G.line(lerp(PD,PC,i/6),lerp(D2,C2,i/6),'cell',{L:2.1});
+      for(let j=1;j<3;j++) G.line(lerp(PD,D2,j/3),lerp(PC,C2,j/3),'cell',{L:2.1}); }
+    G.line(PD,PC,'achse',{L:2.2});
+    G.text(lerp(PD,PC,.5),'Drehachse',0,30,'lbg','middle');
+    const Zm=lerp(lerp(PD,PC,.5),lerp(D2,C2,.5),.5);
+    [[.25,.92],[.75,.92]].forEach(([fa,fb])=>{ const q=lerp(lerp(PD,D2,fa),lerp(PC,C2,fa),fb);
+      G.line(add(q,mul(sh,2.6)),q,'ray thin',{arrow:true,color:'var(--warn)',size:10}); });
+    G.sun(add(Zm,mul(sh,5.2)));
+    const tipN=add(Zm,mul(unit(n),2.4)), tipS=add(Zm,mul(sh,2.4));   // beide als Richtung gleich lang gezeichnet
+    G.line(Zm,tipN,'vn',{arrow:true,color:'var(--mathe)'});
+    G.line(Zm,tipS,'vs',{arrow:true,color:'var(--warn)'});
+    G.dot(Zm,4.5,'dot');
+    const ln=G.P(tipN);
+    G.raw(6,`<text class="lbn halo" x="${ln[0]-14}" y="${ln[1]-6}" text-anchor="middle">n<tspan font-size="13" dy="5">a</tspan></text>`+
+      `<line x1="${ln[0]-20}" y1="${ln[1]-25}" x2="${ln[0]-7}" y2="${ln[1]-25}" style="stroke:var(--mathe);stroke-width:1.8"/><polygon points="${ln[0]-4},${ln[1]-25} ${ln[0]-9},${ln[1]-28.5} ${ln[0]-9},${ln[1]-21.5}" style="fill:var(--mathe)"/>`);
+    if(len(sub(tipN,tipS))<.4) G.vlab(tipS,'u',-22,30,'lbs','var(--warn)',true); else G.vtip(Zm,tipS,'u','lbs','var(--warn)',true);
+    G.render();
+  }
+}
+function eqA(a2){ // E_a als Koordinatengleichung mit eingesetztem a
+  const a=a2/2, rhs=num(3+2*a,1);
+  if(a2===0) return `<i>x</i>₁ = ${rhs}`;
+  return `<i>x</i>₁ + ${a2===2?'':num(a,1)}<i>x</i>₃ = ${rhs}`;
+}
+function werte3(){
+  const s=S[3], el=$('#w3'); if(!el) return;
+  if(s.teil==='A'){
+    const c=calc3(), kH=num(s.k/10,1);
+    let h=`<div class="zl scroll"><i>g</i><sub>${kH}</sub>: ${vec('x')} = ${col([6,2,6])} + <i>r</i> · ${col([-1,s.k/10,-1])}</div>
+      <div class="sep"></div>
+      <div class="zl"><span class="t">Einsetzen in ${V('E')}: ${V('x')}₁ + 3${V('x')}₃ = 9</span></div>
+      <div class="zl">(6 − <i>r</i>) + 3 · (6 − <i>r</i>) = 9 ⇔ 24 − 4<i>r</i> = 9 ⇔ <i>r</i> = ${fr(15,4)}</div>
+      <div class="zl scroll"><i>P</i><sub><i>k</i></sub>(6 − ${fr(15,4)} | 2 + ${fr(15,4)}<i>k</i> | 6 − ${fr(15,4)}) = (2,25 | 2 + 3,75<i>k</i> | 2,25)</div>
+      <div class="zl gross scroll"><span class="t">für ${V('k')} = ${kH}:</span> ${pt(`<i>P</i><sub>${kH}</sub>`,c.P.map(cH))}</div>`;
+    if(c.on) h+=`<div class="klein">0 ≤ ${cH(c.P[1])} ≤ 6: ${V('P')}<sub>${kH}</sub> liegt auf dem Dach.</div>`;
+    else { h+=`<div class="klein">${cH(c.P[1])} liegt nicht zwischen 0 und 6: Der Strahl verfehlt das Dach. Er trifft den Boden (${V('x')}₃ = 0 bei ${V('r')} = 6) in ${pt('Q',c.Q.map(cH))}${inBox(c.Qv)?'':' (außerhalb des Bildes)'}.</div>`; }
+    el.innerHTML=h;
+  } else {
+    const a2=s.a, a=a2/2, aF=Fr(a2,2), N=fadd(Fr(1),aF), R1=fadd(Fr(1),fmul(aF,aF));
+    const cosv=fv(N)/Math.sqrt(fv(R1)*2), neig=a2===0?90:Math.atan(1/a)/DEG, aH=num(a,1);
+    const cosL=`cos φ = ${cosChain(N,R1,Fr(2)).h}`;
+    let h=`<div class="zl"><i>E</i><sub>${aH}</sub>: ${eqA(a2)}${a2===6?' <span class="t">(Dachebene E)</span>':''}${a2===0?' <span class="t">(senkrecht)</span>':''}</div>
+      <div class="zl"><span class="t">Normalenvektor:</span> ${vec('n')}<sub><i>a</i></sub> = ${col([1,0,'<i>a</i>'])} = ${col([1,0,a])}</div>
+      <div class="zl"><span class="t">Neigung gegen den Boden:</span> ${exactAt(neig,1)?'':'≈ '}${num(neig,1)}°</div>
+      <div class="sep"></div>
+      <div class="zl scroll">${vec('n')}<sub><i>a</i></sub> ∘ (${nvec('u')}) = 1 · 1 + 0 · 0 + ${pf(a)} · 1 = ${fH(N)}</div>
+      <div class="zl">|${vec('n')}<sub><i>a</i></sub>| = ${sqH(R1)}, &nbsp; |${nvec('u')}| = ${sq(2)}</div>
+      <div class="zl gross scroll">${cosL}</div>
+      <div class="zl gross"><span class="t">Sonnenanteil:</span> <span class="hl">${appr(cosv*100,0)} %</span> <span class="bar" aria-hidden="true"><span style="width:${(cosv*100).toFixed(1)}%"></span></span></div>`;
+    if(a2===2) h+=`<div class="klein">${vec('n')}<sub>1</sub> = ${col([1,0,1])} zeigt genau zur Sonne: Das Modul steht senkrecht zum Licht.</div>`;
+    el.innerHTML=h;
+  }
+}
+function beob3(){
+  const s=S[3], el=$('#beob3'); if(!el) return;
+  const nk=s.spur.size;
+  el.innerHTML=
+    li(nk>=4&&s.seen.oben,1,`Teil A: Verändert ${V('k')} mehrmals und schaut auch <b>von oben</b>. Auf welcher Linie wandern die Schattenpunkte ${V('P')}<sub>${V('k')}</sub>?`)+
+    li(false,2,`Teil A: Vergleicht ${V('r')} in der Rechnung für verschiedene ${V('k')}. Was fällt auf? Was bedeutet das für die Höhe des Schattens?`,true)+
+    li(s.seen.links&&s.seen.rechts,3,`Teil A: Für welche ${V('k')} liegt der Schatten der Mastspitze noch auf dem Dach? Sucht die Grenzen auf beiden Seiten.`)+
+    li(s.seen.senk,4,`Teil B: Neigt das Modul, bis die Sonne <b>senkrecht</b> auftrifft (100 %). Welches ${V('a')} ist das, wie steil steht das Modul?`)+
+    li(s.seen.senkrecht,5,`Teil B: Stellt das Modul senkrecht wie eine Hauswand. Welche Gleichung hat ${V('E')}<sub>${V('a')}</sub>, wie viel Sonne bekommt es?`);
+}
+
+/* =========================================================
+   Navigation und Ereignisse
+   ========================================================= */
+const FIG={'0':fig0,'1':fig1,'2':()=>fig2(),'3':fig3};
+const BEOB={'1':beob1,'2':beob2,'3':beob3};
+const UPD={'1':upd1,'2':upd2,'3':upd3};
+const RENDER={'1':render1,'2':render2,'3':render3};
+const TABS=[['0','Start'],['1','1 Sonnenanteil'],['2','2 Schatten'],['3','3 Scharen']];
+$('#tabs').innerHTML=TABS.map(([id,l])=>`<button type="button" data-go="${id}">${l}</button>`).join('');
+const HASH={'#station1':'1','#station2':'2','#station3':'3'};
+const fromHash=()=>HASH[location.hash]||'0';
+let current='0';
+function go(id){
+  current=id;
+  document.querySelectorAll('.station').forEach(e=>e.classList.toggle('show',e.id==='st-'+id));
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===id?'true':'false'));
+  FIG[id]();
+}
+function nav(id){
+  if(id==='0'){ if(location.hash) history.pushState(null,'',location.pathname+location.search); }
+  else if(location.hash!=='#station'+id) history.pushState(null,'','#station'+id);
+  go(id);
+  $('#tabs').scrollIntoView({block:'start'});
+}
+window.addEventListener('hashchange',()=>go(fromHash()));
+window.addEventListener('popstate',()=>go(fromHash()));
+
+document.addEventListener('click',e=>{
+  const t=e.target;
+  const g=t.closest('[data-go]'); if(g){ nav(g.dataset.go); return; }
+  const v=t.closest('[data-view]'); if(v){ const [st,w]=v.dataset.view.split(':'); setView(st,w); return; }
+  const r=t.closest('[data-reset]'); if(r){ const id=r.dataset.reset;
+    if(confirm('Diese Station zurücksetzen? Alle Einstellungen dieser Station werden gelöscht.')){ S[id]=INIT[id](); RENDER[id](); } return; }
+  const st=t.closest('[data-step]'); if(st){ const [sid,k,dv]=st.dataset.step.split(':'); setSl(sid,k,S[sid][k]+(+dv)); return; }
+  const sb=t.closest('[data-start]'); if(sb){ S[2].start=sb.dataset.start; upd2(); return; }
+  const tb=t.closest('[data-teil]'); if(tb){ if(S[3].teil!==tb.dataset.teil){ S[3].teil=tb.dataset.teil; S[3].view=view0(S[3].teil==='B'?'3B':'3'); render3(); } return; }
+  if(t.closest('#proj1')){ S[1].proj=!S[1].proj; upd1(); return; }
+  if(t.closest('#verl2')){ S[2].verl=!S[2].verl; upd2(); return; }
+  if(t.closest('#sch2')){ S[2].schatten=!S[2].schatten; upd2(); return; }
+  if(t.closest('#line3')){ S[3].spurline=!S[3].spurline; upd3(); return; }
+  if(t.closest('#clear3')){ S[3].spur=new Set([S[3].k]); upd3(); return; }
+});
+document.addEventListener('input',e=>{
+  const t=e.target; if(t.type!=='range') return;
+  setSl(t.dataset.st,t.dataset.k,+t.value);
+});
+let rsT=null;
+window.addEventListener('resize',()=>{ clearTimeout(rsT); rsT=setTimeout(()=>FIG[current](),60); });
+
+Object.keys(INIT).forEach(k=>S[k]=INIT[k]());
+renderStart(); render1(); render2(); render3();
+go(fromHash());
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>FIG[current]());
+</script>
+</body>
+</html>

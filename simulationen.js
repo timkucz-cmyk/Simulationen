@@ -45,6 +45,19 @@ window.PLATTFORM = {
    --------------------------------------------------------- */
 window.SIMULATIONEN = [
   {
+    id: "sonnendach",
+    titel: "Sonnendach – Licht und Schatten am Fahrradunterstand",
+    fach: "mathe",
+    stufen: ["Q1"],
+    thema: "Analytische Geometrie",
+    beschreibung: "Ein Fahrradunterstand mit Solar-Pultdach, ein Fahnenmast und die Sonne als drehbares 3D-Modell. Drei Stationen: Sonnenanteil als Projektion auf den Normalenvektor (Skalarprodukt, Winkel, Vorzeichen), Schatten der Mastspitze als Schnittpunkt von Gerade und Ebene mit Streiflicht als Parallelfall, wandernde Sonne als Geradenschar und neigbares Modul als Ebenenschar.",
+    pfad: "sims/mathe/sonnendach/",
+    vorschau: "sims/mathe/sonnendach/vorschau.png",
+    sozialform: "Unterrichtsgespräch am Beamer, Partnerarbeit am iPad",
+    dauer: "3 Stationen, 10–25 min",
+    datum: "2026-11-16"
+  },
+  {
     id: "wasserstrahl",
     titel: "Wasserstrahl – ein Glas füllt sich",
     fach: "mathe",
